@@ -1,0 +1,108 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lp-suite-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lp_suite}
+      POSTGRES_USER: ${POSTGRES_USER:-lp_suite_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lp_suite_net
+
+  lp-core:
+    build:
+      context: ./services/lp-core
+    container_name: lp-core
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${LP_CORE_PORT:-9000}:9000"
+    depends_on:
+      - postgres
+    volumes:
+      - lp_core_media:/app/media
+      - lp_core_backups:/app/backups
+    networks:
+      - lp_suite_net
+
+  toolmag:
+    build:
+      context: ./services/toolmag
+    container_name: toolmag
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${TOOLMAG_PORT:-9001}:9001"
+    depends_on:
+      - postgres
+      - lp-core
+    networks:
+      - lp_suite_net
+
+  safety-manager:
+    build:
+      context: ./services/safety-manager
+    container_name: safety-manager
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${SAFETY_MANAGER_PORT:-9002}:9002"
+    depends_on:
+      - postgres
+      - lp-core
+    networks:
+      - lp_suite_net
+
+  system-manager:
+    build:
+      context: ./services/system-manager
+    container_name: system-manager
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${SYSTEM_MANAGER_PORT:-9003}:9003"
+    depends_on:
+      - postgres
+      - lp-core
+    networks:
+      - lp_suite_net
+
+  tp-manager:
+    build:
+      context: ./services/tp-manager
+    container_name: tp-manager
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${TP_MANAGER_PORT:-9004}:9004"
+    depends_on:
+      - postgres
+      - lp-core
+    networks:
+      - lp_suite_net
+
+  pedashop:
+    build:
+      context: ./services/pedashop
+    container_name: pedashop
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${PEDASHOP_PORT:-9005}:9005"
+    depends_on:
+      - postgres
+      - lp-core
+    networks:
+      - lp_suite_net
+
+networks:
+  lp_suite_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  lp_core_media:
+  lp_core_backups:
