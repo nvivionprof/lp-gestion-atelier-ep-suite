@@ -1,10 +1,17 @@
-# Nginx / Reverse proxy
+# Reverse proxy
 
-Emplacement prévu pour la configuration reverse proxy HTTPS.
+Le reverse proxy expose uniquement le port public `9000` côté hôte.
 
-Objectifs :
+Les modules sont routés par chemins :
 
-- routage vers LP Core et les modules ;
-- terminaison TLS ;
-- sécurité HTTP de base ;
-- en-têtes proxy corrects pour Django.
+```text
+/              → LP Core
+/toolmag/      → ToolMag
+/safety/       → Safety Manager
+/systemes/     → System Manager
+/tp/           → TP Manager
+/pedashop/     → PedaShop
+/pfmp/         → PFMP Manager
+```
+
+Les services Django restent sur le réseau Docker interne et écoutent typiquement sur `8000`.

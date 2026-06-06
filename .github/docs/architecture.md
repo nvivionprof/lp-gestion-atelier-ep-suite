@@ -4,7 +4,13 @@
 
 LP Gestion Atelier EP Suite est pensée comme une suite modulaire. LP Core joue le rôle de socle commun : authentification, rôles, référentiels, navigation, sauvegardes et paramètres globaux.
 
-Les autres applications peuvent fonctionner comme services séparés mais doivent consommer les données communes exposées ou synchronisées par LP Core.
+Les modules ne sont pas publiés sur des ports séparés. L’accès utilisateur passe par un **seul point d’entrée public** :
+
+```text
+http://serveur:9000/
+```
+
+Les modules sont ensuite accessibles par chemins.
 
 ```text
 lp-gestion-atelier-ep-suite/
@@ -23,6 +29,49 @@ lp-gestion-atelier-ep-suite/
 ├── docs/
 └── .github/
 ```
+
+---
+
+## Routage public
+
+```text
+:9000/              → LP Core
+:9000/toolmag/      → ToolMag
+:9000/safety/       → Safety Manager
+:9000/systemes/     → System Manager
+:9000/tp/           → TP Manager
+:9000/pedashop/     → PedaShop
+:9000/pfmp/         → PFMP Manager
+```
+
+> Les anciens ports publics dédiés aux modules sont supprimés.  
+> Il ne doit donc plus y avoir d’accès utilisateur du type `:900x` par module
+
+---
+
+## Schéma réseau
+
+```text
+Navigateur utilisateur
+        │
+        ▼
+http://serveur:9000
+        │
+        ▼
+reverse-proxy
+        │
+        ├── /              → lp-core:8000
+        ├── /toolmag/      → toolmag:8000
+        ├── /safety/       → safety-manager:8000
+        ├── /systemes/     → system-manager:8000
+        ├── /tp/           → tp-manager:8000
+        ├── /pedashop/     → pedashop:8000
+        └── /pfmp/         → pfmp-manager:8000
+```
+
+Les ports internes `8000` sont réservés au réseau Docker. Ils ne doivent pas être publiés sur l’hôte.
+
+---
 
 ## Services
 
@@ -92,7 +141,7 @@ Responsabilités :
 - ressources pédagogiques ;
 - documents ;
 - médias ;
-- éventuellement consommables pédagogiques.
+- consommables pédagogiques si le module est retenu pour ce périmètre.
 
 ### PFMP Manager
 
@@ -104,19 +153,6 @@ Responsabilités à préciser :
 - suivis ;
 - bilans ;
 - compétences observées.
-
----
-
-## Réseau et ports
-
-| Service | Port local | Usage |
-|---|---:|---|
-| lp-core | 9000 | portail principal |
-| toolmag | 9001 | outillage |
-| safety-manager | 9002 | sécurité |
-| system-manager | 9003 | systèmes |
-| tp-manager | 9004 | TP |
-| pedashop | 9005 | ressources |
 
 ---
 

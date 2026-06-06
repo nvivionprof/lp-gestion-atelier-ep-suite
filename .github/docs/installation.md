@@ -6,7 +6,7 @@
 - Docker Engine.
 - Docker Compose v2.
 - Git.
-- Accès réseau au port frontal choisi.
+- Accès réseau au port frontal unique `9000`.
 
 ## Installation locale
 
@@ -32,13 +32,30 @@ Ce compte ne doit pas être confondu avec le compte Django `/admin/`.
 
 ## Accès prévus
 
+Tous les modules passent par le même port frontal :
+
 ```text
-LP Core         http://localhost:9000/
-ToolMag         http://localhost:9001/
-Safety Manager  http://localhost:9002/
-System Manager  http://localhost:9003/
-TP Manager      http://localhost:9004/
-PedaShop        http://localhost:9005/
+LP Core          http://localhost:9000/
+ToolMag          http://localhost:9000/toolmag/
+Safety Manager   http://localhost:9000/safety/
+System Manager   http://localhost:9000/systemes/
+TP Manager       http://localhost:9000/tp/
+PedaShop         http://localhost:9000/pedashop/
+PFMP Manager     http://localhost:9000/pfmp/
+```
+
+## Règle d’architecture à respecter
+
+Ne pas recréer d’exposition publique par module.
+
+À éviter : toute exposition publique séparée par module.
+
+À utiliser :
+
+```text
+http://localhost:9000/toolmag/
+http://localhost:9000/safety/
+http://localhost:9000/systemes/
 ```
 
 ## Statut de ce dépôt
