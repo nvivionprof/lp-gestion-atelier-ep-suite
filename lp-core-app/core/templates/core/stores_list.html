@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h1>Magasins / droits / certifications</h1>
+<p>LP Core porte les droits et les périmètres communs. Lors d’un ajout ou d’une modification, les données sont destinées à être synchronisées vers tous les modules concernés.</p>
+
+<section class="panel"><h2>Ajouter / mettre à jour un magasin</h2><form method="post" class="form-card">{% csrf_token %}
+  <input type="hidden" name="form_action" value="store">
+  <input type="hidden" name="module" value="global">
+  <label>Code magasin<input name="code" placeholder="ATELIER"></label>
+  <label>Nom<input name="nom" placeholder="Magasin atelier principal"></label>
+  <label>Description<input name="description"></label>
+  <label class="checkline"><input type="checkbox" name="active" value="1" checked> Actif</label>
+  <button type="submit">Enregistrer</button>
+</form></section>
+
+<section class="panel"><h2>Types de droits existants</h2><form method="post" class="form-grid">{% csrf_token %}
+  <input type="hidden" name="form_action" value="right">
+  <label>Code droit<input name="right_code" placeholder="PROF, ELEVE, MAGASINIER, SYSTEM_ADMIN..."></label>
+  <label>Libellé<input name="right_label" placeholder="Professeur"></label>
+  <label>Module<select name="right_module">{% for code,label in right_modules %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+  <label class="checkline"><input type="checkbox" name="right_active" value="1" checked> Actif</label>
+  <label class="span-all">Description<input name="right_description"></label>
+  <div class="span-all"><button type="submit">Ajouter / mettre à jour le droit</button></div>
+</form>
+<table><tr><th>Module</th><th>Code</th><th>Libellé</th><th>Actif</th></tr>{% for r in rights %}<tr><td>{{ r.module }}</td><td>{{ r.code }}</td><td>{{ r.label }}</td><td>{{ r.active|yesno:'oui,non' }}</td></tr>{% empty %}<tr><td colspan="4">Aucun droit.</td></tr>{% endfor %}</table></section>
+
+<section class="panel"><h2>Types de certifications / habilitations</h2><form method="post" class="form-grid">{% csrf_token %}
+  <input type="hidden" name="form_action" value="cert_type">
+  <label>Code<input name="cert_code" placeholder="B1V, BR, SST, FLUIDE_FRIGO..."></label>
+  <label>Libellé<input name="cert_label" placeholder="Habilitation B1V"></label>
+  <label class="checkline"><input type="checkbox" name="cert_active" value="1" checked> Actif</label>
+  <label class="span-all">Description<input name="cert_description"></label>
+  <div class="span-all"><button type="submit">Ajouter / mettre à jour le type</button></div>
+</form>
+<table><tr><th>Code</th><th>Libellé</th><th>Actif</th></tr>{% for c in cert_types %}<tr><td>{{ c.code }}</td><td>{{ c.label }}</td><td>{{ c.active|yesno:'oui,non' }}</td></tr>{% empty %}<tr><td colspan="3">Aucun type personnalisé.</td></tr>{% endfor %}</table></section>
+
+<section class="panel"><h2>Magasins connus</h2><table><tr><th>Module</th><th>Code</th><th>Nom</th><th>Actif</th></tr>{% for s in stores %}<tr><td>{{ s.module }}</td><td>{{ s.code }}</td><td>{{ s.nom }}</td><td>{{ s.active|yesno:'oui,non' }}</td></tr>{% empty %}<tr><td colspan="4">Aucun magasin.</td></tr>{% endfor %}</table></section>
+
+
+<section class="panel"><h2>Règles de visibilité des modules</h2>
+<p>Ces règles pilotent uniquement les modules visibles dans le portail LP Core. Les droits internes des applications restent gérés par chaque module après synchronisation.</p>
+<form method="post" class="form-grid">{% csrf_token %}
+  <input type="hidden" name="form_action" value="module_rule">
+  <label>Module<select name="module_code">{% for code,label in module_choices %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+  <label>Cible<select name="target_type">{% for code,label in target_choices %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+  <label>Valeur<input name="target_value" placeholder="eleve, 1MELEC, MELEC, groupe A, USR-0001, TOOLMAG_VIEW..."></label>
+  <label class="checkline"><input type="checkbox" name="rule_active" value="1" checked> Active</label>
+  <label class="span-all">Commentaire<input name="rule_comment" placeholder="Ex. 1MELEC voit System Manager"></label>
+  <div class="span-all"><button type="submit">Ajouter / mettre à jour la règle</button></div>
+</form>
+<table><tr><th>Module</th><th>Cible</th><th>Valeur</th><th>Actif</th><th>Commentaire</th><th></th></tr>{% for r in module_rules %}<tr><td>{{ r.get_module_display }}</td><td>{{ r.get_target_type_display }}</td><td>{{ r.target_value }}</td><td>{{ r.active|yesno:'oui,non' }}</td><td>{{ r.comment }}</td><td><form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="delete_module_rule"><input type="hidden" name="rule_id" value="{{ r.id }}"><button class="danger small" type="submit">Supprimer</button></form></td></tr>{% empty %}<tr><td colspan="6">Aucune règle : les valeurs par défaut sont appliquées.</td></tr>{% endfor %}</table></section>
+{% endblock %}

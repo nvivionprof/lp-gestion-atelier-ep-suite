@@ -1,0 +1,65 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Import / modification des utilisateurs par Excel</h1>
+  <p>Flux conseillé : télécharger le modèle, compléter les lignes, importer en simulation, puis cocher l'application réelle.</p>
+  <div class="actions">
+    <a class="button" href="{% url 'users_template_excel' %}">Télécharger le modèle Excel</a>
+    <a class="button" href="{% url 'users_export_excel' %}">Exporter les utilisateurs actuels</a>
+  </div>
+  <form method="post" enctype="multipart/form-data" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="button primary" type="submit">Analyser le fichier</button>
+  </form>
+</section>
+
+{% if summary %}
+<section class="panel">
+  <h2>Résumé</h2>
+  <ul>
+    <li>Total lignes lues : {{ summary.total }}</li>
+    <li>Créations : {{ summary.create }}</li>
+    <li>Mises à jour : {{ summary.update }}</li>
+    <li>Application réelle : {{ summary.applied|yesno:'Oui,Non' }}</li>
+    <li>Classes inconnues proposées à la création : {{ summary.class_create|default:0 }}</li>
+  </ul>
+</section>
+{% endif %}
+
+
+{% if summary.classes_to_create %}
+<section class="panel section-note">
+  <h2>Classes inconnues détectées</h2>
+  <p>Ces classes seront créées automatiquement uniquement si tu coches <strong>Appliquer réellement les modifications</strong> puis relances l’import.</p>
+  <table>
+    <thead><tr><th>Formation</th><th>Classe à créer</th><th>Lignes concernées</th></tr></thead>
+    <tbody>
+      {% for item in summary.classes_to_create %}
+      <tr>
+        <td>{{ item.formation_code|default:'-' }}</td>
+        <td>{{ item.class_name }}</td>
+        <td>{{ item.lines|join:', ' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if report %}
+<section class="panel">
+  <h2>Rapport d'analyse</h2>
+  <table>
+    <thead><tr><th>Ligne</th><th>Niveau</th><th>Message</th></tr></thead>
+    <tbody>
+      {% for item in report %}
+      <tr class="{% if item.level == 'ERREUR' %}row-danger{% endif %}">
+        <td>{{ item.line }}</td><td>{{ item.level }}</td><td>{{ item.message }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

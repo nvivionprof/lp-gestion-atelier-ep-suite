@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">LP Core</p>
+    <h1>Blocs atelier</h1>
+    <p class="lead">Un bloc atelier regroupe uniquement des classes LP Core et des créneaux. Les formations ne sont plus administrées ici.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="button secondary" href="{% url 'core_classes' %}">Classes</a>
+    <a class="button secondary" href="{% url 'core_workshop_zones' %}">Zones atelier</a>
+  </div>
+</section>
+<div class="grid2">
+<section class="panel">
+  <h2>{% if edit_block %}Modifier un bloc{% else %}Créer un bloc{% endif %}</h2>
+  <form method="post" class="form-card">{% csrf_token %}
+    <input type="hidden" name="form_action" value="block">
+    {% if edit_block %}<input type="hidden" name="block_id" value="{{ edit_block.pk }}">{% endif %}
+    <label>Code</label><input name="code" value="{{ edit_block.code|default:'' }}" placeholder="TMELEC_ATELIER_A">
+    <label>Nom du bloc</label><input name="name" required value="{{ edit_block.name|default:'' }}" placeholder="Terminale MELEC atelier A">
+    <label>Classes concernées</label>
+    <input class="filter-input" type="search" data-filter-target="classes-block" placeholder="Filtrer les classes...">
+    <select id="classes-block" name="classes" multiple size="14">
+      {% for c in classes %}<option value="{{ c.pk }}" {% if edit_block and c in edit_block.classes.all %}selected{% endif %}>{{ c.name }}{% if c.school_year %} — {{ c.school_year }}{% endif %}</option>{% endfor %}
+    </select>
+    <small class="muted">Maintenir Ctrl pour sélectionner plusieurs classes. Les blocs sont basés sur les classes présentes dans LP Core.</small>
+    <label>Description</label><textarea name="description" rows="3">{{ edit_block.description|default:'' }}</textarea>
+    <label><input type="checkbox" name="active" value="1" {% if not edit_block or edit_block.active %}checked{% endif %}> Actif</label>
+    <button>Enregistrer bloc</button>{% if edit_block %}<a class="button secondary" href="{% url 'core_atelier_blocks' %}">Annuler</a>{% endif %}
+  </form>
+</section>
+<section class="panel">
+  <h2>{% if edit_slot %}Modifier un créneau{% else %}Ajouter un créneau{% endif %}</h2>
+  <form method="post" class="form-card">{% csrf_token %}
+    <input type="hidden" name="form_action" value="slot">
+    {% if edit_slot %}<input type="hidden" name="slot_id" value="{{ edit_slot.pk }}">{% endif %}
+    <label>Bloc</label><select name="block_id" required>{% for b in blocks %}<option value="{{ b.pk }}" {% if edit_slot and edit_slot.block_id == b.pk %}selected{% endif %}>{{ b.code }} — {{ b.name }}</option>{% endfor %}</select>
+    <label>Jour</label><select name="day_of_week">{% for k,v in day_choices %}<option value="{{ k }}" {% if edit_slot and edit_slot.day_of_week == k %}selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+    <label>Libellé</label><input name="label" value="{{ edit_slot.label|default:'' }}" placeholder="Lundi matin">
+    <div class="grid2"><p><label>Heure début</label><input type="time" name="start_time" value="{% if edit_slot %}{{ edit_slot.start_time|time:'H:i' }}{% endif %}" required></p><p><label>Heure fin</label><input type="time" name="end_time" value="{% if edit_slot %}{{ edit_slot.end_time|time:'H:i' }}{% endif %}" required></p></div>
+    <label><input type="checkbox" name="active" value="1" {% if not edit_slot or edit_slot.active %}checked{% endif %}> Actif</label>
+    <button>Enregistrer créneau</button>{% if edit_slot %}<a class="button secondary" href="{% url 'core_atelier_blocks' %}">Annuler</a>{% endif %}
+  </form>
+</section>
+</div>
+<section class="panel"><h2>Blocs existants</h2><form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="delete_blocks"><table><tr><th></th><th>Code</th><th>Nom</th><th>Classes</th><th>Actif</th><th>Action</th></tr>{% for b in blocks %}<tr><td><input type="checkbox" name="selected_blocks" value="{{ b.pk }}"></td><td>{{ b.code }}</td><td>{{ b.name }}<br><small>{{ b.description }}</small></td><td>{% for c in b.classes.all %}<span class="badge">{{ c.name }}</span>{% empty %}<span class="muted">Aucune classe</span>{% endfor %}</td><td>{{ b.active|yesno:'Oui,Non' }}</td><td><a class="mini-button secondary" href="?edit_block={{ b.pk }}">Modifier</a></td></tr>{% empty %}<tr><td colspan="6">Aucun bloc atelier.</td></tr>{% endfor %}</table><button class="button danger" type="submit">Supprimer les blocs cochés</button></form></section>
+<section class="panel"><h2>Créneaux existants</h2><form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="delete_slots"><table><tr><th></th><th>Bloc</th><th>Jour</th><th>Horaire</th><th>Libellé</th><th>Action</th></tr>{% for b in blocks %}{% for s in b.slots.all %}<tr><td><input type="checkbox" name="selected_slots" value="{{ s.pk }}"></td><td>{{ b.code }}</td><td>{{ s.get_day_of_week_display }}</td><td>{{ s.start_time|time:'H:i' }}-{{ s.end_time|time:'H:i' }}</td><td>{{ s.label|default:'—' }}</td><td><a class="mini-button secondary" href="?edit_slot={{ s.pk }}">Modifier</a></td></tr>{% endfor %}{% empty %}<tr><td colspan="6">Aucun créneau.</td></tr>{% endfor %}</table><button class="button danger" type="submit">Supprimer les créneaux cochés</button></form></section>
+<script>
+document.querySelectorAll('[data-filter-target]').forEach(function(input){input.addEventListener('input',function(){var sel=document.getElementById(input.dataset.filterTarget);var q=input.value.toLowerCase();Array.from(sel.options).forEach(function(o){o.hidden=q && !o.text.toLowerCase().includes(q);});});});
+</script>
+{% endblock %}

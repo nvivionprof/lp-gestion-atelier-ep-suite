@@ -3,139 +3,381 @@ services:
     image: postgres:16-alpine
     container_name: lp-suite-postgres
     restart: unless-stopped
+    env_file: .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-lp_suite}
       POSTGRES_USER: ${POSTGRES_USER:-lp_suite_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD doit etre defini dans .env}
+      POSTGRES_DB: ${POSTGRES_DB:-lp_core}
+      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_MULTIPLE_DATABASES:-lp_core,toolmag,safety,pedashop,system_manager,tpmanager,pfmp}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+    - ./postgres-db/data:/var/lib/postgresql/data
+    - ./scripts/postgres/init-multiple-databases.sh:/docker-entrypoint-initdb.d/10-init-multiple-databases.sh:ro
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
     networks:
-      - lp_suite_net
-
-  reverse-proxy:
-    image: nginx:1.27-alpine
-    container_name: lp-suite-reverse-proxy
+    - lp-suite-net
+  lp-gateway:
+    build: ./nginx
+    container_name: lp-gateway
     restart: unless-stopped
+    env_file: .env
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:-localhost}
+      ENABLE_HTTPS: ${ENABLE_HTTPS:-0}
+      SSL_CERT_FILE: /ssl/fullchain.pem
+      SSL_KEY_FILE: /ssl/privkey.pem
+    volumes:
+    - ./ssl:/ssl:ro
+    - ./ssl/acme:/var/www/certbot:ro
+    - ./lp-core-db/data/staticfiles:/gateway-static/lp-core:ro
+    - ./toolmag-db/data/staticfiles:/gateway-static/toolmag:ro
+    - ./safety-db/data/staticfiles:/gateway-static/safety:ro
+    - ./pedashop-db/data/staticfiles:/gateway-static/pedashop:ro
+    - ./system-manager-db/data/staticfiles:/gateway-static/system-manager:ro
+    - ./tpmanager-db/data/staticfiles:/gateway-static/tpmanager:ro
+    - ./pfmp-db/data/staticfiles:/gateway-static/pfmp:ro
+    - ./lp-core-db/data/media:/gateway-media/lp-core:ro
+    - ./toolmag-db/data/media:/gateway-media/toolmag:ro
+    - ./safety-db/data/media:/gateway-media/safety:ro
+    - ./pedashop-db/data/media:/gateway-media/pedashop:ro
+    - ./system-manager-db/data/media:/gateway-media/system-manager:ro
+    - ./tpmanager-db/data/media:/gateway-media/tpmanager:ro
+    - ./pfmp-db/data/media:/gateway-media/pfmp:ro
     ports:
-      - "${PUBLIC_HTTP_PORT:-9000}:80"
+    - ${GATEWAY_HTTP_PORT:-9000}:80
+    - ${GATEWAY_HTTPS_PORT:-9443}:443
+    depends_on:
+    - lp-core-app
+    - toolmag-app
+    - safety-app
+    - pedashop-app
+    - system-manager-app
+    - tpmanager-app
+    - pfmp-app
+    networks:
+    - lp-suite-net
+  lp-core-app:
+    build: ./lp-core-app
+    container_name: lp-core-app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      LP_CORE_DATA_DIR: /data/lp-core
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${LP_CORE_DB_NAME:-lp_core}
+      STATIC_ROOT: /data/lp-core/staticfiles
+      MEDIA_ROOT: /data/lp-core/media
+      LP_CORE_VERSION: ${LP_CORE_VERSION:-LP Core — Bêta 2 V0.0.1}
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      TOOLMAG_PUBLIC_BASE_URL: ${TOOLMAG_PUBLIC_BASE_URL}
+      SAFETY_PUBLIC_URL: ${SAFETY_PUBLIC_URL}
+      CONSUMABLES_PUBLIC_URL: ${CONSUMABLES_PUBLIC_URL}
+      PEDASHOP_PUBLIC_URL: ${PEDASHOP_PUBLIC_URL}
+      PEDASHOP_INTERNAL_SYNC_URL: http://pedashop-app:8000/api/internal/sync-lp-core/
+      INVENTORY_PUBLIC_URL: ${INVENTORY_PUBLIC_URL}
+      SYSTEM_MANAGER_PUBLIC_URL: ${SYSTEM_MANAGER_PUBLIC_URL}
+      TPMANAGER_PUBLIC_URL: ${TPMANAGER_PUBLIC_URL}
+      PFMP_PUBLIC_URL: ${PFMP_PUBLIC_URL}
+      TOOLMAG_INTERNAL_SYNC_URL: http://toolmag-app:8000/api/internal/sync-lp-core/
+      SAFETY_INTERNAL_SYNC_URL: http://safety-app:8000/sync-lp-core/
+      SYSTEM_MANAGER_INTERNAL_SYNC_URL: http://system-manager-app:8000/sync-lp-core/
+      TPMANAGER_INTERNAL_SYNC_URL: http://tpmanager-app:8000/sync-lp-core/
+      PFMP_INTERNAL_SYNC_URL: http://pfmp-app:8000/sync-lp-core/
+      SUITE_ADMIN_AGENT_URL: http://suite-admin-agent:8079
+      LP_CORE_UPDATES_DIR: /data/lp-core/updates
+      SUITE_ALLOW_WEB_MAINTENANCE: ${SUITE_ALLOW_WEB_MAINTENANCE:-1}
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
     volumes:
-      - ./infra/nginx/lp-suite.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - lp-core
-      - toolmag
-      - safety-manager
-      - system-manager
-      - tp-manager
-      - pedashop
-      - pfmp-manager
+    - ./lp-core-db/data:/data/lp-core
+    - ./ssl:/ssl:rw
+    - ./imports:/imports:rw
+    expose:
+    - '8000'
     networks:
-      - lp_suite_net
-
-  lp-core:
-    build:
-      context: ./services/lp-core
-    container_name: lp-core
+    - lp-suite-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+  toolmag-app:
+    build: ./toolmag-app
+    container_name: toolmag-app
     restart: unless-stopped
     env_file: .env
-    expose:
-      - "8000"
-    depends_on:
-      - postgres
+    environment:
+      TOOLMAG_DATA_DIR: /data/toolmag
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${TOOLMAG_DB_NAME:-toolmag}
+      STATIC_ROOT: /data/toolmag/staticfiles
+      MEDIA_ROOT: /data/toolmag/media
+      LP_CORE_API_URL: http://lp-core-app:8000
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      TOOLMAG_PUBLIC_BASE_URL: ${TOOLMAG_PUBLIC_BASE_URL}
+      APP_URL_PREFIX: /toolmag
+      APP_NAME: ToolMag
+      APP_VERSION: ${APP_VERSION:-ToolMag — Bêta 2 V0.0.1}
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
     volumes:
-      - lp_core_media:/app/media
-      - lp_core_backups:/app/backups
+    - ./toolmag-db/data:/data/toolmag
+    - ./ssl:/ssl:ro
+    - ./imports:/imports:ro
+    - ./demo:/demo:ro
+    expose:
+    - '8000'
+    depends_on:
+      lp-core-app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
-      - lp_suite_net
-
-  toolmag:
-    build:
-      context: ./services/toolmag
-    container_name: toolmag
+    - lp-suite-net
+  safety-app:
+    build: ./safety-app
+    container_name: safety-app
     restart: unless-stopped
     env_file: .env
+    environment:
+      SAFETY_DATA_DIR: /data/safety
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${SAFETY_DB_NAME:-safety}
+      STATIC_ROOT: /data/safety/staticfiles
+      MEDIA_ROOT: /data/safety/media
+      LP_CORE_API_URL: http://lp-core-app:8000
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      TOOLMAG_PUBLIC_BASE_URL: ${TOOLMAG_PUBLIC_BASE_URL}
+      SAFETY_PUBLIC_URL: ${SAFETY_PUBLIC_URL}
+      APP_URL_PREFIX: /safety
+      SAFETY_APP_NAME: Safety Manager
+      SAFETY_VERSION: ${SAFETY_VERSION:-Safety Manager — Bêta 2 V0.0.1}
+      SAFETY_SESSION_COOKIE_NAME: safety_sessionid
+      SAFETY_CSRF_COOKIE_NAME: safety_csrftoken
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
+    volumes:
+    - ./safety-db/data:/data/safety
+    - ./ssl:/ssl:ro
+    - ./imports:/imports:ro
     expose:
-      - "8000"
+    - '8000'
     depends_on:
-      - postgres
-      - lp-core
+      lp-core-app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
-      - lp_suite_net
-
-  safety-manager:
-    build:
-      context: ./services/safety-manager
-    container_name: safety-manager
+    - lp-suite-net
+  pedashop-app:
+    build: ./pedashop-app
+    container_name: pedashop-app
     restart: unless-stopped
     env_file: .env
+    environment:
+      PEDASHOP_DATA_DIR: /data/pedashop
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${PEDASHOP_DB_NAME:-pedashop}
+      STATIC_ROOT: /data/pedashop/staticfiles
+      MEDIA_ROOT: /data/pedashop/media
+      LP_CORE_API_URL: http://lp-core-app:8000
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      TOOLMAG_PUBLIC_BASE_URL: ${TOOLMAG_PUBLIC_BASE_URL}
+      SAFETY_PUBLIC_URL: ${SAFETY_PUBLIC_URL}
+      PEDASHOP_PUBLIC_URL: ${PEDASHOP_PUBLIC_URL}
+      APP_URL_PREFIX: /pedashop
+      PEDASHOP_APP_NAME: PedaShop
+      PEDASHOP_VERSION: ${PEDASHOP_VERSION:-PedaShop — Bêta 2 V0.0.1}
+      PEDASHOP_SESSION_COOKIE_NAME: pedashop_sessionid
+      PEDASHOP_CSRF_COOKIE_NAME: pedashop_csrftoken
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
+    volumes:
+    - ./pedashop-db/data:/data/pedashop
+    - ./ssl:/ssl:ro
+    - ./imports:/imports:rw
     expose:
-      - "8000"
+    - '8000'
     depends_on:
-      - postgres
-      - lp-core
+      lp-core-app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
-      - lp_suite_net
-
-  system-manager:
-    build:
-      context: ./services/system-manager
-    container_name: system-manager
+    - lp-suite-net
+  system-manager-app:
+    build: ./system-manager-app
+    container_name: system-manager-app
     restart: unless-stopped
     env_file: .env
+    environment:
+      SYSTEM_MANAGER_DATA_DIR: /data/system-manager
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${SYSTEM_MANAGER_DB_NAME:-system_manager}
+      STATIC_ROOT: /data/system-manager/staticfiles
+      MEDIA_ROOT: /data/system-manager/media
+      LP_CORE_API_URL: http://lp-core-app:8000
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      TOOLMAG_PUBLIC_BASE_URL: ${TOOLMAG_PUBLIC_BASE_URL}
+      SAFETY_PUBLIC_URL: ${SAFETY_PUBLIC_URL}
+      PEDASHOP_PUBLIC_URL: ${PEDASHOP_PUBLIC_URL}
+      SYSTEM_MANAGER_PUBLIC_URL: ${SYSTEM_MANAGER_PUBLIC_URL}
+      APP_URL_PREFIX: /system
+      INVENTORY_PUBLIC_URL: ${SYSTEM_MANAGER_PUBLIC_URL}
+      SYSTEM_MANAGER_APP_NAME: System Manager
+      SYSTEM_MANAGER_VERSION: ${SYSTEM_MANAGER_VERSION:-System Manager — Bêta 2 V0.0.1}
+      SYSTEM_MANAGER_SESSION_COOKIE_NAME: system_manager_sessionid
+      SYSTEM_MANAGER_CSRF_COOKIE_NAME: system_manager_csrftoken
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
+    volumes:
+    - ./system-manager-db/data:/data/system-manager
+    - ./ssl:/ssl:ro
+    - ./imports:/imports:ro
     expose:
-      - "8000"
+    - '8000'
     depends_on:
-      - postgres
-      - lp-core
+      lp-core-app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
-      - lp_suite_net
-
-  tp-manager:
-    build:
-      context: ./services/tp-manager
-    container_name: tp-manager
+    - lp-suite-net
+  tpmanager-app:
+    build: ./tpmanager-app
+    container_name: tpmanager-app
     restart: unless-stopped
     env_file: .env
+    environment:
+      TPMANAGER_DATA_DIR: /data/tpmanager
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${TPMANAGER_DB_NAME:-tpmanager}
+      STATIC_ROOT: /data/tpmanager/staticfiles
+      MEDIA_ROOT: /data/tpmanager/media
+      LP_CORE_API_URL: http://lp-core-app:8000
+      SYSTEM_MANAGER_API_URL: http://system-manager-app:8000
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      TOOLMAG_PUBLIC_BASE_URL: ${TOOLMAG_PUBLIC_BASE_URL}
+      SAFETY_PUBLIC_URL: ${SAFETY_PUBLIC_URL}
+      PEDASHOP_PUBLIC_URL: ${PEDASHOP_PUBLIC_URL}
+      SYSTEM_MANAGER_PUBLIC_URL: ${SYSTEM_MANAGER_PUBLIC_URL}
+      TPMANAGER_PUBLIC_URL: ${TPMANAGER_PUBLIC_URL}
+      PFMP_PUBLIC_URL: ${PFMP_PUBLIC_URL}
+      APP_URL_PREFIX: /tpmanager
+      TPMANAGER_APP_NAME: TP Manager
+      TPMANAGER_VERSION: ${TPMANAGER_VERSION:-TP Manager — Bêta 2 V0.0.1}
+      TPMANAGER_SESSION_COOKIE_NAME: tpmanager_sessionid
+      TPMANAGER_CSRF_COOKIE_NAME: tpmanager_csrftoken
+      TPMANAGER_TOOLMAG_DB: /data/toolmag/toolmag.sqlite3
+      TPMANAGER_PEDASHOP_DB: /data/pedashop/pedashop.sqlite3
+      TPMANAGER_SYSTEM_MANAGER_DB: /data/system-manager/system-manager.sqlite3
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
+    volumes:
+    - ./tpmanager-db/data:/data/tpmanager
+    - ./toolmag-db/data:/data/toolmag:ro
+    - ./pedashop-db/data:/data/pedashop:ro
+    - ./system-manager-db/data:/data/system-manager:ro
+    - ./ssl:/ssl:ro
+    - ./imports:/imports:ro
     expose:
-      - "8000"
+    - '8000'
     depends_on:
-      - postgres
-      - lp-core
+      lp-core-app:
+        condition: service_started
+      system-manager-app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
-      - lp_suite_net
-
-  pedashop:
-    build:
-      context: ./services/pedashop
-    container_name: pedashop
+    - lp-suite-net
+  pfmp-app:
+    build: ./pfmp-app
+    container_name: pfmp-app
     restart: unless-stopped
     env_file: .env
+    environment:
+      PFMP_DATA_DIR: /data/pfmp
+      DB_ENGINE: ${DB_ENGINE:-django.db.backends.postgresql}
+      DB_NAME: ${PFMP_DB_NAME:-pfmp}
+      STATIC_ROOT: /data/pfmp/staticfiles
+      MEDIA_ROOT: /data/pfmp/media
+      LP_CORE_API_URL: http://lp-core-app:8000
+      LP_CORE_PUBLIC_URL: ${LP_CORE_PUBLIC_URL}
+      PFMP_PUBLIC_URL: ${PFMP_PUBLIC_URL}
+      APP_URL_PREFIX: /pfmp
+      PFMP_APP_NAME: PFMP Manager
+      PFMP_VERSION: ${PFMP_VERSION:-PFMP Manager — Bêta 2 V0.0.1}
+      PFMP_SESSION_COOKIE_NAME: pfmp_sessionid
+      PFMP_CSRF_COOKIE_NAME: pfmp_csrftoken
+      PFMP_SSO_TOKEN_MAX_AGE: ${PFMP_SSO_TOKEN_MAX_AGE:-600}
+      DB_USER: ${POSTGRES_USER:-lp_suite_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${POSTGRES_HOST:-postgres}
+      DB_PORT: ${POSTGRES_PORT:-5432}
+    volumes:
+    - ./pfmp-db/data:/data/pfmp
+    - ./ssl:/ssl:ro
+    - ./imports:/imports:rw
     expose:
-      - "8000"
+    - '8000'
     depends_on:
-      - postgres
-      - lp-core
+      lp-core-app:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
-      - lp_suite_net
-
-  pfmp-manager:
-    build:
-      context: ./services/pfmp-manager
-    container_name: pfmp-manager
+    - lp-suite-net
+  suite-admin-agent:
+    build: ./suite-admin-agent
+    container_name: suite-admin-agent
     restart: unless-stopped
     env_file: .env
-    expose:
-      - "8000"
-    depends_on:
-      - postgres
-      - lp-core
+    environment:
+      AGENT_PORT: 8079
+      ADMIN_AGENT_TOKEN: ${LP_CORE_API_TOKEN}
+      SUITE_ROOT: ${SUITE_HOST_ROOT:-/suite}
+      UPDATES_DIR: ${SUITE_HOST_ROOT:-/suite}/lp-core-db/data/updates
+    volumes:
+    - ./:/suite:rw
+    - ${SUITE_HOST_ROOT:-.}:${SUITE_HOST_ROOT:-/suite}:rw
+    - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - lp_suite_net
+    - lp-suite-net
+  suite-backup-scheduler:
+    build: ./suite-admin-agent
+    container_name: suite-backup-scheduler
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      SUITE_ROOT: /suite
+      BACKUP_DAILY_HOUR: ${BACKUP_DAILY_HOUR:-02}
+      BACKUP_DAILY_MINUTE: ${BACKUP_DAILY_MINUTE:-00}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-7}
+      BACKUP_ENABLED: ${BACKUP_ENABLED:-1}
+    volumes:
+    - ./:/suite:rw
+    command: 'bash -lc ''mkdir -p /suite/backups/daily; while true; do [ -f /suite/lp-core-db/data/backup-policy.env ] && . /suite/lp-core-db/data/backup-policy.env || true; D=$$(date +%F); H=$$(date +%H); M=$$(date +%M); STAMP="/suite/backups/.last_daily_$${D}"; if [ "$${BACKUP_ENABLED:-1}" = "1" ] && [ "$${H}" = "$${BACKUP_DAILY_HOUR:-02}" ] && [ "$${M}" = "$${BACKUP_DAILY_MINUTE:-00}" ] && [ ! -f "$${STAMP}" ]; then /suite/scripts/full_backup.sh daily && touch "$${STAMP}"; fi; find /suite/backups/daily -type f -name "lp-suite-full-*.zip" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true; sleep 60; done''
 
+      '
+    networks:
+    - lp-suite-net
 networks:
-  lp_suite_net:
+  lp-suite-net:
     driver: bridge
-
-volumes:
-  postgres_data:
-  lp_core_media:
-  lp_core_backups:

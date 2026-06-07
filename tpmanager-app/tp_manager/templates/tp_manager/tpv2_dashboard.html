@@ -1,0 +1,34 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">TP Manager V2</p>
+    <h1>Création, duplication et parcours de TP</h1>
+    <p class="lead">Les référentiels restent officiels et verrouillés. Les TP peuvent être dupliqués pour modification, puis affectés aux élèves dans les parcours.</p>
+  </div>
+  <div class="hero-actions">
+    {% if tp_current_user and tp_current_user.is_prof_like %}<a class="button" href="{% url 'tp_create' %}">Créer un TP</a>{% endif %}
+    <a class="button secondary" href="{% url 'tp_list' %}">Bibliothèque</a>
+  </div>
+</section>
+<div class="cards">
+  <div class="card"><span>TP V2</span><strong>{{ stats.tps }}</strong></div>
+  <div class="card"><span>Publiés</span><strong>{{ stats.publies }}</strong></div>
+  <div class="card"><span>Diplômes</span><strong>{{ stats.diplomes }}</strong></div>
+  <div class="card"><span>Parcours élèves</span><strong>{{ stats.parcours }}</strong></div>
+</div>
+<div class="grid2">
+  <section class="panel">
+    <h2>Référentiels intégrés</h2>
+    <table><thead><tr><th>Diplôme</th><th>TP</th></tr></thead><tbody>
+      {% for d in diplome_counts %}<tr><td><strong>{{ d.code }}</strong><br><span class="muted">{{ d.intitule }}</span></td><td>{{ d.tp_count }}</td></tr>{% empty %}<tr><td colspan="2">Aucun diplôme V2 chargé. Lancer le seed TP Manager V2.</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+  <section class="panel">
+    <h2>TP récents</h2>
+    <div class="doc-grid">
+      {% for tp in recent_tps %}<div class="doc-row"><div><strong><a href="{% url 'tp_detail' tp.pk %}">{{ tp.code }}</a></strong><br>{{ tp.titre }}<br><span class="badge">{{ tp.diplome.code }}</span><span class="badge status-{{ tp.statut }}">{{ tp.get_statut_display }}</span></div></div>{% empty %}<p class="muted">Aucun TP V2.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

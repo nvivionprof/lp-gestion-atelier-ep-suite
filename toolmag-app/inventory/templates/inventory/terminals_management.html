@@ -1,0 +1,22 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Terminaux autorisés</h1>
+<section class="panel">
+  <h2>État du module armoires sécurisées</h2>
+  <p><strong>Module actif :</strong> {{ settings.module_enabled|yesno:'Oui,Non' }}</p>
+  <p><strong>Terminal autorisé obligatoire :</strong> {{ settings.require_authorized_terminal|yesno:'Oui,Non' }}</p>
+  <p><strong>IP publique autorisée obligatoire :</strong> {{ settings.require_allowed_public_ip|yesno:'Oui,Non' }}</p>
+  <p class="hint">L’activation fine du module et les IP autorisées se règlent dans l’administration Django : <a href="/admin/inventory/lockersettings/">Paramètres armoires sécurisées</a>.</p>
+  <div class="actions"><a class="button" href="{% url 'terminal_register' %}">Enregistrer ce terminal</a><a class="button secondary" href="/admin/inventory/authorizedterminal/">Gérer dans l’admin</a></div>
+</section>
+<section class="panel">
+  <h2>Terminal courant</h2>
+  {% if current_terminal %}<p><strong>{{ current_terminal.name }}</strong> — {{ current_terminal.get_terminal_type_display }} — ouverture casiers : {{ current_terminal.can_open_lockers|yesno:'oui,non' }}</p>{% else %}<p>Ce navigateur n’est pas enregistré comme terminal autorisé.</p>{% endif %}
+</section>
+<section class="panel">
+  <h2>Liste des terminaux</h2>
+  <table><thead><tr><th>Nom</th><th>Type</th><th>Ouverture casiers</th><th>Actif</th><th>Dernière IP</th><th>Dernière utilisation</th></tr></thead><tbody>
+  {% for terminal in terminals %}<tr><td>{{ terminal.name }}</td><td>{{ terminal.get_terminal_type_display }}</td><td>{{ terminal.can_open_lockers|yesno:'Oui,Non' }}</td><td>{{ terminal.active|yesno:'Oui,Non' }}</td><td>{{ terminal.last_ip|default:'-' }}</td><td>{% if terminal.last_seen_at %}{{ terminal.last_seen_at|date:'d/m/Y H:i:s' }}{% else %}-{% endif %}</td></tr>{% empty %}<tr><td colspan="6">Aucun terminal enregistré.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

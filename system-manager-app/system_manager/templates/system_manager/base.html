@@ -1,0 +1,53 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ SYSTEM_MANAGER_APP_NAME }} — LP Gestion Atelier EP Suite</title>
+  <link rel="stylesheet" href="{% static 'system_manager/system.css' %}">
+  <link rel="stylesheet" href="{% static 'system_manager/camera_upload.css' %}">
+</head>
+<body>
+<header class="topbar system-topbar">
+  <div class="brand brand-logo">
+    <a href="{% url 'system_dashboard' %}" aria-label="Accueil System Manager"><img src="{% static 'system_manager/img/logo_system_manager.png' %}" alt="System Manager" class="brand-img"></a>
+    <span class="version-badge">{{ SYSTEM_MANAGER_VERSION }}</span>
+  </div>
+  <nav>
+    <a href="{% url 'system_dashboard' %}">Tableau de bord</a>
+    <a href="{% url 'system_list' %}">Systèmes</a>
+    <a href="{% url 'reservation_calendar' %}">Calendrier</a>
+    <a href="{% url 'reservation_list' %}">Réservations</a>
+    <a href="{% url 'system_dynamic_display' %}">Affichage dynamique</a>
+    {% if system_current_user and system_current_user.is_admin_like %}
+      <details class="admin-dropdown"><summary>Fonctions admin</summary><div class="admin-dropdown-menu" aria-label="Fonctions administrateur System Manager">
+        <a class="admin-menu-item" title="Créer un système" href="{% url 'system_create' %}">Créer un système</a>
+        <a class="admin-menu-item" title="Créer une réservation" href="{% url 'reservation_create' %}">Créer une réservation</a>
+        <a class="admin-menu-item" title="Réserver par bloc" href="{% url 'reservation_create' %}?mode=bloc_atelier">Réserver par bloc</a>
+        <a class="admin-menu-item" title="Paramétrage" href="{% url 'system_referentials' %}">Paramétrage</a>
+        <a class="admin-menu-item" title="Droits temporaires élèves" href="{% url 'system_temporary_permissions' %}">Droits temporaires élèves</a>
+        <a class="admin-menu-item" title="Sauvegarde / import" href="{% url 'system_backup' %}">Sauvegarde / import</a>
+        <a class="admin-menu-item" title="Historiques" href="{% url 'system_history' %}">Historiques</a>
+        <form method="post" action="{% url 'system_sync_lp_core' %}" onsubmit="return confirm('Attention : cette synchronisation LP Core → System Manager peut écraser certains référentiels locaux. Action réservée administrateur. Continuer ?');">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser LP Core" type="submit"><span>Synchroniser LP Core</span></button></form>
+        <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
+        <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
+      </div></details>
+    {% endif %}
+    <details class="admin-dropdown suite-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier accessibles">
+      {% for app in suite_app_links %}<a class="admin-menu-item" href="{{ app.url }}" target="_blank" rel="noopener">{{ app.name }}</a>{% empty %}<span class="admin-menu-item muted">Aucune application disponible</span>{% endfor %}
+    </div></details>
+    {% if system_current_user %}<a href="{% url 'system_logout' %}">Déconnexion {{ system_current_user.username }}</a>{% else %}<a href="{% url 'system_login' %}">Connexion</a>{% endif %}
+    <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide System Manager">
+      <a class="admin-menu-item" href="{% url 'system_help' %}">Aide System Manager</a>
+      <a class="admin-menu-item" href="{% url 'system_about' %}">À propos</a>
+    </div></details>
+  </nav>
+</header>
+<main class="container">
+  {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'system_manager/camera_upload.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}
+<h1>Distribuer — {{ bon.code }}</h1>
+<form method="post" class="card">{% csrf_token %}
+  <p><label>Remis à</label><br><select name="remis_a" required>{% for u in users %}<option value="{{ u.id }}" {% if bon.demandeur_id == u.id %}selected{% endif %}>{{ u.last_name }} {{ u.first_name }} — {{ u.code }}</option>{% endfor %}</select></p>
+  <p class="muted">La commande passera en statut distribué et quittera l’affichage dynamique. L’utilisateur devra ensuite faire l’inventaire de réception.</p>
+  <button class="btn primary">Valider la distribution</button> <a class="btn" href="{% url 'pedashop_bon_detail' bon.pk %}">Annuler</a>
+</form>
+{% endblock %}

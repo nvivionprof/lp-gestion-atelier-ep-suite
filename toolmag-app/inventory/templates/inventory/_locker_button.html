@@ -1,0 +1,17 @@
+{% if equipment.secure_storage %}
+<section class="panel locker-panel">
+  <h2>Armoire sécurisée</h2>
+  <p><strong>Armoire :</strong> {{ equipment.secure_cabinet|default:"—" }} · <strong>Casier :</strong> {{ equipment.secure_locker|default:"—" }}</p>
+  {% if locker_info.allowed %}
+  <form method="post" action="{% url 'api_locker_open' %}" class="locker-open-form" data-context="{{ locker_context|default:'detail' }}">
+    {% csrf_token %}
+    <input type="hidden" name="equipment_code" value="{{ equipment.code }}">
+    <input type="hidden" name="context" value="{{ locker_context|default:'detail' }}">
+    <button class="button danger" type="submit">Ouvrir le casier</button>
+  </form>
+  <p class="hint">Ouverture autorisée : magasinier connecté, terminal autorisé et IP conforme.</p>
+  {% else %}
+  <div class="alert">Ouverture casier indisponible : {{ locker_info.reasons|join:", " }}</div>
+  {% endif %}
+</section>
+{% endif %}

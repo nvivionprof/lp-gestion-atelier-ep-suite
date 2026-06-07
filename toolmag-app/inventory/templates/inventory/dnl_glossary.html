@@ -1,0 +1,38 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Glossaire DNL ToolMag — données métier non traduites automatiquement</h1>
+
+<div class="section-note">
+  <p><strong>Principe :</strong> le bouton FR / EN traduit l’interface ToolMag. En revanche, les données saisies dans la base restent dans la langue dans laquelle elles ont été créées : catégories, emplacements, noms de matériels, composants, documents, commentaires.</p>
+  <p>Ce tableau sert de base de travail DNL pour construire un vocabulaire technique français / anglais avec les élèves.</p>
+</div>
+
+<p class="actions">
+  <a class="button" href="?format=csv">Télécharger le tableau CSV</a>
+</p>
+
+<table class="glossary-table">
+  <thead>
+    <tr>
+      <th>Zone ToolMag</th>
+      <th>Champ non traduit automatiquement</th>
+      <th>Exemple français</th>
+      <th>Traduction anglaise proposée</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for zone, field, fr, en in glossary_rows %}
+      <tr>
+        <td>{{ zone }}</td>
+        <td>{{ field }}</td>
+        <td>{{ fr }}</td>
+        <td>{{ en }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Prompt DNL proposé</h2>
+<p>Ce prompt peut être copié dans une IA ou utilisé comme consigne d’activité en anglais.</p>
+<textarea class="copy-box" readonly>{{ dnl_prompt }}</textarea>
+{% endblock %}

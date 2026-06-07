@@ -1,0 +1,2 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}<section class="form-card"><h1>Réservation professeur / TP</h1><form method="post">{% csrf_token %}<h2>Réservation</h2>{{ res_form.as_p }}<h2>Article réservé</h2>{{ line_form.as_p }}<button type="submit">Créer la réservation</button></form></section>{% endblock %}

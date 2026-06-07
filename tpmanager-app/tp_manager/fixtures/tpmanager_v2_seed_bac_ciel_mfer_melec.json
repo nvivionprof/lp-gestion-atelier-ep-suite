@@ -1,0 +1,3332 @@
+[
+  {
+    "model": "tpmanager_v2.bacdiplome",
+    "pk": 1,
+    "fields": {
+      "code": "CIEL",
+      "intitule": "Cybersécurité, Informatique et réseaux, Électronique",
+      "niveau": "4",
+      "version_ref": "Arrêté du 13 février 2023 / annexes fournies",
+      "source_document": "16021-annexes-bac-pro-ciel230213.pdf",
+      "description": "Intervenir dans les processus de réalisation et de maintenance de produits électroniques, la mise en œuvre de réseaux informatiques et la valorisation de la donnée en intégrant les enjeux de cybersécurité.",
+      "actif": true,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 1,
+    "fields": {
+      "diplome": 1,
+      "code": "P1",
+      "libelle_officiel": "RÉALISATION ET MAINTENANCE DE PRODUITS ÉLECTRONIQUES",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 2,
+    "fields": {
+      "diplome": 1,
+      "code": "P2",
+      "libelle_officiel": "MISE EN ŒUVRE DE RÉSEAUX INFORMATIQUES",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 3,
+    "fields": {
+      "diplome": 1,
+      "code": "P3",
+      "libelle_officiel": "VALORISATION DE LA DONNÉE ET CYBERSÉCURITÉ",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 1,
+    "fields": {
+      "diplome": 1,
+      "code": "U2",
+      "libelle_officiel": "Réalisation et maintenance de produits électroniques",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 2,
+    "fields": {
+      "diplome": 1,
+      "code": "U31",
+      "libelle_officiel": "Mise en œuvre de réseaux informatiques",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 3,
+    "fields": {
+      "diplome": 1,
+      "code": "U32",
+      "libelle_officiel": "Valorisation de la donnée et cybersécurité",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 1,
+    "fields": {
+      "diplome": 1,
+      "code": "C01",
+      "libelle_officiel": "Communiquer en situation professionnelle (français/anglais)",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 2,
+    "fields": {
+      "diplome": 1,
+      "code": "C02",
+      "libelle_officiel": "Organiser",
+      "selectable_bac": false,
+      "note": "Compétence relevant d’un niveau 5 ; non proposée par défaut en Bac Pro",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 3,
+    "fields": {
+      "diplome": 1,
+      "code": "C03",
+      "libelle_officiel": "Participer à un projet",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 4,
+    "fields": {
+      "diplome": 1,
+      "code": "C04",
+      "libelle_officiel": "Analyser une structure matérielle et logicielle",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 5,
+    "fields": {
+      "diplome": 1,
+      "code": "C05",
+      "libelle_officiel": "Concevoir",
+      "selectable_bac": false,
+      "note": "Compétence relevant d’un niveau 5 ; non proposée par défaut en Bac Pro",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 6,
+    "fields": {
+      "diplome": 1,
+      "code": "C06",
+      "libelle_officiel": "Valider la conformité d’une installation",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 7,
+    "fields": {
+      "diplome": 1,
+      "code": "C07",
+      "libelle_officiel": "Réaliser des maquettes et prototypes",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 8,
+    "fields": {
+      "diplome": 1,
+      "code": "C08",
+      "libelle_officiel": "Coder",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 9,
+    "fields": {
+      "diplome": 1,
+      "code": "C09",
+      "libelle_officiel": "Installer les éléments d’un système électronique ou informatique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 10,
+    "fields": {
+      "diplome": 1,
+      "code": "C10",
+      "libelle_officiel": "Exploiter un réseau informatique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 11,
+    "fields": {
+      "diplome": 1,
+      "code": "C11",
+      "libelle_officiel": "Maintenir un système électronique ou réseau informatique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 1,
+    "fields": {
+      "diplome": 1,
+      "unite": 1,
+      "code": "B1",
+      "libelle_officiel": "Réalisation et maintenance de produits électroniques",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 1,
+    "fields": {
+      "bloc": 1,
+      "competence": 3,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 2,
+    "fields": {
+      "bloc": 1,
+      "competence": 7,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 3,
+    "fields": {
+      "bloc": 1,
+      "competence": 11,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 2,
+    "fields": {
+      "diplome": 1,
+      "unite": 2,
+      "code": "B2",
+      "libelle_officiel": "Mise en œuvre de réseaux informatiques",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 4,
+    "fields": {
+      "bloc": 2,
+      "competence": 6,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 5,
+    "fields": {
+      "bloc": 2,
+      "competence": 9,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 6,
+    "fields": {
+      "bloc": 2,
+      "competence": 10,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 3,
+    "fields": {
+      "diplome": 1,
+      "unite": 3,
+      "code": "B3",
+      "libelle_officiel": "Valorisation de la donnée et cybersécurité",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 7,
+    "fields": {
+      "bloc": 3,
+      "competence": 1,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 8,
+    "fields": {
+      "bloc": 3,
+      "competence": 4,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 9,
+    "fields": {
+      "bloc": 3,
+      "competence": 8,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacdiplome",
+    "pk": 2,
+    "fields": {
+      "code": "MFER",
+      "intitule": "Métiers du Froid et des Énergies Renouvelables",
+      "niveau": "4",
+      "version_ref": "Référentiel février 2021 / première session 2024",
+      "source_document": "13435-referentiel-bcp-mfer-fevrier-2021.pdf",
+      "description": "Préparer, réaliser, mettre en service et maintenir des installations frigorifiques, thermiques et énergétiques, en intégrant les dimensions sécurité, environnement et efficacité énergétique.",
+      "actif": true,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 4,
+    "fields": {
+      "diplome": 2,
+      "code": "P1",
+      "libelle_officiel": "PRÉPARATION DES OPÉRATIONS À RÉALISER",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 5,
+    "fields": {
+      "diplome": 2,
+      "code": "P2",
+      "libelle_officiel": "RÉALISATION ET MISE EN SERVICE D’UNE INSTALLATION",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 6,
+    "fields": {
+      "diplome": 2,
+      "code": "P3",
+      "libelle_officiel": "MAINTENANCE D’UNE INSTALLATION",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 4,
+    "fields": {
+      "diplome": 2,
+      "code": "U2",
+      "libelle_officiel": "Préparation d’une intervention",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 5,
+    "fields": {
+      "diplome": 2,
+      "code": "U31",
+      "libelle_officiel": "Réalisation et mise en service d’une installation",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 6,
+    "fields": {
+      "diplome": 2,
+      "code": "U32",
+      "libelle_officiel": "Maintenance d’une installation",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 12,
+    "fields": {
+      "diplome": 2,
+      "code": "C1",
+      "libelle_officiel": "Analyser les conditions de l’opération et son contexte",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 13,
+    "fields": {
+      "diplome": 2,
+      "code": "C2",
+      "libelle_officiel": "Analyser et exploiter les données techniques de l’intervention",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 14,
+    "fields": {
+      "diplome": 2,
+      "code": "C3",
+      "libelle_officiel": "Choisir les matériels, équipements et outillage",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 15,
+    "fields": {
+      "diplome": 2,
+      "code": "C4",
+      "libelle_officiel": "Organiser et sécuriser son intervention",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 16,
+    "fields": {
+      "diplome": 2,
+      "code": "C5",
+      "libelle_officiel": "Réceptionner les approvisionnements",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 17,
+    "fields": {
+      "diplome": 2,
+      "code": "C6",
+      "libelle_officiel": "Réaliser une installation en adoptant une attitude écoresponsable",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 18,
+    "fields": {
+      "diplome": 2,
+      "code": "C7",
+      "libelle_officiel": "Mettre en service une installation",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 19,
+    "fields": {
+      "diplome": 2,
+      "code": "C8",
+      "libelle_officiel": "Contrôler, régler et paramétrer l’installation",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 20,
+    "fields": {
+      "diplome": 2,
+      "code": "C12",
+      "libelle_officiel": "Communiquer, rendre compte de son intervention à l’écrit et/ou à l’oral",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 21,
+    "fields": {
+      "diplome": 2,
+      "code": "C9",
+      "libelle_officiel": "Réaliser des opérations de maintenance corrective",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 22,
+    "fields": {
+      "diplome": 2,
+      "code": "C10",
+      "libelle_officiel": "Réaliser des opérations de maintenance préventive",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 23,
+    "fields": {
+      "diplome": 2,
+      "code": "C11",
+      "libelle_officiel": "Consigner et transmettre les informations",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 24,
+    "fields": {
+      "diplome": 2,
+      "code": "C13",
+      "libelle_officiel": "Conseiller le client et/ou l’exploitant du système",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 4,
+    "fields": {
+      "diplome": 2,
+      "unite": 4,
+      "code": "B1",
+      "libelle_officiel": "Préparation d’une intervention",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 10,
+    "fields": {
+      "bloc": 4,
+      "competence": 12,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 11,
+    "fields": {
+      "bloc": 4,
+      "competence": 13,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 12,
+    "fields": {
+      "bloc": 4,
+      "competence": 14,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 5,
+    "fields": {
+      "diplome": 2,
+      "unite": 5,
+      "code": "B2",
+      "libelle_officiel": "Réalisation et mise en service d’une installation",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 13,
+    "fields": {
+      "bloc": 5,
+      "competence": 15,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 14,
+    "fields": {
+      "bloc": 5,
+      "competence": 16,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 15,
+    "fields": {
+      "bloc": 5,
+      "competence": 17,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 16,
+    "fields": {
+      "bloc": 5,
+      "competence": 18,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 17,
+    "fields": {
+      "bloc": 5,
+      "competence": 19,
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 18,
+    "fields": {
+      "bloc": 5,
+      "competence": 20,
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 6,
+    "fields": {
+      "diplome": 2,
+      "unite": 6,
+      "code": "B3",
+      "libelle_officiel": "Maintenance d’une installation",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 19,
+    "fields": {
+      "bloc": 6,
+      "competence": 21,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 20,
+    "fields": {
+      "bloc": 6,
+      "competence": 22,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 21,
+    "fields": {
+      "bloc": 6,
+      "competence": 23,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 22,
+    "fields": {
+      "bloc": 6,
+      "competence": 24,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacdiplome",
+    "pk": 3,
+    "fields": {
+      "code": "MELEC",
+      "intitule": "Métiers de l’électricité et de ses environnements connectés",
+      "niveau": "4",
+      "version_ref": "Arrêté publié au JORF du 8 mars 2024 / fichier fourni",
+      "source_document": "referentiel_bac_pro_melec_legifrance.pdf",
+      "description": "Intervenir dans les secteurs du bâtiment, de l’industrie, de l’agriculture, des services et des infrastructures, depuis le point de production de l’énergie jusqu’aux utilisations.",
+      "actif": true,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 7,
+    "fields": {
+      "diplome": 3,
+      "code": "P1",
+      "libelle_officiel": "PRÉPARATION DES OPÉRATIONS À RÉALISER",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 8,
+    "fields": {
+      "diplome": 3,
+      "code": "P2",
+      "libelle_officiel": "RÉALISATION ET MISE EN SERVICE D’UNE INSTALLATION",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 9,
+    "fields": {
+      "diplome": 3,
+      "code": "P3",
+      "libelle_officiel": "MAINTENANCE D’UNE INSTALLATION",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 7,
+    "fields": {
+      "diplome": 3,
+      "code": "U2",
+      "libelle_officiel": "Préparation des opérations à réaliser",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 8,
+    "fields": {
+      "diplome": 3,
+      "code": "U31",
+      "libelle_officiel": "Réalisation et mise en service d’une installation",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 9,
+    "fields": {
+      "diplome": 3,
+      "code": "U32",
+      "libelle_officiel": "Maintenance d’une installation",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 25,
+    "fields": {
+      "diplome": 3,
+      "code": "C1",
+      "libelle_officiel": "Analyser les conditions de l’opération et son contexte",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 26,
+    "fields": {
+      "diplome": 3,
+      "code": "C2",
+      "libelle_officiel": "Définir une installation à l’aide de solutions préétablies",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 27,
+    "fields": {
+      "diplome": 3,
+      "code": "C3",
+      "libelle_officiel": "Exploiter les outils numériques dans le contexte professionnel",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 28,
+    "fields": {
+      "diplome": 3,
+      "code": "C4",
+      "libelle_officiel": "Compléter les documents liés aux opérations",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 29,
+    "fields": {
+      "diplome": 3,
+      "code": "C5",
+      "libelle_officiel": "Organiser l’opération dans son contexte",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 30,
+    "fields": {
+      "diplome": 3,
+      "code": "C6",
+      "libelle_officiel": "Réaliser une installation de manière écoresponsable",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 31,
+    "fields": {
+      "diplome": 3,
+      "code": "C7",
+      "libelle_officiel": "Contrôler les grandeurs caractéristiques de l’installation",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 32,
+    "fields": {
+      "diplome": 3,
+      "code": "C8",
+      "libelle_officiel": "Régler, paramétrer les matériels de l’installation",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 33,
+    "fields": {
+      "diplome": 3,
+      "code": "C9",
+      "libelle_officiel": "Valider le fonctionnement de l’installation",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 34,
+    "fields": {
+      "diplome": 3,
+      "code": "C10",
+      "libelle_officiel": "Communiquer entre professionnels sur l’opération",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 35,
+    "fields": {
+      "diplome": 3,
+      "code": "C11",
+      "libelle_officiel": "Communiquer avec le client/usager sur l’opération",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 36,
+    "fields": {
+      "diplome": 3,
+      "code": "C12",
+      "libelle_officiel": "Diagnostiquer un dysfonctionnement",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 37,
+    "fields": {
+      "diplome": 3,
+      "code": "C13",
+      "libelle_officiel": "Remplacer un matériel électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 7,
+    "fields": {
+      "diplome": 3,
+      "unite": 7,
+      "code": "B1",
+      "libelle_officiel": "Préparation des opérations à réaliser",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 23,
+    "fields": {
+      "bloc": 7,
+      "competence": 25,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 24,
+    "fields": {
+      "bloc": 7,
+      "competence": 26,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 25,
+    "fields": {
+      "bloc": 7,
+      "competence": 27,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 26,
+    "fields": {
+      "bloc": 7,
+      "competence": 28,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 8,
+    "fields": {
+      "diplome": 3,
+      "unite": 8,
+      "code": "B2",
+      "libelle_officiel": "Réalisation et mise en service d’une installation",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 27,
+    "fields": {
+      "bloc": 8,
+      "competence": 29,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 28,
+    "fields": {
+      "bloc": 8,
+      "competence": 30,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 29,
+    "fields": {
+      "bloc": 8,
+      "competence": 31,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 30,
+    "fields": {
+      "bloc": 8,
+      "competence": 32,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 31,
+    "fields": {
+      "bloc": 8,
+      "competence": 33,
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 32,
+    "fields": {
+      "bloc": 8,
+      "competence": 34,
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 33,
+    "fields": {
+      "bloc": 8,
+      "competence": 35,
+      "ordre": 7
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 9,
+    "fields": {
+      "diplome": 3,
+      "unite": 9,
+      "code": "B3",
+      "libelle_officiel": "Maintenance d’une installation",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 34,
+    "fields": {
+      "bloc": 9,
+      "competence": 36,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 35,
+    "fields": {
+      "bloc": 9,
+      "competence": 37,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 1,
+    "fields": {
+      "diplome": 1,
+      "code": "CIEL_SYSTEM_DOMAIN",
+      "libelle": "Domaine CIEL ciblé",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Produit électronique | Réseau informatique | Donnée/cybersécurité | Système mixte",
+      "ordre": 1,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 1,
+    "fields": {
+      "champ": 1,
+      "valeur": "produit_electronique",
+      "libelle": "Produit électronique",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 2,
+    "fields": {
+      "champ": 1,
+      "valeur": "reseau_informatique",
+      "libelle": "Réseau informatique",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 3,
+    "fields": {
+      "champ": 1,
+      "valeur": "donnee_cybersecurite",
+      "libelle": "Donnée/cybersécurité",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 4,
+    "fields": {
+      "champ": 1,
+      "valeur": "systeme_mixte",
+      "libelle": "Système mixte",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 2,
+    "fields": {
+      "diplome": 1,
+      "code": "CIEL_ARCHITECTURE",
+      "libelle": "Architecture matérielle et logicielle",
+      "type_champ": "text",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Décrire équipements, réseau, interfaces, données, versions logicielles",
+      "ordre": 2,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 3,
+    "fields": {
+      "diplome": 1,
+      "code": "CIEL_NETWORK_PARAMS",
+      "libelle": "Paramètres réseau / communication",
+      "type_champ": "text",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Adressage, VLAN, Wi-Fi, protocole, service, supervision",
+      "ordre": 3,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 4,
+    "fields": {
+      "diplome": 1,
+      "code": "CIEL_CYBER_LEVEL",
+      "libelle": "Niveau cybersécurité attendu",
+      "type_champ": "choice",
+      "phase": "evaluation",
+      "obligatoire": false,
+      "aide": "Aucun | Sensibilisation | Durcissement simple | Analyse incident | Validation",
+      "ordre": 4,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 5,
+    "fields": {
+      "champ": 4,
+      "valeur": "aucun",
+      "libelle": "Aucun",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 6,
+    "fields": {
+      "champ": 4,
+      "valeur": "sensibilisation",
+      "libelle": "Sensibilisation",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 7,
+    "fields": {
+      "champ": 4,
+      "valeur": "durcissement_simple",
+      "libelle": "Durcissement simple",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 8,
+    "fields": {
+      "champ": 4,
+      "valeur": "analyse_incident",
+      "libelle": "Analyse incident",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 9,
+    "fields": {
+      "champ": 4,
+      "valeur": "validation",
+      "libelle": "Validation",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 5,
+    "fields": {
+      "diplome": 1,
+      "code": "CIEL_CODE_EXPECTED",
+      "libelle": "Codage ou script attendu",
+      "type_champ": "choice",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Non | Lecture/modification | Création simple | Validation/tests",
+      "ordre": 5,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 10,
+    "fields": {
+      "champ": 5,
+      "valeur": "non",
+      "libelle": "Non",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 11,
+    "fields": {
+      "champ": 5,
+      "valeur": "lecture_modification",
+      "libelle": "Lecture/modification",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 12,
+    "fields": {
+      "champ": 5,
+      "valeur": "creation_simple",
+      "libelle": "Création simple",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 13,
+    "fields": {
+      "champ": 5,
+      "valeur": "validation_tests",
+      "libelle": "Validation/tests",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 6,
+    "fields": {
+      "diplome": 2,
+      "code": "MFER_INSTALL_TYPE",
+      "libelle": "Type d’installation MFER",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Froid commercial | Climatisation | Pompe à chaleur | Ventilation | Solaire/ENR | Régulation thermique",
+      "ordre": 6,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 14,
+    "fields": {
+      "champ": 6,
+      "valeur": "froid_commercial",
+      "libelle": "Froid commercial",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 15,
+    "fields": {
+      "champ": 6,
+      "valeur": "climatisation",
+      "libelle": "Climatisation",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 16,
+    "fields": {
+      "champ": 6,
+      "valeur": "pompe_a_chaleur",
+      "libelle": "Pompe à chaleur",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 17,
+    "fields": {
+      "champ": 6,
+      "valeur": "ventilation",
+      "libelle": "Ventilation",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 18,
+    "fields": {
+      "champ": 6,
+      "valeur": "solaire_enr",
+      "libelle": "Solaire/ENR",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 19,
+    "fields": {
+      "champ": 6,
+      "valeur": "regulation_thermique",
+      "libelle": "Régulation thermique",
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 7,
+    "fields": {
+      "diplome": 2,
+      "code": "MFER_INTERVENTION",
+      "libelle": "Nature de l’intervention",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Préparation | Réalisation | Mise en service | Maintenance préventive | Maintenance corrective",
+      "ordre": 7,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 20,
+    "fields": {
+      "champ": 7,
+      "valeur": "preparation",
+      "libelle": "Préparation",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 21,
+    "fields": {
+      "champ": 7,
+      "valeur": "realisation",
+      "libelle": "Réalisation",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 22,
+    "fields": {
+      "champ": 7,
+      "valeur": "mise_en_service",
+      "libelle": "Mise en service",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 23,
+    "fields": {
+      "champ": 7,
+      "valeur": "maintenance_preventive",
+      "libelle": "Maintenance préventive",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 24,
+    "fields": {
+      "champ": 7,
+      "valeur": "maintenance_corrective",
+      "libelle": "Maintenance corrective",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 8,
+    "fields": {
+      "diplome": 2,
+      "code": "MFER_FLUID_ENERGY",
+      "libelle": "Fluide / énergie / environnement",
+      "type_champ": "text",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Fluide frigorigène, énergie, contraintes environnementales, récupération, sécurité",
+      "ordre": 8,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 9,
+    "fields": {
+      "diplome": 2,
+      "code": "MFER_REGULATION",
+      "libelle": "Régulation et paramètres thermiques",
+      "type_champ": "text",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Consigne, sondes, thermostat, régulateur, température, pression, surchauffe, sous-refroidissement",
+      "ordre": 9,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 10,
+    "fields": {
+      "diplome": 2,
+      "code": "MFER_SAFETY_ENV",
+      "libelle": "Sécurité et environnement spécifiques",
+      "type_champ": "text",
+      "phase": "evaluation",
+      "obligatoire": true,
+      "aide": "Pression, fluide, électricité, EPI/EPC, récupération, déchets",
+      "ordre": 10,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 11,
+    "fields": {
+      "diplome": 3,
+      "code": "MELEC_INSTALL_DOMAIN",
+      "libelle": "Domaine d’installation MELEC",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Résidentiel | Tertiaire | Industriel | Infrastructure | Énergie | Bâtiment connecté",
+      "ordre": 11,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 25,
+    "fields": {
+      "champ": 11,
+      "valeur": "residentiel",
+      "libelle": "Résidentiel",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 26,
+    "fields": {
+      "champ": 11,
+      "valeur": "tertiaire",
+      "libelle": "Tertiaire",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 27,
+    "fields": {
+      "champ": 11,
+      "valeur": "industriel",
+      "libelle": "Industriel",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 28,
+    "fields": {
+      "champ": 11,
+      "valeur": "infrastructure",
+      "libelle": "Infrastructure",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 29,
+    "fields": {
+      "champ": 11,
+      "valeur": "energie",
+      "libelle": "Énergie",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 30,
+    "fields": {
+      "champ": 11,
+      "valeur": "bâtiment_connecte",
+      "libelle": "Bâtiment connecté",
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 12,
+    "fields": {
+      "diplome": 3,
+      "code": "MELEC_OPERATION_TYPE",
+      "libelle": "Type d’opération électrique",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Préparation | Réalisation | Mise en service | Maintenance | Dépannage | Modification",
+      "ordre": 12,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 31,
+    "fields": {
+      "champ": 12,
+      "valeur": "preparation",
+      "libelle": "Préparation",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 32,
+    "fields": {
+      "champ": 12,
+      "valeur": "realisation",
+      "libelle": "Réalisation",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 33,
+    "fields": {
+      "champ": 12,
+      "valeur": "mise_en_service",
+      "libelle": "Mise en service",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 34,
+    "fields": {
+      "champ": 12,
+      "valeur": "maintenance",
+      "libelle": "Maintenance",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 35,
+    "fields": {
+      "champ": 12,
+      "valeur": "depannage",
+      "libelle": "Dépannage",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 36,
+    "fields": {
+      "champ": 12,
+      "valeur": "modification",
+      "libelle": "Modification",
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 13,
+    "fields": {
+      "diplome": 3,
+      "code": "MELEC_DOSSIERS",
+      "libelle": "Dossiers mobilisés",
+      "type_champ": "multi_choice",
+      "phase": "documentation",
+      "obligatoire": false,
+      "aide": "Dossier 1 technique | Dossier 2 communication/traçabilité | Dossier 3 santé-sécurité-environnement",
+      "ordre": 13,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 37,
+    "fields": {
+      "champ": 13,
+      "valeur": "dossier_1_technique",
+      "libelle": "Dossier 1 technique",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 38,
+    "fields": {
+      "champ": 13,
+      "valeur": "dossier_2_communication_tracabilite",
+      "libelle": "Dossier 2 communication/traçabilité",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 39,
+    "fields": {
+      "champ": 13,
+      "valeur": "dossier_3_sante-securite-environnement",
+      "libelle": "Dossier 3 santé-sécurité-environnement",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 14,
+    "fields": {
+      "diplome": 3,
+      "code": "MELEC_HABILITATION",
+      "libelle": "Habilitation / sécurité électrique",
+      "type_champ": "text",
+      "phase": "evaluation",
+      "obligatoire": true,
+      "aide": "Habilitations, limites d’intervention, consignation éventuelle, EPI/EPC",
+      "ordre": 14,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 15,
+    "fields": {
+      "diplome": 3,
+      "code": "MELEC_ENERGY_CONTROL",
+      "libelle": "Contrôle énergétique / grandeurs électriques",
+      "type_champ": "text",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Tension, courant, puissance, continuité, isolement, fonctionnement",
+      "ordre": 15,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 1,
+    "fields": {
+      "code": "PIV_PREPARER",
+      "libelle": "Préparer une intervention",
+      "description": "Comparer les attentes de préparation et d’analyse préalable."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 2,
+    "fields": {
+      "code": "PIV_ANALYSER_DOSSIER",
+      "libelle": "Analyser un dossier technique",
+      "description": "Lire, exploiter et sélectionner les informations utiles."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 3,
+    "fields": {
+      "code": "PIV_RACCORDER",
+      "libelle": "Raccorder / câbler / connecter",
+      "description": "Réaliser des liaisons physiques adaptées au métier."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 4,
+    "fields": {
+      "code": "PIV_CONFIGURER",
+      "libelle": "Configurer / paramétrer",
+      "description": "Régler, adresser, programmer ou adapter un équipement."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 5,
+    "fields": {
+      "code": "PIV_METTRE_SERVICE",
+      "libelle": "Mettre en service / valider",
+      "description": "Contrôler et valider le fonctionnement dans le contexte métier."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 6,
+    "fields": {
+      "code": "PIV_MESURER",
+      "libelle": "Mesurer / contrôler",
+      "description": "Effectuer des mesures ou contrôles adaptés aux grandeurs du métier."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 7,
+    "fields": {
+      "code": "PIV_DIAGNOSTIQUER",
+      "libelle": "Diagnostiquer un dysfonctionnement",
+      "description": "Identifier un défaut selon une démarche structurée."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 8,
+    "fields": {
+      "code": "PIV_MAINTENIR",
+      "libelle": "Maintenir",
+      "description": "Réaliser maintenance préventive ou corrective."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 9,
+    "fields": {
+      "code": "PIV_COMMUNIQUER",
+      "libelle": "Communiquer / rendre compte",
+      "description": "Produire une trace écrite/orale professionnelle."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 10,
+    "fields": {
+      "code": "PIV_CONSEILLER",
+      "libelle": "Conseiller / proposer une amélioration",
+      "description": "Expliquer, conseiller et proposer une évolution pertinente."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 11,
+    "fields": {
+      "code": "PIV_CONCEVOIR",
+      "libelle": "Concevoir / définir une solution technique",
+      "description": "Pivot interne pour études, conception, architecture, choix ou définition de solutions."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 12,
+    "fields": {
+      "code": "PIV_DIMENSIONNER",
+      "libelle": "Dimensionner / choisir des constituants",
+      "description": "Pivot interne pour calculs, dimensionnement, choix matériel, comparaison technique."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 13,
+    "fields": {
+      "code": "PIV_PLANIFIER",
+      "libelle": "Planifier / conduire un projet",
+      "description": "Pivot interne pour organisation, planification, suivi, conduite et animation."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 14,
+    "fields": {
+      "code": "PIV_CHIFFRER",
+      "libelle": "Chiffrer / établir une offre",
+      "description": "Pivot interne pour devis, coûts, offre commerciale et bilan économique."
+    }
+  },
+  {
+    "model": "tpmanager_v2.competencepivot",
+    "pk": 15,
+    "fields": {
+      "code": "PIV_GTBDOMO",
+      "libelle": "GTB / domotique / bâtiment communicant",
+      "description": "Pivot interne pour systèmes bâtiment communicants, supervision, protocoles, pilotage et données."
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacdiplome",
+    "pk": 4,
+    "fields": {
+      "code": "BTS_ELEC",
+      "intitule": "BTS Électrotechnique",
+      "niveau": "5",
+      "version_ref": "Référentiel BTS Électrotechnique — arrêté publié au JORF du 17 mars 2020",
+      "source_document": "12188-referentiel-bts-electrotechnique.pdf",
+      "description": "Base TP Manager V2 structurée autour des pôles, blocs de compétences et unités professionnelles du BTS Électrotechnique. Les compétences officielles restent verrouillées ; les critères de réussite et d’évaluation sont ajoutés par l’enseignant.",
+      "actif": true,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 10,
+    "fields": {
+      "diplome": 4,
+      "code": "P1",
+      "libelle_officiel": "Conception - étude préliminaire",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 11,
+    "fields": {
+      "diplome": 4,
+      "code": "P2",
+      "libelle_officiel": "Conception - étude détaillée du projet",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 12,
+    "fields": {
+      "diplome": 4,
+      "code": "P3",
+      "libelle_officiel": "Conduite de projet/chantier",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 13,
+    "fields": {
+      "diplome": 4,
+      "code": "P4",
+      "libelle_officiel": "Réalisation, mise en service d’un projet",
+      "ordre": 4,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 14,
+    "fields": {
+      "diplome": 4,
+      "code": "P5",
+      "libelle_officiel": "Analyse, diagnostic, maintenance",
+      "ordre": 5,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 10,
+    "fields": {
+      "diplome": 4,
+      "code": "U4",
+      "libelle_officiel": "Conception - étude préliminaire",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 11,
+    "fields": {
+      "diplome": 4,
+      "code": "U51",
+      "libelle_officiel": "Analyse, diagnostic, maintenance",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 12,
+    "fields": {
+      "diplome": 4,
+      "code": "U52",
+      "libelle_officiel": "Conduite de projet/chantier",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 13,
+    "fields": {
+      "diplome": 4,
+      "code": "U61",
+      "libelle_officiel": "Conception - étude détaillée du projet",
+      "ordre": 4,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 14,
+    "fields": {
+      "diplome": 4,
+      "code": "U62",
+      "libelle_officiel": "Réalisation, mise en service d’un projet",
+      "ordre": 5,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 38,
+    "fields": {
+      "diplome": 4,
+      "code": "C1",
+      "libelle_officiel": "Recenser et prendre en compte les normes, les réglementations applicables au projet/chantier",
+      "selectable_bac": true,
+      "note": "Compétence transversale.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 39,
+    "fields": {
+      "diplome": 4,
+      "code": "C2",
+      "libelle_officiel": "Extraire les informations nécessaires à la réalisation des tâches",
+      "selectable_bac": true,
+      "note": "Compétence transversale.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 40,
+    "fields": {
+      "diplome": 4,
+      "code": "C3",
+      "libelle_officiel": "Gérer les risques et les aléas liés à la réalisation des tâches",
+      "selectable_bac": true,
+      "note": "Compétence transversale.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 41,
+    "fields": {
+      "diplome": 4,
+      "code": "C4",
+      "libelle_officiel": "Communiquer de manière adaptée à l'oral, à l'écrit, y compris en langue anglaise",
+      "selectable_bac": true,
+      "note": "Compétence transversale.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 42,
+    "fields": {
+      "diplome": 4,
+      "code": "C5",
+      "libelle_officiel": "Interpréter un besoin client/utilisateur, un CCTP, un cahier des charges",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 43,
+    "fields": {
+      "diplome": 4,
+      "code": "C6",
+      "libelle_officiel": "Modéliser le comportement de tout ou partie d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 44,
+    "fields": {
+      "diplome": 4,
+      "code": "C7",
+      "libelle_officiel": "Simuler le comportement de tout ou partie d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 45,
+    "fields": {
+      "diplome": 4,
+      "code": "C8",
+      "libelle_officiel": "Dimensionner les constituants d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 46,
+    "fields": {
+      "diplome": 4,
+      "code": "C9",
+      "libelle_officiel": "Choisir les constituants d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 47,
+    "fields": {
+      "diplome": 4,
+      "code": "C10",
+      "libelle_officiel": "Proposer l’architecture d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 48,
+    "fields": {
+      "diplome": 4,
+      "code": "C11",
+      "libelle_officiel": "Réaliser les documents techniques (plans, schémas, DOE, maquette virtuelle, etc.) du projet/chantier",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 49,
+    "fields": {
+      "diplome": 4,
+      "code": "C12",
+      "libelle_officiel": "Gérer et conduire (y compris avec les documents de : organisation, planification, suivi, pilotage, réception, etc.) le projet/chantier",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 50,
+    "fields": {
+      "diplome": 4,
+      "code": "C13",
+      "libelle_officiel": "Mesurer les grandeurs caractéristiques d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 51,
+    "fields": {
+      "diplome": 4,
+      "code": "C14",
+      "libelle_officiel": "Réaliser un ouvrage, une installation, un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 52,
+    "fields": {
+      "diplome": 4,
+      "code": "C15",
+      "libelle_officiel": "Configurer et programmer les matériels dans le cadre du projet/chantier",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 53,
+    "fields": {
+      "diplome": 4,
+      "code": "C16",
+      "libelle_officiel": "Appliquer un protocole pour mettre en service un ouvrage, une installation, un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 54,
+    "fields": {
+      "diplome": 4,
+      "code": "C17",
+      "libelle_officiel": "Réaliser un diagnostic de performance y compris énergétique, de sécurité, d’un ouvrage, d’une installation, d’un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 55,
+    "fields": {
+      "diplome": 4,
+      "code": "C18",
+      "libelle_officiel": "Réaliser des opérations de maintenance sur un ouvrage, une installation, un équipement électrique",
+      "selectable_bac": true,
+      "note": "",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 10,
+    "fields": {
+      "diplome": 4,
+      "unite": 10,
+      "code": "BTS_ELEC_U4",
+      "libelle_officiel": "Conception - étude préliminaire",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 36,
+    "fields": {
+      "bloc": 10,
+      "competence": 42,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 37,
+    "fields": {
+      "bloc": 10,
+      "competence": 43,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 38,
+    "fields": {
+      "bloc": 10,
+      "competence": 45,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 39,
+    "fields": {
+      "bloc": 10,
+      "competence": 47,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 11,
+    "fields": {
+      "diplome": 4,
+      "unite": 11,
+      "code": "BTS_ELEC_U51",
+      "libelle_officiel": "Analyse, diagnostic, maintenance",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 40,
+    "fields": {
+      "bloc": 11,
+      "competence": 39,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 41,
+    "fields": {
+      "bloc": 11,
+      "competence": 50,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 42,
+    "fields": {
+      "bloc": 11,
+      "competence": 54,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 43,
+    "fields": {
+      "bloc": 11,
+      "competence": 55,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 12,
+    "fields": {
+      "diplome": 4,
+      "unite": 12,
+      "code": "BTS_ELEC_U52",
+      "libelle_officiel": "Conduite de projet/chantier",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 44,
+    "fields": {
+      "bloc": 12,
+      "competence": 38,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 45,
+    "fields": {
+      "bloc": 12,
+      "competence": 40,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 46,
+    "fields": {
+      "bloc": 12,
+      "competence": 49,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 13,
+    "fields": {
+      "diplome": 4,
+      "unite": 13,
+      "code": "BTS_ELEC_U61",
+      "libelle_officiel": "Conception - étude détaillée du projet",
+      "ordre": 4,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 47,
+    "fields": {
+      "bloc": 13,
+      "competence": 44,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 48,
+    "fields": {
+      "bloc": 13,
+      "competence": 46,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 49,
+    "fields": {
+      "bloc": 13,
+      "competence": 48,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 14,
+    "fields": {
+      "diplome": 4,
+      "unite": 14,
+      "code": "BTS_ELEC_U62",
+      "libelle_officiel": "Réalisation, mise en service d’un projet",
+      "ordre": 5,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 50,
+    "fields": {
+      "bloc": 14,
+      "competence": 41,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 51,
+    "fields": {
+      "bloc": 14,
+      "competence": 51,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 52,
+    "fields": {
+      "bloc": 14,
+      "competence": 52,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 53,
+    "fields": {
+      "bloc": 14,
+      "competence": 53,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 16,
+    "fields": {
+      "diplome": 4,
+      "code": "BTS_ELEC_SECTEUR",
+      "libelle": "Secteur professionnel support",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Choisir le contexte dominant du TP BTS Électrotechnique.",
+      "ordre": 101,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 40,
+    "fields": {
+      "champ": 16,
+      "valeur": "BATIMENT",
+      "libelle": "Bâtiment",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 41,
+    "fields": {
+      "champ": 16,
+      "valeur": "INDUSTRIE",
+      "libelle": "Industrie",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 42,
+    "fields": {
+      "champ": 16,
+      "valeur": "ENERGIE",
+      "libelle": "Énergie",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 43,
+    "fields": {
+      "champ": 16,
+      "valeur": "INFRASTRUCTURE",
+      "libelle": "Infrastructure",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 44,
+    "fields": {
+      "champ": 16,
+      "valeur": "EQUIPEMENT",
+      "libelle": "Équipement électrique",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 45,
+    "fields": {
+      "champ": 16,
+      "valeur": "GTB",
+      "libelle": "GTB / bâtiment communicant",
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 17,
+    "fields": {
+      "diplome": 4,
+      "code": "BTS_ELEC_PHASE_PROJET",
+      "libelle": "Phase principale du projet/chantier",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Aligner le TP sur le bloc/unité professionnel dominant.",
+      "ordre": 102,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 46,
+    "fields": {
+      "champ": 17,
+      "valeur": "ETUDE_PRELIMINAIRE",
+      "libelle": "Conception - étude préliminaire",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 47,
+    "fields": {
+      "champ": 17,
+      "valeur": "ETUDE_DETAILLEE",
+      "libelle": "Conception - étude détaillée du projet",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 48,
+    "fields": {
+      "champ": 17,
+      "valeur": "CONDUITE",
+      "libelle": "Conduite de projet/chantier",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 49,
+    "fields": {
+      "champ": 17,
+      "valeur": "REALISATION_MES",
+      "libelle": "Réalisation, mise en service",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 50,
+    "fields": {
+      "champ": 17,
+      "valeur": "ADM",
+      "libelle": "Analyse, diagnostic, maintenance",
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 18,
+    "fields": {
+      "diplome": 4,
+      "code": "BTS_ELEC_DOSSIER_SOURCE",
+      "libelle": "Dossier technique support / CCTP / cahier des charges",
+      "type_champ": "textarea",
+      "phase": "documentation",
+      "obligatoire": true,
+      "aide": "Préciser les documents fournis et ceux à produire : plans, schémas, DOE, maquette virtuelle, protocole.",
+      "ordre": 103,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 19,
+    "fields": {
+      "diplome": 4,
+      "code": "BTS_ELEC_GRANDEURS_MESURES",
+      "libelle": "Grandeurs, essais ou mesures attendus",
+      "type_champ": "textarea",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Tensions, courants, puissances, énergie, sécurité, performance, protocole de mise en service ou diagnostic.",
+      "ordre": 104,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 20,
+    "fields": {
+      "diplome": 4,
+      "code": "BTS_ELEC_SECURITE_NORMES",
+      "libelle": "Normes, habilitations, risques et aléas",
+      "type_champ": "textarea",
+      "phase": "evaluation",
+      "obligatoire": true,
+      "aide": "Normes/réglementations, risques électriques, santé-sécurité-environnement, aléas projet/chantier.",
+      "ordre": 105,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacdiplome",
+    "pk": 5,
+    "fields": {
+      "code": "BTS_FED",
+      "intitule": "BTS Fluides Énergies Domotique — options GCF, FCA, DBC",
+      "niveau": "5",
+      "version_ref": "Référentiel BTS FED — mars 2014",
+      "source_document": "3851-referentiel-bts-fed-mars14.pdf",
+      "description": "Base TP Manager V2 structurée autour des fonctions et unités professionnelles du BTS FED : GCF, FCA et DBC. Les compétences officielles restent verrouillées ; les critères de réussite et d’évaluation sont ajoutés par l’enseignant.",
+      "actif": true,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 15,
+    "fields": {
+      "diplome": 5,
+      "code": "A",
+      "libelle_officiel": "CONCEVOIR et DÉFINIR",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 16,
+    "fields": {
+      "diplome": 5,
+      "code": "B",
+      "libelle_officiel": "METTRE EN SERVICE - OPTIMISER",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 17,
+    "fields": {
+      "diplome": 5,
+      "code": "C",
+      "libelle_officiel": "CONDUIRE UN PROJET",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 18,
+    "fields": {
+      "diplome": 5,
+      "code": "D",
+      "libelle_officiel": "COMMUNIQUER",
+      "ordre": 4,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacpole",
+    "pk": 19,
+    "fields": {
+      "diplome": 5,
+      "code": "E",
+      "libelle_officiel": "ASSURER LA RELATION CLIENT",
+      "ordre": 5,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 15,
+    "fields": {
+      "diplome": 5,
+      "code": "U41",
+      "libelle_officiel": "Analyse d’un système / justification de choix de solutions",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 16,
+    "fields": {
+      "diplome": 5,
+      "code": "U42",
+      "libelle_officiel": "Physique-chimie associées au système",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 17,
+    "fields": {
+      "diplome": 5,
+      "code": "U5",
+      "libelle_officiel": "Interventions sur les systèmes",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 18,
+    "fields": {
+      "diplome": 5,
+      "code": "U61",
+      "libelle_officiel": "Conduite de projet",
+      "ordre": 4,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacunite",
+    "pk": 19,
+    "fields": {
+      "diplome": 5,
+      "code": "U62",
+      "libelle_officiel": "Rapport d’activités en milieu professionnel",
+      "ordre": 5,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 56,
+    "fields": {
+      "diplome": 5,
+      "code": "C1",
+      "libelle_officiel": "Analyser les besoins d'un client",
+      "selectable_bac": true,
+      "note": "Détails officiels : C1-1 Traduire le besoin du client et l’exprimer fonctionnellement ; C1-2 Exprimer les contraintes.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 57,
+    "fields": {
+      "diplome": 5,
+      "code": "C2",
+      "libelle_officiel": "Analyser un système",
+      "selectable_bac": true,
+      "note": "Détails officiels : C2-1 Identifier les composants et l’architecture structurelle et fonctionnelle du système ; C2-2 Identifier les chaines d’énergie et d’information ; C2-3 Décrire le fonctionnement du système.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 58,
+    "fields": {
+      "diplome": 5,
+      "code": "C3",
+      "libelle_officiel": "Concevoir des solutions technologiques",
+      "selectable_bac": true,
+      "note": "Détails officiels : C3-1 Choisir les éléments d’un système ou d’une installation ; C3-2 Comparer et proposer une ou des solutions techniques ; C3-3 Dimensionner tout ou partie du système.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 59,
+    "fields": {
+      "diplome": 5,
+      "code": "C4",
+      "libelle_officiel": "Décoder et élaborer des plans et des schémas",
+      "selectable_bac": true,
+      "note": "Détails officiels : C4-1 Élaborer des schémas et/ou un synoptique ; C4-2 Compléter ou réaliser un plan ; C4-3 Décoder les plans.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 60,
+    "fields": {
+      "diplome": 5,
+      "code": "C5",
+      "libelle_officiel": "Appliquer les règlementations en vigueur",
+      "selectable_bac": true,
+      "note": "Détails officiels : C5-1 Recueillir les documents réglementaires adéquats ; C5-2 Extraire les éléments réglementaires concernant le projet ; C5-3 Remplir les documents réglementaires officiels.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 61,
+    "fields": {
+      "diplome": 5,
+      "code": "C6",
+      "libelle_officiel": "Mettre en œuvre des outils numériques de pilotage",
+      "selectable_bac": true,
+      "note": "Détail officiel : programmer, paramétrer, configurer un système de traitement de l’information.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 62,
+    "fields": {
+      "diplome": 5,
+      "code": "C7",
+      "libelle_officiel": "Réaliser des essais, des mesures",
+      "selectable_bac": true,
+      "note": "Détails officiels : analyser un dossier, identifier normes/réglementations, respecter les procédures, conduire les essais/mesures, choisir et utiliser les appareils de mesure, interpréter les résultats.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 63,
+    "fields": {
+      "diplome": 5,
+      "code": "C8",
+      "libelle_officiel": "Vérifier, adapter les performances d'un système",
+      "selectable_bac": true,
+      "note": "Détails officiels : établir une procédure de vérification, choisir mesures/paramètres, analyser les résultats, concevoir une action corrective.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 64,
+    "fields": {
+      "diplome": 5,
+      "code": "C9",
+      "libelle_officiel": "Déterminer des prix ou des coûts aux différentes phases d'avancement d’un projet",
+      "selectable_bac": true,
+      "note": "Détails officiels : enveloppe financière, devis quantitatif, bilan coût réel/devis.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 65,
+    "fields": {
+      "diplome": 5,
+      "code": "C10",
+      "libelle_officiel": "Organiser et suivre le projet, animer une équipe",
+      "selectable_bac": true,
+      "note": "Détails officiels : suivre/évaluer l’avancement, conduire une réunion, transmettre des consignes, gérer les autorisations et habilitations.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 66,
+    "fields": {
+      "diplome": 5,
+      "code": "C11",
+      "libelle_officiel": "Établir et mettre à jour un planning",
+      "selectable_bac": true,
+      "note": "Détails officiels : exploiter une planification existante ; élaborer le calendrier de travaux d’exécution des tâches du second œuvre.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 67,
+    "fields": {
+      "diplome": 5,
+      "code": "C12",
+      "libelle_officiel": "Recueillir et traiter l'information",
+      "selectable_bac": true,
+      "note": "Détails officiels : identifier les documents d’un dossier ; extraire les informations ; rédiger un compte rendu et/ou une synthèse.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 68,
+    "fields": {
+      "diplome": 5,
+      "code": "C13",
+      "libelle_officiel": "Écouter, dialoguer, argumenter",
+      "selectable_bac": true,
+      "note": "Détails officiels : prendre rendez-vous, écouter et prendre en compte les protagonistes, adapter son discours, choisir des arguments.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 69,
+    "fields": {
+      "diplome": 5,
+      "code": "C14",
+      "libelle_officiel": "Élaborer et utiliser un support de communication",
+      "selectable_bac": true,
+      "note": "Détails officiels : positionner l’entreprise et ses offres, proposer des actions de promotion, élaborer/presenter un support.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 70,
+    "fields": {
+      "diplome": 5,
+      "code": "C15",
+      "libelle_officiel": "Négocier",
+      "selectable_bac": true,
+      "note": "Détails officiels : analyser le contexte de négociation, mettre en œuvre une stratégie, rédiger un document.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.baccompetence",
+    "pk": 71,
+    "fields": {
+      "diplome": 5,
+      "code": "C16",
+      "libelle_officiel": "Élaborer une offre commerciale",
+      "selectable_bac": true,
+      "note": "Détails officiels : extraire les documents techniques ; réaliser un argumentaire commercial.",
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 15,
+    "fields": {
+      "diplome": 5,
+      "unite": 15,
+      "code": "BTS_FED_U41",
+      "libelle_officiel": "Analyse d’un système / justification de choix de solutions",
+      "ordre": 1,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 54,
+    "fields": {
+      "bloc": 15,
+      "competence": 56,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 55,
+    "fields": {
+      "bloc": 15,
+      "competence": 57,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 56,
+    "fields": {
+      "bloc": 15,
+      "competence": 59,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 57,
+    "fields": {
+      "bloc": 15,
+      "competence": 67,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 16,
+    "fields": {
+      "diplome": 5,
+      "unite": 17,
+      "code": "BTS_FED_U5",
+      "libelle_officiel": "Interventions sur les systèmes",
+      "ordre": 2,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 58,
+    "fields": {
+      "bloc": 16,
+      "competence": 61,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 59,
+    "fields": {
+      "bloc": 16,
+      "competence": 62,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 60,
+    "fields": {
+      "bloc": 16,
+      "competence": 63,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 17,
+    "fields": {
+      "diplome": 5,
+      "unite": 18,
+      "code": "BTS_FED_U61",
+      "libelle_officiel": "Conduite de projet",
+      "ordre": 3,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 61,
+    "fields": {
+      "bloc": 17,
+      "competence": 56,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 62,
+    "fields": {
+      "bloc": 17,
+      "competence": 58,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 63,
+    "fields": {
+      "bloc": 17,
+      "competence": 59,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 64,
+    "fields": {
+      "bloc": 17,
+      "competence": 60,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 65,
+    "fields": {
+      "bloc": 17,
+      "competence": 64,
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 66,
+    "fields": {
+      "bloc": 17,
+      "competence": 66,
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 67,
+    "fields": {
+      "bloc": 17,
+      "competence": 68,
+      "ordre": 7
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 68,
+    "fields": {
+      "bloc": 17,
+      "competence": 69,
+      "ordre": 8
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 69,
+    "fields": {
+      "bloc": 17,
+      "competence": 70,
+      "ordre": 9
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 70,
+    "fields": {
+      "bloc": 17,
+      "competence": 71,
+      "ordre": 10
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloc",
+    "pk": 18,
+    "fields": {
+      "diplome": 5,
+      "unite": 19,
+      "code": "BTS_FED_U62",
+      "libelle_officiel": "Rapport d’activités en milieu professionnel",
+      "ordre": 4,
+      "locked_official": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 71,
+    "fields": {
+      "bloc": 18,
+      "competence": 64,
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 72,
+    "fields": {
+      "bloc": 18,
+      "competence": 65,
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 73,
+    "fields": {
+      "bloc": 18,
+      "competence": 67,
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 74,
+    "fields": {
+      "bloc": 18,
+      "competence": 68,
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 75,
+    "fields": {
+      "bloc": 18,
+      "competence": 69,
+      "ordre": 5
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacbloccompetence",
+    "pk": 76,
+    "fields": {
+      "bloc": 18,
+      "competence": 70,
+      "ordre": 6
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 21,
+    "fields": {
+      "diplome": 5,
+      "code": "BTS_FED_OPTION",
+      "libelle": "Option BTS FED ciblée",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "GCF, FCA ou DBC selon le support du TP.",
+      "ordre": 201,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 51,
+    "fields": {
+      "champ": 21,
+      "valeur": "GCF",
+      "libelle": "Génie climatique et fluidique",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 52,
+    "fields": {
+      "champ": 21,
+      "valeur": "FCA",
+      "libelle": "Froid et conditionnement d’air",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 53,
+    "fields": {
+      "champ": 21,
+      "valeur": "DBC",
+      "libelle": "Domotique et bâtiments communicants",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 54,
+    "fields": {
+      "champ": 21,
+      "valeur": "TRANSVERSAL",
+      "libelle": "Transversal FED",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 22,
+    "fields": {
+      "diplome": 5,
+      "code": "BTS_FED_PHASE",
+      "libelle": "Phase professionnelle dominante",
+      "type_champ": "choice",
+      "phase": "general",
+      "obligatoire": true,
+      "aide": "Aligner le TP sur l’unité/bloc professionnel dominant.",
+      "ordre": 202,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 55,
+    "fields": {
+      "champ": 22,
+      "valeur": "ANALYSE_SYSTEME",
+      "libelle": "Analyse d’un système / justification de choix",
+      "ordre": 1
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 56,
+    "fields": {
+      "champ": 22,
+      "valeur": "INTERVENTION_SYSTEME",
+      "libelle": "Interventions sur les systèmes",
+      "ordre": 2
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 57,
+    "fields": {
+      "champ": 22,
+      "valeur": "CONDUITE_PROJET",
+      "libelle": "Conduite de projet",
+      "ordre": 3
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptpoption",
+    "pk": 58,
+    "fields": {
+      "champ": 22,
+      "valeur": "RAPPORT_ACTIVITES",
+      "libelle": "Rapport d’activités / milieu professionnel",
+      "ordre": 4
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 23,
+    "fields": {
+      "diplome": 5,
+      "code": "BTS_FED_SYSTEME_SUPPORT",
+      "libelle": "Système ou installation support",
+      "type_champ": "textarea",
+      "phase": "technique",
+      "obligatoire": true,
+      "aide": "Décrire le système : GCF/FCA/DBC, composants, architecture, chaîne d’énergie et chaîne d’information.",
+      "ordre": 203,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 24,
+    "fields": {
+      "diplome": 5,
+      "code": "BTS_FED_PERFORMANCES_MESURES",
+      "libelle": "Performances, paramètres, essais ou mesures attendus",
+      "type_champ": "textarea",
+      "phase": "technique",
+      "obligatoire": false,
+      "aide": "Température, pression, débit, énergie, régulation, supervision, performance système, action corrective.",
+      "ordre": 204,
+      "actif": true
+    }
+  },
+  {
+    "model": "tpmanager_v2.bacchamptp",
+    "pk": 25,
+    "fields": {
+      "diplome": 5,
+      "code": "BTS_FED_REGLEMENTATION_CLIENT",
+      "libelle": "Réglementation, relation client, offre ou communication",
+      "type_champ": "textarea",
+      "phase": "evaluation",
+      "obligatoire": false,
+      "aide": "Contraintes réglementaires, documents officiels, devis, planning, négociation, support de communication.",
+      "ordre": 205,
+      "actif": true
+    }
+  }
+]

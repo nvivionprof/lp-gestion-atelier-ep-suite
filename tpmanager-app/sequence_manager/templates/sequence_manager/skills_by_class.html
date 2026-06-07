@@ -1,0 +1,11 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}Compétences travaillées — {{ sequence.titre }}{% endblock %}
+{% block seq_content %}
+<p><a href="{% url 'sequence_manager:skills_by_class' sequence.pk %}?mode=compact">Vue compacte</a> · <a href="{% url 'sequence_manager:skills_by_class' sequence.pk %}?mode=detail">Vue développée</a></p>
+{% for key, comps in rows %}
+<section class="card"><h2>{{ key.0 }} — {{ key.1 }}</h2>
+<table class="table"><thead><tr><th>Compétence</th><th>TP concernés</th>{% if mode == 'detail' %}<th>Sous-compétences / critères</th>{% endif %}</tr></thead><tbody>
+{% for comp, links in comps.items %}<tr><td><strong>{{ comp.code }}</strong> — {{ comp.libelle_officiel }}</td><td>{% for l in links %}<span class="badge">{{ l.tp.code }} · {{ l.type_lien }}</span> {% endfor %}</td>{% if mode == 'detail' %}<td>{% for l in links %}{% for c in l.criteria %}<div>{{ c.code }} — {{ c.libelle_officiel }}</div>{% endfor %}{% endfor %}</td>{% endif %}</tr>{% endfor %}
+</tbody></table></section>
+{% empty %}<section class="card"><p>Aucune compétence détectée dans les TP affectés.</p></section>{% endfor %}
+{% endblock %}

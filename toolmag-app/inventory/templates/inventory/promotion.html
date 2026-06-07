@@ -1,0 +1,88 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Montée de niveau / changement de filière / archivage</h1>
+  <p>Ce module sert à gérer les fins d'année, les redoublants, les réorientations et les comptes à désactiver.</p>
+  <form method="get" class="inline-form">
+    {{ filter_form.as_p }}
+    <button class="button" type="submit">Filtrer</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Élèves sélectionnables</h2>
+  <div class="actions compact-actions">
+    <button type="button" class="button secondary" id="select-visible-users">Tout sélectionner dans le filtre</button>
+    <button type="button" class="button secondary" id="unselect-visible-users">Tout désélectionner</button>
+    <span class="hint">La sélection agit uniquement sur les utilisateurs affichés par le filtre courant.</span>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="promotion-layout">
+      <div>
+        <table>
+          <thead><tr><th>Sélection</th><th>Code</th><th>Nom</th><th>Formation</th><th>Classe</th><th>Groupe</th><th>Actif</th></tr></thead>
+          <tbody>
+            {% for person in persons %}
+            <tr>
+              <td><input class="promotion-user-checkbox" type="checkbox" name="selected" value="{{ person.code }}"></td>
+              <td>{{ person.code }}</td>
+              <td>{{ person.last_name }} {{ person.first_name }}</td>
+              <td>{% if person.formation %}{{ person.formation.code }}{% else %}-{% endif %}</td>
+              <td>{{ person.class_name }}</td>
+              <td>{{ person.group_name }}</td>
+              <td>{{ person.active|yesno:'Oui,Non' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">Aucun élève dans ce filtre.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="side-card">
+        <h3>Action collective</h3>
+        <p>{{ action_form.action.label_tag }} {{ action_form.action }}</p>
+        <p>{{ action_form.new_formation.label_tag }} {{ action_form.new_formation }}</p>
+        <p>{{ action_form.new_class_name.label_tag }} {{ action_form.new_class_name }}</p>
+        <p>{{ action_form.new_group_name.label_tag }} {{ action_form.new_group_name }}</p>
+        <p>{{ action_form.school_year.label_tag }} {{ action_form.school_year }}</p>
+        <p>{{ action_form.comment.label_tag }} {{ action_form.comment }}</p>
+        <p>{{ action_form.apply_changes }} {{ action_form.apply_changes.label_tag }}</p>
+        <button class="button primary" type="submit">Prévisualiser / appliquer</button>
+      </div>
+    </div>
+  </form>
+</section>
+
+{% if summary %}
+<section class="panel">
+  <h2>Résumé opération</h2>
+  <p>{{ summary.count }} utilisateur(s) concerné(s). Action : {{ summary.action }}. Application réelle : {{ summary.applied|yesno:'Oui,Non' }}.</p>
+</section>
+{% endif %}
+
+{% if report %}
+<section class="panel">
+  <h2>Rapport</h2>
+  <table>
+    <thead><tr><th>Code</th><th>Nom</th><th>Action</th><th>Message</th></tr></thead>
+    <tbody>
+      {% for item in report %}
+      <tr><td>{{ item.code }}</td><td>{{ item.name }}</td><td>{{ item.action }}</td><td>{{ item.message }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+<script>
+(function(){
+  function setVisibleUsers(checked){
+    document.querySelectorAll('.promotion-user-checkbox').forEach(function(box){ box.checked = checked; });
+  }
+  var selectBtn = document.getElementById('select-visible-users');
+  var unselectBtn = document.getElementById('unselect-visible-users');
+  if(selectBtn){ selectBtn.addEventListener('click', function(){ setVisibleUsers(true); }); }
+  if(unselectBtn){ unselectBtn.addEventListener('click', function(){ setVisibleUsers(false); }); }
+})();
+</script>
+{% endblock %}

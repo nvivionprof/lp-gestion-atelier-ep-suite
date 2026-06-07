@@ -1,0 +1,5 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Traçabilité</p><h1>Historiques de prise et restitution de poste</h1></div></section>
+<section class="panel"><table><tr><th>Date</th><th>Système</th><th>Utilisateur</th><th>Formation</th><th>Niveau</th><th>Prof référent</th><th>TP</th><th>Statut</th></tr>{% for s in sessions %}<tr><td>{{ s.date_prise|date:'d/m/Y H:i' }}{% if s.date_restitution %}<br><small>Restitution {{ s.date_restitution|date:'d/m/Y H:i' }}</small>{% endif %}</td><td><a href="{% url 'system_detail' s.systeme.pk %}">{{ s.systeme.code }}</a></td><td>{{ s.utilisateur.full_name|default:'—' }}</td><td>{{ s.formation.code|default:'—' }}<br><small>{{ s.classe_ou_groupe }}</small></td><td>{{ s.niveau.code|default:'—' }}</td><td>{{ s.professeur_referent.full_name|default:'—' }}</td><td>{{ s.tp_code }}<br><small>{{ s.tp_titre }}</small></td><td>{{ s.get_statut_display }}</td></tr>{% empty %}<tr><td colspan="8">Aucun historique.</td></tr>{% endfor %}</table></section>
+{% endblock %}

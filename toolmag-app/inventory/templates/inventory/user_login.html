@@ -1,0 +1,70 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Connexion utilisateur / emprunteur</h1>
+<section class="panel">
+  <p>Le magasinier peut rechercher l’emprunteur par nom, prénom, classe ou code. La connexion exige ensuite le <strong>code</strong> et le <strong>mot de passe</strong>.</p>
+
+  <div class="search-card" data-search-url="{% url 'api_person_search' %}">
+    <label>Rechercher dans la base utilisateurs
+      <input type="search" id="borrower-search" placeholder="Exemple : Martin, Lucas, 1CIEL, USR-0001" autocomplete="off">
+    </label>
+    <div id="borrower-search-results" class="search-results" aria-live="polite"></div>
+  </div>
+
+  <form method="post" class="form">{% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {{ form.non_field_errors }}
+    <div class="formgrid">
+      <label>{{ form.borrower_code.label }}{{ form.borrower_code }}{% if form.borrower_code.errors %}<small class="error">{{ form.borrower_code.errors }}</small>{% endif %}</label>
+      <label>{{ form.password.label }}{{ form.password }}{% if form.password.errors %}<small class="error">{{ form.password.errors }}</small>{% endif %}</label>
+    </div>
+    <button class="button primary" type="submit">Se connecter comme utilisateur</button>
+  </form>
+</section>
+<section class="panel">
+  <h2>Usage prévu</h2>
+  <p>Avant une sortie ou un inventaire de kit, l’utilisateur est identifié. Le champ emprunteur est ensuite verrouillé et repris automatiquement dans la sortie.</p>
+</section>
+<script>
+(function(){
+  const box = document.querySelector('.search-card');
+  const input = document.getElementById('borrower-search');
+  const results = document.getElementById('borrower-search-results');
+  const codeField = document.getElementById('id_borrower_code');
+  if (!box || !input || !results || !codeField) return;
+  const url = box.dataset.searchUrl;
+  let timer = null;
+  function clearResults(){ results.innerHTML = ''; }
+  function render(items){
+    clearResults();
+    if (!items.length) { results.innerHTML = '<div class="search-empty">Aucun utilisateur trouvé.</div>'; return; }
+    items.forEach(person => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'search-result';
+      const subtitle = [person.code, person.formation, person.class_name, person.group_name].filter(Boolean).join(' · ');
+      button.innerHTML = `<strong>${person.name}</strong><span>${subtitle}</span>`;
+      button.addEventListener('click', () => {
+        codeField.value = person.code;
+        input.value = `${person.name} — ${person.code}`;
+        clearResults();
+        document.getElementById('id_password').focus();
+      });
+      results.appendChild(button);
+    });
+  }
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    clearTimeout(timer);
+    if (q.length < 2) { clearResults(); return; }
+    timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`${url}?q=${encodeURIComponent(q)}`, {headers: {'Accept': 'application/json'}});
+        const data = await response.json();
+        render(data.results || []);
+      } catch(e) { results.innerHTML = '<div class="search-empty">Recherche indisponible.</div>'; }
+    }, 180);
+  });
+})();
+</script>
+{% endblock %}

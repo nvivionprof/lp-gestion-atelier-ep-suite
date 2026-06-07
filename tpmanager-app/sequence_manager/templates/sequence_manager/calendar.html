@@ -1,0 +1,18 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}Calendrier global des séquences{% endblock %}
+{% block seq_content %}
+<form class="card filters" method="get">
+  <label>Zone<select name="zone"><option value="">Toutes</option>{% for z in zones %}<option value="{{ z.id }}" {% if filters.zone == z.id|stringformat:'s' %}selected{% endif %}>{{ z.code }} — {{ z.nom }}</option>{% endfor %}</select></label>
+  <label>Formation<select name="formation"><option value="">Toutes</option>{% for f in formations %}<option value="{{ f }}" {% if filters.formation == f %}selected{% endif %}>{{ f }}</option>{% endfor %}</select></label>
+  <button class="btn" type="submit">Filtrer</button>
+</form>
+<div class="calendar-stack">
+{% for item in blocks %}
+  <article class="seq-calendar-card" style="border-left-color: {{ item.seq.coloration.couleur|default:'#2563eb' }}">
+    <div class="seq-cal-date"><strong>{{ item.seq.date_debut }}</strong><br><span>→ {{ item.seq.date_fin }}</span></div>
+    <div class="seq-cal-body"><h3>{{ item.seq.titre }}</h3><p>{{ item.seq.zone_principale|default:'Zone non définie' }} — {{ item.seq.coloration|default:'Sans coloration' }}</p><p>{% for e in item.effectifs %}<span class="badge">{{ e }}</span> {% empty %}<span class="muted">Aucun effectif renseigné</span>{% endfor %}</p></div>
+    <a class="btn small" href="{% url 'sequence_manager:sequence_detail' item.seq.pk %}">Planning</a>
+  </article>
+{% empty %}<p>Aucune séquence.</p>{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Évaluation des compétences</h1>
+<p class="muted">Module expérimental : ToolMag observe les actions, propose des compétences et laisse la validation finale au professeur.</p>
+
+<section class="card">
+  <h2>Filtres</h2>
+  <form method="get" class="grid-form">
+    {{ form.as_p }}
+    <p><button type="submit">Filtrer</button> <a class="button" href="{% url 'evaluation_export_excel' %}">Exporter les évaluations Excel</a> <a class="button" href="{% url 'evaluation_sessions' %}">Séances pédagogiques</a></p>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Propositions automatiques</h2>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="generate_evaluations" value="1">
+    <button type="submit">Générer / mettre à jour les propositions</button>
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Élève</th>
+        <th>Formation</th>
+        <th>Classe</th>
+        <th>Actions observées</th>
+        <th>Compétences proposées</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td><strong>{{ row.person.last_name }} {{ row.person.first_name }}</strong><br><small>{{ row.person.code }}</small></td>
+        <td>{% if row.person.formation %}{{ row.person.formation.code }}{% else %}-{% endif %}</td>
+        <td>{{ row.person.class_name }} {{ row.person.group_name }}</td>
+        <td>
+          <small>
+            Emprunts : {{ row.evidence.borrowed_count }}<br>
+            Sorties validées : {{ row.evidence.checkout_validated_count }}<br>
+            Retours validés : {{ row.evidence.return_validated_count }}<br>
+            Inventaires utilisateur : {{ row.evidence.user_check_count }}<br>
+            Inventaires magasinier : {{ row.evidence.storekeeper_check_count }}<br>
+            Anomalies : {{ row.evidence.problem_count }}
+          </small>
+        </td>
+        <td>
+          {% if row.suggestions %}
+            {% for s in row.suggestions %}
+              <div class="competence-chip">
+                <strong>{{ s.competence.code }}</strong> — {{ s.competence.title }}<br>
+                <small>Rôle : {{ s.role }} · preuves : {{ s.evidence_count }} · niveau proposé : <strong>{{ s.proposed_level }}/4</strong></small>
+              </div>
+            {% endfor %}
+          {% else %}
+            <span class="muted">Aucune proposition. Vérifier formation, référentiel ou période.</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">Aucun élève dans le filtre.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Dernières évaluations enregistrées</h2>
+  <table>
+    <thead><tr><th>Élève</th><th>Séance</th><th>Compétence</th><th>Niveau proposé</th><th>Niveau validé</th><th>Preuves</th></tr></thead>
+    <tbody>
+    {% for r in records %}
+      <tr>
+        <td>{{ r.person.last_name }} {{ r.person.first_name }}</td>
+        <td>{% if r.session %}{{ r.session.title }}{% else %}-{% endif %}</td>
+        <td>{{ r.competence.code }} — {{ r.competence.title }}</td>
+        <td>{{ r.proposed_level }}/4</td>
+        <td>{% if r.validated_level == None %}-{% else %}{{ r.validated_level }}/4{% endif %}</td>
+        <td>{{ r.evidence_count }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Aucune évaluation enregistrée.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

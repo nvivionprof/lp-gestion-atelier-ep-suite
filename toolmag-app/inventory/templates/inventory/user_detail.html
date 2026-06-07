@@ -1,0 +1,198 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel user-detail-head">
+  <div class="user-detail-main">
+    <div class="user-detail-identity">
+      <h1>Fiche utilisateur — {{ person.first_name }} {{ person.last_name }}</h1>
+      <p><strong>Code :</strong> {{ person.code }}</p>
+      <p><strong>Identifiant :</strong> {{ person.username|default:'-' }}</p>
+      <p><strong>Formation :</strong> {% if person.formation %}{{ person.formation.code }} — {{ person.formation.name }}{% else %}-{% endif %}</p>
+      <p><strong>Classe / groupe :</strong> {{ person.class_name|default:'-' }} / {{ person.group_name|default:'-' }}</p>
+      <p><strong>Rôle principal :</strong> {{ person.get_role_display }}</p>
+      <p><strong>Rôles autorisés :</strong> {{ person.allowed_roles|default:'-' }}</p>
+      <p><strong>Statut :</strong> {% if person.active %}Actif{% else %}Inactif{% endif %}{% if person.archived %} — Archivé{% endif %}</p>
+    </div>
+    <aside class="user-detail-actions">
+      <h2>Actions disponibles</h2>
+      {% if is_self %}<a class="button compact" href="{% url 'change_password' %}">Modifier mon mot de passe</a>{% endif %}
+      {% if is_prof %}<a class="button compact" href="{% url 'reset_password' %}?person_code={{ person.code|urlencode }}">Réinitialiser le mot de passe</a>{% endif %}
+      <a class="button secondary compact" href="{% url 'user_detail_pdf' person.code %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Exporter la fiche filtrée en PDF</a>
+      {% if not is_self and not is_prof %}<p class="hint">Aucune action sensible disponible.</p>{% endif %}
+    </aside>
+  </div>
+</section>
+
+<section class="panel user-filter-panel">
+  <h2>Filtre période</h2>
+  <form method="get" class="filters user-period-filters">
+    <label>Du <input type="date" name="date_from" value="{{ date_from|date:'Y-m-d' }}"></label>
+    <label>Au <input type="date" name="date_to" value="{{ date_to|date:'Y-m-d' }}"></label>
+    <button type="submit" class="compact">Filtrer</button>
+    <a class="button secondary compact" href="{% url 'user_detail' person.code %}">Réinitialiser</a>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Synthèse sur la période</h2>
+  <div class="cards">
+    <div class="card"><span>Emprunts</span><strong>{{ user_counts.borrowed_loans }}</strong></div>
+    <div class="card"><span>Inventaires utilisateur</span><strong>{{ user_counts.user_inventories }}</strong></div>
+    <div class="card"><span>Sorties validées comme magasinier</span><strong>{{ storekeeper_counts.checkout_loans }}</strong></div>
+    <div class="card"><span>Retours validés comme magasinier</span><strong>{{ storekeeper_counts.return_loans }}</strong></div>
+    <div class="card"><span>Interventions</span><strong>{{ storekeeper_counts.interventions }}</strong></div>
+    <div class="card"><span>Réparations</span><strong>{{ storekeeper_counts.repairs }}</strong></div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Actions réalisées en tant qu’utilisateur</h2>
+  <h3>Matériels empruntés</h3>
+  <table>
+    <thead><tr><th>Date sortie</th><th>Matériel</th><th>Magasinier sortie</th><th>Retour</th><th>Statut</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for loan in borrowed_loans %}
+      <tr>
+        <td>{{ loan.checked_out_at|date:'d/m/Y H:i' }}</td>
+        <td><a href="{% url 'equipment_detail' loan.equipment.code %}">{{ loan.equipment.code }} — {{ loan.equipment.name }}</a></td>
+        <td>{{ loan.checkout_storekeeper.first_name }} {{ loan.checkout_storekeeper.last_name }}</td>
+        <td>{% if loan.returned_at %}{{ loan.returned_at|date:'d/m/Y H:i' }}{% else %}-{% endif %}</td>
+        <td>{{ loan.get_status_display }}</td>
+        <td>{{ loan.comment_out|default:'-' }}{% if loan.comment_return %}<br><strong>Retour :</strong> {{ loan.comment_return }}{% endif %}</td>
+      </tr>
+      {% empty %}<tr><td colspan="6">Aucun emprunt sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Inventaires utilisateur</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Type</th><th>Matériel</th><th>État global</th><th>Statut</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for inv in user_inventories %}
+      <tr>
+        <td>{{ inv.submitted_at|date:'d/m/Y H:i' }}</td>
+        <td>{{ inv.get_inventory_type_display }}</td>
+        <td><a href="{% url 'equipment_detail' inv.equipment.code %}">{{ inv.equipment.code }} — {{ inv.equipment.name }}</a></td>
+        <td>{{ inv.get_global_condition_display }}</td>
+        <td>{{ inv.get_status_display }}</td>
+        <td>{{ inv.comment|default:'-' }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="6">Aucun inventaire utilisateur sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <h2>Actions réalisées en tant que magasinier</h2>
+  <h3>Sorties validées</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Matériel</th><th>Emprunteur</th><th>État sortie</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for loan in checkout_loans %}
+      <tr>
+        <td>{{ loan.checked_out_at|date:'d/m/Y H:i' }}</td>
+        <td><a href="{% url 'equipment_detail' loan.equipment.code %}">{{ loan.equipment.code }} — {{ loan.equipment.name }}</a></td>
+        <td>{{ loan.borrower.first_name }} {{ loan.borrower.last_name }}</td>
+        <td>{{ loan.get_condition_out_display }}</td>
+        <td>{{ loan.comment_out|default:'-' }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="5">Aucune sortie validée sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Retours validés</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Matériel</th><th>Emprunteur</th><th>État retour</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for loan in return_loans %}
+      <tr>
+        <td>{{ loan.returned_at|date:'d/m/Y H:i' }}</td>
+        <td><a href="{% url 'equipment_detail' loan.equipment.code %}">{{ loan.equipment.code }} — {{ loan.equipment.name }}</a></td>
+        <td>{{ loan.borrower.first_name }} {{ loan.borrower.last_name }}</td>
+        <td>{{ loan.get_condition_return_display }}</td>
+        <td>{{ loan.comment_return|default:'-' }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="5">Aucun retour validé sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Contrôles de composants</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Type</th><th>Matériel</th><th>Composant</th><th>Présent</th><th>Statut</th></tr></thead>
+    <tbody>
+      {% for check in component_checks %}
+      <tr>
+        <td>{{ check.created_at|date:'d/m/Y H:i' }}</td>
+        <td>{{ check.get_check_type_display }}</td>
+        <td><a href="{% url 'equipment_detail' check.loan.equipment.code %}">{{ check.loan.equipment.code }}</a></td>
+        <td>{{ check.component.name }}</td>
+        <td>{{ check.present|yesno:'Oui,Non' }}</td>
+        <td>{{ check.get_condition_display }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="6">Aucun contrôle de composant sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Bons d’intervention</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Matériel</th><th>Type</th><th>Résultat</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for intervention in interventions %}
+      <tr>
+        <td>{{ intervention.intervention_at|date:'d/m/Y H:i' }}</td>
+        <td><a href="{% url 'equipment_detail' intervention.equipment.code %}">{{ intervention.equipment.code }} — {{ intervention.equipment.name }}</a></td>
+        <td>{{ intervention.get_intervention_type_display }}</td>
+        <td>{{ intervention.get_result_display }}</td>
+        <td>{{ intervention.comment|default:intervention.action_done|default:'-' }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="5">Aucun bon d’intervention sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Bons de réparation / maintenance</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Matériel</th><th>Type</th><th>Résultat</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for repair in repairs %}
+      <tr>
+        <td>{{ repair.repaired_at|date:'d/m/Y H:i' }}</td>
+        <td><a href="{% url 'equipment_detail' repair.equipment.code %}">{{ repair.equipment.code }} — {{ repair.equipment.name }}</a></td>
+        <td>{{ repair.get_repair_type_display }}</td>
+        <td>{{ repair.get_result_display }}</td>
+        <td>{{ repair.comment|default:repair.action_done|default:'-' }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="5">Aucun bon de réparation sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Ouvertures de casiers</h3>
+  <table>
+    <thead><tr><th>Date</th><th>Matériel</th><th>Armoire</th><th>Casier</th><th>Contexte</th><th>Résultat</th></tr></thead>
+    <tbody>
+      {% for log in locker_logs %}
+      <tr>
+        <td>{{ log.created_at|date:'d/m/Y H:i:s' }}</td>
+        <td>{% if log.equipment %}<a href="{% url 'equipment_detail' log.equipment.code %}">{{ log.equipment.code }}</a>{% else %}-{% endif %}</td>
+        <td>{{ log.cabinet }}</td>
+        <td>{{ log.locker }}</td>
+        <td>{{ log.get_context_display }}</td>
+        <td>{% if log.success %}Succès{% elif log.refused %}Refusé — {{ log.refusal_reason }}{% else %}Erreur{% endif %}</td>
+      </tr>
+      {% empty %}<tr><td colspan="6">Aucune ouverture de casier sur cette période.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+
+{% if is_prof %}
+<section class="panel">
+  <h2>Parcours / administration</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Événement</th><th>Ancienne classe</th><th>Nouvelle classe</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for item in enrollment_history %}
+      <tr><td>{{ item.created_at|date:'d/m/Y H:i' }}</td><td>{{ item.get_event_type_display }}</td><td>{{ item.old_class_name|default:'-' }}</td><td>{{ item.new_class_name|default:'-' }}</td><td>{{ item.comment|default:'-' }}</td></tr>
+      {% empty %}<tr><td colspan="5">Aucun historique de parcours.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

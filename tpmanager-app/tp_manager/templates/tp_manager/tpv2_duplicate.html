@@ -1,0 +1,9 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Duplication de TP</p><h1>{{ tp.code }} — {{ tp.titre }}</h1><p class="lead">La duplication crée une copie brouillon dans le même diplôme pour modification. Le TP source reste intact.</p></div></section>
+<section class="panel">
+  <h2>Créer une copie modifiable</h2>
+  <p>La copie conservera le cadre général, les liens référentiel, les ressources et les critères ajoutés. Elle recevra un nouveau repère automatique et pourra être modifiée ensuite.</p>
+  <form method="post">{% csrf_token %}<button type="submit">Créer la copie brouillon</button> <a class="button secondary" href="{% url 'tp_detail' tp.pk %}">Annuler</a></form>
+</section>
+{% endblock %}

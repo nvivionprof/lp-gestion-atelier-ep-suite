@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h1>Gestion élèves centralisée — montées de niveau</h1>
+<section class="panel">
+  <p class="muted"><strong>LP Core est la base officielle.</strong> Cette page sert aux changements de classe, formation, groupe, année scolaire, rôle et statut actif par lot. Après validation, synchronise vers ToolMag, PedaShop, Safety, System Manager et TP Manager.</p>
+  <form method="get" class="form-grid compact">
+    <label>Recherche<input name="q" value="{{ q }}" placeholder="Nom, prénom, code, identifiant"></label>
+    <label>Classe<select name="class_name"><option value="">Toutes</option>{% for c in classes %}<option value="{{ c }}" {% if class_name == c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+    <label>Formation<select name="formation"><option value="">Toutes</option>{% for f in formations %}<option value="{{ f.code }}" {% if formation == f.code %}selected{% endif %}>{{ f.code }} — {{ f.name }}</option>{% endfor %}</select></label>
+    <label>Rôle<select name="role"><option value="">Tous</option>{% for code,label in roles %}<option value="{{ code }}" {% if role == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <label>Statut<select name="active"><option value="active" {% if active_filter == 'active' %}selected{% endif %}>Actifs</option><option value="inactive" {% if active_filter == 'inactive' %}selected{% endif %}>Inactifs</option><option value="all" {% if active_filter == 'all' %}selected{% endif %}>Tous</option></select></label>
+    <div><button type="submit">Filtrer</button></div>
+  </form>
+</section>
+
+<form method="post">{% csrf_token %}
+<section class="panel lifecycle-actions">
+  <h2>Action par lot</h2>
+  <div class="form-grid compact">
+    <label>Nouvelle formation<select name="new_formation"><option value="">Ne pas modifier</option>{% for f in formations %}<option value="{{ f.code }}">{{ f.code }} — {{ f.name }}</option>{% endfor %}</select></label>
+    <label>Nouvelle classe<input name="new_class_name" placeholder="ex. 1MELEC, TCIEL, STEL2"></label>
+    <label>Année scolaire<input name="new_school_year" placeholder="ex. 2026-2027"></label>
+    <label>Rôle<select name="new_role"><option value="">Ne pas modifier</option>{% for code,label in roles %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+    <label>Statut actif<select name="new_active"><option value="">Ne pas modifier</option><option value="1">Activer</option><option value="0">Désactiver</option></select></label>
+    <label class="checkline"><input type="checkbox" name="change_group" value="1"> Modifier le groupe</label>
+    <label>Groupe<input name="new_group_name" placeholder="vide possible si case cochée"></label>
+    <label class="checkline"><input type="checkbox" name="apply_filtered" value="1"> Appliquer à toute la liste filtrée si rien n’est coché</label>
+    <label class="checkline"><input type="checkbox" name="sync_modules" value="1" checked> Synchroniser les modules après modification</label>
+  </div>
+  <button type="submit" onclick="return confirm('Appliquer cette modification par lot ?');">Appliquer au lot</button>
+</section>
+
+<section class="panel">
+  <h2>Élèves / utilisateurs filtrés</h2>
+  <table>
+    <thead><tr><th><input type="checkbox" onclick="document.querySelectorAll('.student-check').forEach(c=>c.checked=this.checked)"></th><th>Code</th><th>Nom</th><th>Classe</th><th>Formation</th><th>Groupe</th><th>Année</th><th>Rôle</th><th>Actif</th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td><input class="student-check" type="checkbox" name="selected_users" value="{{ u.id }}"></td>
+        <td><a href="{% url 'core_user_detail' u.pk %}">{{ u.code }}</a></td>
+        <td>{{ u.last_name }} {{ u.first_name }}</td>
+        <td>{{ u.class_name|default:'-' }}</td>
+        <td>{% if u.formation %}{{ u.formation.code }}{% else %}-{% endif %}</td>
+        <td>{{ u.group_name|default:'-' }}</td>
+        <td>{{ u.school_year|default:'-' }}</td>
+        <td>{{ u.get_role_principal_display }}</td>
+        <td>{{ u.active|yesno:'oui,non' }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="9">Aucun utilisateur dans ce filtre.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+</form>
+{% endblock %}

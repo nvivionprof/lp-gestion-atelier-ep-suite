@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Reprise après incident</p><h1>Sauvegarde / restauration complète</h1><p class="lead">LP Core pilote les sauvegardes quotidiennes, manuelles, pré-mise-à-jour et la restauration complète depuis l’interface web.</p></div></section>
+
+<section class="panel">
+  <h2>Paramètres de sauvegarde</h2>
+  <form method="post" class="form-grid">{% csrf_token %}
+    <input type="hidden" name="form_action" value="save_backup_settings">
+    <label>Sauvegarde automatique
+      <select name="automatic_enabled"><option value="1" {% if backup_policy.automatic_enabled %}selected{% endif %}>Activée</option><option value="0" {% if not backup_policy.automatic_enabled %}selected{% endif %}>Désactivée</option></select>
+    </label>
+    <label>Heure quotidienne
+      <input type="number" name="daily_hour" min="0" max="23" value="{{ backup_policy.daily_hour }}">
+    </label>
+    <label>Minute
+      <input type="number" name="daily_minute" min="0" max="59" value="{{ backup_policy.daily_minute }}">
+    </label>
+    <label>Conservation quotidienne
+      <input type="number" name="daily_retention_days" min="1" value="{{ backup_policy.daily_retention_days }}">
+    </label>
+    <label>Manuelles
+      <select name="manual_keep_forever"><option value="1" {% if backup_policy.manual_keep_forever %}selected{% endif %}>Conserver sans suppression automatique</option><option value="0" {% if not backup_policy.manual_keep_forever %}selected{% endif %}>Autoriser rotation future</option></select>
+    </label>
+    <label>Sauvegarde avant mise à jour complète
+      <select name="pre_upgrade_required"><option value="1" {% if backup_policy.pre_upgrade_required %}selected{% endif %}>Obligatoire</option><option value="0" {% if not backup_policy.pre_upgrade_required %}selected{% endif %}>Non obligatoire</option></select>
+    </label>
+    <label>Si la sauvegarde pré-MAJ échoue
+      <select name="block_update_if_backup_failed"><option value="1" {% if backup_policy.block_update_if_backup_failed %}selected{% endif %}>Bloquer la mise à jour</option><option value="0" {% if not backup_policy.block_update_if_backup_failed %}selected{% endif %}>Avertir seulement</option></select>
+    </label>
+    <label>Restauration web
+      <select name="web_restore_enabled"><option value="1" {% if backup_policy.web_restore_enabled %}selected{% endif %}>Autorisée admin</option><option value="0" {% if not backup_policy.web_restore_enabled %}selected{% endif %}>Désactivée</option></select>
+    </label>
+    <label class="span-all">Notes internes
+      <textarea name="notes" rows="3">{{ backup_policy.notes }}</textarea>
+    </label>
+    <p class="muted span-all">Fichier généré : <code>{{ backup_policy_env_path }}</code>. Le planificateur lit ce fichier à chaque boucle ; aucun changement manuel du <code>.env</code> n’est nécessaire pour heure/durée.</p>
+    <div class="span-all actions"><button type="submit">Enregistrer les paramètres</button></div>
+  </form>
+</section>
+
+<section class="panel"><h2>Politique active</h2><div class="cards compact"><article><strong>Fréquence</strong><br>{% if backup_policy.automatic_enabled %}Sauvegarde automatique journalière{% else %}Sauvegarde automatique désactivée{% endif %}</article><article><strong>Heure</strong><br>{{ backup_daily_hour }}:{{ backup_daily_minute }}</article><article><strong>Conservation quotidienne</strong><br>{{ backup_retention_days }} jour(s) glissant(s)</article><article><strong>Manuelles</strong><br>{% if backup_policy.manual_keep_forever %}Conservation permanente{% else %}Politique personnalisée{% endif %}</article></div><p class="muted">Inclus : bases des modules, fichiers joints, médias, certificats SSL, imports, logs techniques, <code>.env</code>, manifest et SHA-256.</p><div class="actions"><form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="full_backup"><button type="submit">Créer une sauvegarde complète maintenant</button></form></div></section>
+
+
+
+<section class="panel"><h2>Sauvegardes PostgreSQL par module</h2><p class="muted">Cette zone sauvegarde uniquement les bases PostgreSQL. Elle est autorisée depuis le web car elle ne modifie pas le code applicatif.</p><form method="post" class="form-grid">{% csrf_token %}<input type="hidden" name="form_action" value="backup_database"><label>Module à sauvegarder <select name="database_module">{% for code,label in database_backup_modules %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label><div class="actions"><button type="submit">Créer sauvegarde base</button></div></form></section>
+
+<section class="panel"><h2>Sauvegardes bases présentes sur le serveur</h2>{% if database_backups_error %}<p class="alert warning">{{ database_backups_error }}</p>{% endif %}<table><tr><th>Date</th><th>Type</th><th>Module</th><th>Fichier</th><th>Taille</th><th>Restauration</th></tr>{% for b in database_backups %}<tr><td>{{ b.modified }}</td><td>{{ b.kind }}</td><td>{{ b.module }}</td><td><code>{{ b.path }}</code></td><td>{{ b.size_human }}</td><td>{% if backup_policy.web_restore_enabled and b.restorable %}<form method="post" onsubmit="return confirm('Restaurer cette sauvegarde base ? Les données du module choisi seront remplacées.');">{% csrf_token %}<input type="hidden" name="form_action" value="restore_existing_database_backup"><input type="hidden" name="database_backup_path" value="{{ b.path }}"><label>Restaurer <select name="database_restore_module"><option value="auto">Auto</option>{% for code,label in database_backup_modules %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label><label>Confirmation <input type="text" name="confirm_restore_existing_database" placeholder="RESTAURER" required></label><button type="submit" class="danger">Restaurer base</button></form>{% else %}<span class="muted">Non restaurable ici</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="6">Aucune sauvegarde base listée.</td></tr>{% endfor %}</table></section>
+
+<section class="panel danger-zone"><h2>Injecter une sauvegarde base PostgreSQL depuis un ZIP</h2><p class="alert warning">La restauration remplace les tables de la base choisie. Elle est prévue après réinstallation complète ou incident.</p><form method="post" enctype="multipart/form-data" class="form-grid">{% csrf_token %}<input type="hidden" name="form_action" value="upload_db_restore"><label class="span-all">Archive ZIP de sauvegarde base <input type="file" name="database_backup_zip" accept=".zip" required></label><p class="muted span-all">Le ZIP doit contenir <code>manifest.json</code>, <code>databases/*.dump</code> et idéalement <code>checksums.sha256</code>.</p><div class="span-all actions"><button type="submit" {% if not backup_policy.web_restore_enabled %}disabled{% endif %}>Déposer et analyser la sauvegarde base</button></div></form></section>
+
+<section class="panel"><h2>Sauvegardes déjà présentes sur le serveur</h2>{% if existing_backups_error %}<p class="alert warning">{{ existing_backups_error }}</p>{% endif %}<table><tr><th>Date</th><th>Type</th><th>Fichier</th><th>Taille</th><th>Restauration</th></tr>{% for b in existing_backups %}<tr><td>{{ b.modified }}</td><td>{{ b.kind }}</td><td><code>{{ b.path }}</code></td><td>{{ b.size_human }}</td><td>{% if backup_policy.web_restore_enabled and b.restorable %}<form method="post" onsubmit="return confirm('Restaurer cette sauvegarde serveur ? Les données actuelles seront remplacées.');">{% csrf_token %}<input type="hidden" name="form_action" value="restore_existing_backup"><input type="hidden" name="backup_path" value="{{ b.path }}"><label>Confirmation <input type="text" name="confirm_restore_existing" placeholder="RESTAURER" required></label><button type="submit" class="danger">Restaurer</button></form>{% else %}<span class="muted">Non restaurable ici</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="5">Aucune sauvegarde serveur listée.</td></tr>{% endfor %}</table></section>
+
+<section class="panel danger-zone"><h2>Restaurer après crash serveur depuis un ZIP externe</h2><p class="alert warning">La restauration remplace les bases et fichiers de production par ceux de la sauvegarde. À utiliser sur installation neuve ou incident grave.</p><form method="post" enctype="multipart/form-data" class="form-grid">{% csrf_token %}<input type="hidden" name="form_action" value="upload_restore"><label class="span-all">Archive ZIP de sauvegarde complète <input type="file" name="backup_zip" accept=".zip" required></label><p class="muted span-all">Taille maximale : {{ max_zip_mb }} Mo. Manifest obligatoire, chemins dangereux interdits, SHA-256 vérifié si présent.</p><div class="span-all actions"><button type="submit" {% if not backup_policy.web_restore_enabled %}disabled{% endif %}>Déposer et analyser la sauvegarde</button></div></form></section>
+
+<section class="panel"><h2>Sauvegardes déposées / paquets analysés</h2><table><tr><th>Date</th><th>Fichier</th><th>Statut</th><th>Rapport</th><th>Restauration</th></tr>{% for pkg in packages %}<tr><td>{{ pkg.created_at|date:'d/m/Y H:i' }}</td><td><strong>{{ pkg.original_filename }}</strong><br><small>{{ pkg.size_bytes }} octets</small><br><code>{{ pkg.sha256|slice:':20' }}...</code></td><td>{{ pkg.get_status_display }}</td><td><pre class="mini-pre">{{ pkg.analysis_report }}</pre></td><td>{% if pkg.status == 'analyzed' and backup_policy.web_restore_enabled %}{% if pkg.manifest.package_type == 'database_backup' %}<form method="post" onsubmit="return confirm('Restaurer cette sauvegarde base ?');">{% csrf_token %}<input type="hidden" name="form_action" value="restore_database_backup"><input type="hidden" name="package_id" value="{{ pkg.id }}"><label>Restaurer <select name="database_restore_module"><option value="auto">Auto</option>{% for code,label in database_backup_modules %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label><label>Confirmation <input type="text" name="confirm_restore_database" placeholder="RESTAURER" required></label><button type="submit" class="danger">Restaurer base</button></form>{% else %}<form method="post" onsubmit="return confirm('Restauration complète ? LP Core peut redémarrer pendant l’opération.');">{% csrf_token %}<input type="hidden" name="form_action" value="restore_full_backup"><input type="hidden" name="package_id" value="{{ pkg.id }}"><label>Confirmation <input type="text" name="confirm_restore" placeholder="RESTAURER" required></label><button type="submit" class="danger">Restaurer complet</button></form>{% endif %}{% else %}<span class="muted">Non restaurable</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="5">Aucune sauvegarde déposée.</td></tr>{% endfor %}</table></section>
+
+<section class="panel"><h2>Journal sauvegarde / restauration</h2><table><tr><th>Date</th><th>Action</th><th>Statut</th><th>Job agent</th><th>Message / logs</th></tr>{% for job in jobs %}<tr><td>{{ job.created_at|date:'d/m/Y H:i' }}</td><td>{{ job.get_action_display }}</td><td>{{ job.get_status_display }}</td><td><code>{{ job.agent_job_id|default:'—' }}</code></td><td>{% if job.result_message %}<p>{{ job.result_message }}</p>{% endif %}{% if job.log_tail %}<pre class="mini-pre">{{ job.log_tail }}</pre>{% endif %}</td></tr>{% empty %}<tr><td colspan="5">Aucune action récente.</td></tr>{% endfor %}</table></section>
+{% endblock %}

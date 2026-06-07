@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="login-wrap">
+  <div class="login-card">
+    <p class="eyebrow">LP Gestion Atelier Suite</p>
+    <h1>Connexion</h1>
+    <p>Connecte-toi pour accéder à ta fiche et aux modules autorisés.</p>
+    <form method="post">{% csrf_token %}
+      <label>Identifiant<input name="username" autocomplete="username"></label>
+      <label>Mot de passe<input type="password" name="password" autocomplete="current-password"></label>
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

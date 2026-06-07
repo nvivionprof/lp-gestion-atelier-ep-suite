@@ -1,0 +1,20 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Documents — {{ equipment.code }} {{ equipment.name }}</h1>
+<section class="panel">
+  <h2>{% if document %}Modifier un document{% else %}Ajouter un document{% endif %}</h2>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer</button>
+    <a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Retour fiche</a>
+  </form>
+</section>
+<section class="panel">
+  <h2>Documents existants</h2>
+  <table><thead><tr><th>Type</th><th>Titre</th><th>Description</th><th>Actif</th><th>Action</th></tr></thead><tbody>
+  {% for d in documents %}
+    <tr><td>{{ d.get_document_type_display }}</td><td>{% if d.file %}<a href="{{ d.file.url }}" target="_blank">{{ d.title }}</a>{% else %}{{ d.title }}{% endif %}</td><td>{{ d.description|default:'-' }}</td><td>{{ d.active|yesno:'Oui,Non' }}</td><td><a class="button secondary" href="?edit={{ d.id }}">Modifier</a>{% if can_delete %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="delete_id" value="{{ d.id }}"><button class="danger" type="submit">Supprimer</button></form>{% endif %}</td></tr>
+  {% empty %}<tr><td colspan="5">Aucun document.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

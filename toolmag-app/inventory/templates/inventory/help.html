@@ -1,0 +1,39 @@
+{% extends "inventory/base.html" %}
+{% block content %}
+<section class="page-card help-page">
+<h1>Aide — ToolMag</h1>
+<p>ToolMag gère les matériels, sorties, retours, inventaires et rôles utilisateur / magasinier.</p>
+<h2>Index</h2>
+<ol>
+<li><a href="#aide-1">Créer et suivre un matériel</a></li>
+<li><a href="#aide-2">Sorties, retours et inventaires</a></li>
+<li><a href="#aide-3">Rôles et connexions</a></li>
+<li><a href="#aide-4">Administration ToolMag</a></li>
+</ol>
+<h2 id="aide-1">Créer et suivre un matériel</h2>
+<ul>
+<li>Aller dans Inventaire puis créer une fiche matériel.</li>
+<li>Renseigner code, catégorie, emplacement, état, photo et documents si nécessaire.</li>
+<li>Utiliser les composants pour un matériel composé ou un lot pédagogique.</li>
+</ul>
+<h2 id="aide-2">Sorties, retours et inventaires</h2>
+<ul>
+<li>Une sortie associe un matériel à un utilisateur avec validation magasinier si nécessaire.</li>
+<li>Le retour permet de constater l’état, les remarques et les éventuelles anomalies.</li>
+<li>La fiche utilisateur permet de filtrer une période et d’exporter un récapitulatif PDF.</li>
+</ul>
+<h2 id="aide-3">Rôles et connexions</h2>
+<ul>
+<li>Le rôle utilisateur sert aux emprunts, retours ou inventaires personnels.</li>
+<li>Le rôle magasinier sert à préparer, distribuer, contrôler et administrer le stock outil.</li>
+<li>Un professeur peut disposer simultanément des deux rôles selon les droits synchronisés depuis LP Core.</li>
+</ul>
+<h2 id="aide-4">Administration ToolMag</h2>
+<ul>
+<li>Synchroniser LP Core après modification d’élèves ou de droits.</li>
+<li>Utiliser Sauvegardes et Base SQL uniquement pour maintenance contrôlée.</li>
+<li>Les élèves sont gérés officiellement dans LP Core ; ToolMag conserve une vue synchronisée.</li>
+</ul>
+<p class="muted">Cette aide doit être ajustée à chaque évolution du module.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Tableau de bord</h1>
+<section class="cards">
+  <article class="card"><span>Disponibles</span><strong>{{ stats.available }}</strong></article>
+  <article class="card"><span>Sortis</span><strong>{{ stats.out }}</strong></article>
+  <article class="card danger"><span>En retard</span><strong>{{ stats.late }}</strong></article>
+  <article class="card warn"><span>Maintenance</span><strong>{{ stats.maintenance }}</strong></article>
+  <article class="card warn"><span>Incomplets</span><strong>{{ stats.incomplete }}</strong></article>
+</section>
+<section class="grid2">
+  <div class="panel">
+    <h2>Matériel actuellement sorti</h2>
+    <p class="hint">Les lignes rouges signalent un matériel composé sorti dont l’inventaire utilisateur de sortie reste à faire : vérification magasinier nécessaire.</p>
+    <table>
+      <thead><tr><th>Code</th><th>Matériel</th><th>Utilisateur</th><th>Inv. sortie</th><th>Inv. retour</th><th>Retour prévu</th></tr></thead>
+      <tbody>
+      {% for loan in current_loans %}
+        <tr class="{% if not loan.user_inventory_status.not_applicable and not loan.user_inventory_status.out_done %}row-inventory-alert{% elif loan.is_late %}late{% endif %}">
+          <td><a href="{% url 'equipment_detail' loan.equipment.code %}">{{ loan.equipment.code }}</a></td>
+          <td>{{ loan.equipment.name }}</td>
+          <td>{{ loan.borrower.first_name }} {{ loan.borrower.last_name }}</td>
+          <td>{% if loan.user_inventory_status.not_applicable %}S.O.{% elif loan.user_inventory_status.out_done %}Fait{% else %}À faire{% endif %}</td>
+          <td>{% if loan.user_inventory_status.not_applicable %}S.O.{% elif loan.user_inventory_status.return_done %}Fait{% else %}-{% endif %}</td>
+          <td>{{ loan.due_at|default:'Non renseigné' }}</td>
+        </tr>
+      {% empty %}<tr><td colspan="6">Aucune sortie en cours.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="panel">
+    <h2>Top utilisation</h2>
+    <table>
+      <thead><tr><th>Code</th><th>Matériel</th><th>Sorties</th></tr></thead>
+      <tbody>
+      {% for eq in top_equipment %}
+        <tr><td>{{ eq.code }}</td><td>{{ eq.name }}</td><td>{{ eq.nb_loans }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<div class="actions"><a class="button" href="{% url 'checkout' %}">Nouvelle sortie</a><a class="button secondary" href="{% url 'return_equipment' %}">Retour matériel</a></div>
+
+<script id="toolmag-dashboard-autorefresh">
+(function(){
+  var refreshDelayMs = 15000;
+  setTimeout(function(){
+    if (!document.hidden) {
+      window.location.reload();
+    }
+  }, refreshDelayMs);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,4 @@
+code,identifiant,mot_de_passe_initial,nom,prenom,email,classe,formation,groupe,role,droits,actif,annee_scolaire
+PROF-0001,PROF-0001,prof1234,DEMO,Professeur,prof.demo@example.local,PROF,DEMO,A,PROFESSEUR,CORE_ADMIN;TOOLMAG_ADMIN;TOOLMAG_VIEW;TOOLMAG_BORROW;TOOLMAG_RETURN,1,2025-2026
+USR-0001,USR-0001,user0001,UN,Utilisateur,usr1.demo@example.local,DEMO,DEMO,A,UTILISATEUR,TOOLMAG_VIEW;TOOLMAG_BORROW,1,2025-2026
+USR-0002,USR-0002,user0002,DEUX,Utilisateur,usr2.demo@example.local,DEMO,DEMO,A,UTILISATEUR,TOOLMAG_VIEW;TOOLMAG_BORROW,1,2025-2026

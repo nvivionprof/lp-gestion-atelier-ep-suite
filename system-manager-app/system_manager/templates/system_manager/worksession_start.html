@@ -1,0 +1,32 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<div class="worksession-mobile mobile-action-page">
+<section class="hero">
+  <div>
+    <p class="eyebrow">Prise de poste — parcours téléphone RC V0.0.1</p>
+    <h1>{{ systeme.code }} — {{ systeme.designation }}</h1>
+    {% if current_reservation %}<p class="lead">Réservation détectée : {{ current_reservation.classe_ou_groupe }} — {{ current_reservation.date_debut|date:'H:i' }}-{{ current_reservation.date_fin|date:'H:i' }}.</p>{% endif %}
+    <div class="system-mobile-card">
+      {% if systeme.photo %}<img src="{{ systeme.photo.url }}" alt="Photo {{ systeme.designation }}">{% else %}<div class="muted">Sans photo</div>{% endif %}
+      <div>
+        <strong>État actuel :</strong> {{ systeme.get_statut_display|default:systeme.statut }}<br>
+        <strong>Zone :</strong> {{ systeme.zone|default:'-' }}{% if systeme.sous_zone %} / {{ systeme.sous_zone }}{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+<section class="panel">
+  <form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
+    {{ form.non_field_errors }}
+    <h2>Contexte de prise de poste</h2>
+    <p class="muted">Sur téléphone : renseigner uniquement l’essentiel, ajouter une observation ou photo si nécessaire.</p>
+    <div class="formgrid">{% for field in form %}<div class="field"><label>{{ field.label }}</label>{{ field }}{% for error in field.errors %}<span class="error">{{ error }}</span>{% endfor %}</div>{% endfor %}</div>
+    <datalist id="tp-suggestions">{% for code,title in tp_suggestions %}<option value="{{ title }}">{{ code }}</option>{% endfor %}</datalist>
+    <h2>Check avant utilisation</h2>
+    {% include 'system_manager/check_fields.html' %}
+    <div class="actions"><button type="submit">Valider la prise de poste</button><a class="button secondary" href="{% url 'system_detail' systeme.pk %}">Annuler</a></div>
+  </form>
+</section>
+</div>
+<script>var tp=document.getElementById('id_tp_titre'); if(tp){tp.setAttribute('list','tp-suggestions'); tp.setAttribute('placeholder','Filtrer un TP depuis la base TP associée...');}</script>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}
+<h1>Utilisateurs PedaShop</h1><form class="actions"><input name="q" value="{{ q }}" placeholder="Recherche nom, code, classe"><button class="btn">Filtrer</button></form>
+<section class="card"><table><thead><tr><th>Code</th><th>Nom</th><th>Classe</th><th>Rôle</th><th></th></tr></thead><tbody>{% for u in items %}<tr><td>{{ u.code }}</td><td>{{ u.last_name }} {{ u.first_name }}</td><td>{{ u.class_name }}</td><td>{{ u.role_principal }}</td><td><a class="btn small" href="{% url 'pedashop_user_detail' u.pk %}">Fiche</a></td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

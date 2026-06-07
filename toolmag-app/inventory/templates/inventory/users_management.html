@@ -1,0 +1,67 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Utilisateurs synchronisés ToolMag</h1>
+  <p class="hint"><strong>Référence officielle :</strong> la création, l'import Excel, les montées de niveau et les modifications par lot se font maintenant dans LP Core. ToolMag conserve une consultation locale, la synchronisation et les fonctions historiques de secours.</p>
+  {% if can_manage_users %}
+  <div class="section-note">
+    <strong>Gestion centralisée des élèves :</strong> utilise LP Core pour les classes, formations, promotions, droits par lot et synchronisation vers les modules.
+    <div class="actions compact-actions">
+      <a class="button primary compact" href="{{ LP_CORE_PUBLIC_URL }}/utilisateurs/" target="_blank" rel="noopener">Ouvrir LP Core élèves</a>
+      <a class="button compact" href="{{ LP_CORE_PUBLIC_URL }}/utilisateurs/gestion-eleves/" target="_blank" rel="noopener">Montées de niveau LP Core</a>
+      <a class="button secondary compact" href="{% url 'sync_core_users' %}">Synchroniser depuis LP Core</a>
+    </div>
+  </div>
+  {% endif %}
+  <form method="get" class="filters">
+    <input type="search" name="q" value="{{ q }}" placeholder="Rechercher nom, prénom, code, classe...">
+    <select name="formation">
+      <option value="">Toutes formations</option>
+      {% for formation in formations %}<option value="{{ formation.code }}" {% if selected_formation == formation.code %}selected{% endif %}>{{ formation.code }}</option>{% endfor %}
+    </select>
+    <input type="text" name="classe" value="{{ selected_class }}" placeholder="Classe">
+    <button type="submit">Filtrer</button>
+  </form>
+  {% if can_manage_users %}
+  <details class="section-note">
+    <summary><strong>Fonctions ToolMag historiques / secours</strong></summary>
+    <p class="hint">À utiliser seulement pour dépannage local. La base officielle reste LP Core.</p>
+    <div class="actions compact-actions">
+      <a class="button compact" href="{% url 'user_create' %}">Créer localement</a>
+      <a class="button compact" href="{% url 'users_template_excel' %}">Modèle Excel local</a>
+      <a class="button compact" href="{% url 'users_export_excel' %}">Export local</a>
+      <a class="button compact" href="{% url 'users_import_excel' %}">Import local</a>
+      <a class="button compact" href="{% url 'promotion_management' %}">Promotion locale</a>
+      <a class="button compact" href="{% url 'reset_password' %}">Mot de passe local</a>
+    </div>
+  </details>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>Utilisateurs existants</h2>
+  <table>
+    <thead>
+      <tr><th>Code</th><th>Nom</th><th>Identifiant</th><th>Formation</th><th>Classe</th><th>Groupe</th><th>Rôle</th><th>Actif</th><th>Archivé</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for person in persons %}
+      <tr>
+        <td>{{ person.code }}</td>
+        <td>{{ person.last_name }} {{ person.first_name }}</td>
+        <td>{{ person.username|default:'-' }}</td>
+        <td>{% if person.formation %}{{ person.formation.code }}{% else %}-{% endif %}</td>
+        <td>{{ person.class_name|default:'-' }}</td>
+        <td>{{ person.group_name|default:'-' }}</td>
+        <td>{{ person.get_role_display }}</td>
+        <td>{{ person.active|yesno:'Oui,Non' }}</td>
+        <td>{{ person.archived|yesno:'Oui,Non' }}</td>
+        <td><a class="button secondary" href="{% url 'user_detail' person.code %}">Voir fiche</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="10">Aucun utilisateur.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}Parcours libre — {{ sequence.titre }}{% endblock %}
+{% block seq_content %}
+<section class="card"><p>Cette vue sert de portail élève/prof : elle affiche les TP disponibles en fonction des filtres. La réservation automatique reste encadrée par la capacité du TP et la disponibilité du système.</p>
+<form method="get" class="filters">{{ form.as_p }}<button class="btn" type="submit">Filtrer</button></form></section>
+<section class="card"><h2>TP proposés</h2><table class="table"><thead><tr><th>Code</th><th>Titre</th><th>Diplôme</th><th>Thème</th><th>Durée</th></tr></thead><tbody>{% for tp in tps %}<tr><td>{{ tp.code }}</td><td>{{ tp.titre }}</td><td>{{ tp.diplome.code }}</td><td>{{ tp.domaine_principal }} / {{ tp.sous_theme }}</td><td>{{ tp.duree_heures_affichage }}</td></tr>{% empty %}<tr><td colspan="5">Aucun TP.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

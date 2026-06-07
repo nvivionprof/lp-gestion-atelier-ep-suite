@@ -1,0 +1,2 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}<h1>Magasins</h1><div class="actions"><a class="btn primary" href="{% url 'pedashop_magasin_create' %}">Nouveau magasin</a></div><div class="card table-wrap"><table><thead><tr><th>Code</th><th>Nom</th><th>Responsable</th><th>Actif</th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.code }}</td><td>{{ i.nom }}</td><td>{{ i.responsable }}</td><td>{{ i.actif|yesno:'Oui,Non' }}</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

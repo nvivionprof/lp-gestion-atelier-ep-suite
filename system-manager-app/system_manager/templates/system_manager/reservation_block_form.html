@@ -1,0 +1,4 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="panel"><h1>{{ title }}</h1><p class="muted">Cette page crée une réservation pour chaque système sélectionné, chaque jour compris dans la période, et chaque créneau du bloc correspondant au jour de semaine. Les conflits existants sont ignorés et signalés.</p><form method="post" class="form-card">{% csrf_token %}{{ form.non_field_errors }}<div class="formgrid">{% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<span class="error">{{ error }}</span>{% endfor %}</div>{% endfor %}</div><div class="actions"><button type="submit">Créer les réservations</button><a class="button secondary" href="{% url 'reservation_list' %}">Retour</a></div></form></section>
+{% endblock %}

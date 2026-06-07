@@ -1,0 +1,64 @@
+{
+  "suite": "LP Gestion Atelier EP Suite",
+  "current_version": "V0.0.1-RC1",
+  "database_backend": "postgresql",
+  "migrations_required_by_default": true,
+  "web_update_allowed": false,
+  "web_database_backup_restore_allowed": true,
+  "version_scheme": {
+    "format": "VMAJOR.MINOR.PATCH",
+    "update": "Vx.y.z -> Vx.y.(z+1)",
+    "upgrade": "Vx.y.z -> Vx.(y+1).0",
+    "major_release": "Vx.y.z -> V(x+1).0.0"
+  },
+  "install": {
+    "allowed_without_existing_version": true,
+    "backup_required": false,
+    "description": "Installation neuve ou réinstallation complète. Demande PostgreSQL, admin LP Core, puis migrations et option démo."
+  },
+  "update": {
+    "minimum_source_version": "V0.0.1",
+    "backup_required": true,
+    "description": "Patch compatible : même majeure et même mineure, patch supérieur. Sauvegarde puis migrations."
+  },
+  "upgrade": {
+    "minimum_source_version": "V0.0.1",
+    "backup_required": true,
+    "description": "Montée mineure ou majeure : sauvegarde complète, remplacement applicatif, migrations et reprise des bases sauvegardées si nécessaire."
+  },
+  "major_release": {
+    "minimum_source_version": "V0.0.1",
+    "backup_required": true,
+    "description": "Nouvelle version majeure : sauvegarde complète, installation du nouveau socle, restauration/migration automatisée des bases compatibles."
+  },
+  "demo_data_policy": {
+    "prompt_allowed_only_in_mode": "install",
+    "automatic_load_allowed_only_in_mode": "install",
+    "update_upgrade_behavior": "never load demo data automatically; LOAD_DEMO_DATA is forced to 0 during update/upgrade",
+    "manual_script": "scripts/load_demo_data.sh remains available for explicit administrator action"
+  },
+  "release_candidate_policy": {
+    "current_rc": "V0.0.1-RC1",
+    "final_target": "V0.0.1",
+    "rc_to_final_mode": "update",
+    "description": "Une RC validée peut passer en V0.0.1 finale par update contrôlé, même si le numéro numérique est identique."
+  },
+  "rc_scope": {
+    "priority_modules": [
+      "toolmag",
+      "system-manager",
+      "pedashop"
+    ],
+    "mobile_required": [
+      "ToolMag inventaire utilisateur",
+      "System Manager prise de poste",
+      "prise de photo système/matériel"
+    ],
+    "not_blocking_for_rc": [
+      "réservation avancée System Manager",
+      "PFMP cartes",
+      "TP Manager complet",
+      "Safety Manager complet"
+    ]
+  }
+}

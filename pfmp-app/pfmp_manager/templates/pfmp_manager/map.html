@@ -1,0 +1,211 @@
+{% extends 'pfmp_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">PFMP géographique</p>
+      <h1>Carte des entreprises</h1>
+      <p class="muted">Carte interactive avec filtrage par formation, recherche texte et distance maximale depuis un point défini par l’élève.</p>
+    </div>
+    <a class="button" href="{% url 'pfmp_company_create' %}">Ajouter une entreprise</a>
+  </div>
+
+  <form class="filters map-filters" method="get">
+    <label>Recherche
+      <input name="q" value="{{ q }}" placeholder="Nom, activité, ville, code postal">
+    </label>
+    <label>Formation
+      <select name="formation">
+        <option value="">Toutes formations</option>
+        {% for f in formations %}<option value="{{ f.code }}" {% if formation == f.code %}selected{% endif %}>{{ f.code }} — {{ f.nom }}</option>{% endfor %}
+      </select>
+    </label>
+    <button>Filtrer</button>
+  </form>
+
+  <div class="geo-tools">
+    <div>
+      <label>Latitude du point élève
+        <input id="origin-lat" type="number" step="0.000001" placeholder="ex. 48.006110">
+      </label>
+    </div>
+    <div>
+      <label>Longitude du point élève
+        <input id="origin-lng" type="number" step="0.000001" placeholder="ex. 0.199556">
+      </label>
+    </div>
+    <div>
+      <label>Distance maximale
+        <input id="max-distance" type="number" min="1" step="1" value="30">
+      </label>
+    </div>
+    <div class="geo-actions">
+      <button id="apply-distance" type="button">Appliquer</button>
+      <button id="locate-me" type="button" class="button-secondary">Me localiser</button>
+      <button id="clear-origin" type="button" class="button-secondary">Tout afficher</button>
+    </div>
+  </div>
+  <p class="muted small-note">Astuce : clique sur la carte pour créer ou déplacer le marqueur élève. Le rayon sert à masquer les entreprises trop éloignées.</p>
+</section>
+
+<section class="map-layout map-layout-real">
+  <div class="panel map-panel">
+    <div id="pfmp-map" class="leaflet-map" aria-label="Carte des entreprises PFMP"></div>
+  </div>
+  <aside class="panel map-results-panel">
+    <h2>Résultats</h2>
+    <p id="map-count" class="muted"></p>
+    <div id="map-results" class="map-results"></div>
+  </aside>
+</section>
+
+{% if companies_without_coords %}
+<section class="panel">
+  <h2>Entreprises sans coordonnées GPS</h2>
+  <p class="muted">Elles n’apparaissent pas sur la carte tant que latitude et longitude ne sont pas renseignées dans la fiche entreprise.</p>
+  <div class="cards-list">
+    {% for c in companies_without_coords %}
+      <a class="company-card" href="{% url 'pfmp_company_detail' c.pk %}">
+        <h3>{{ c.name }}</h3>
+        <p>{{ c.activity|default:'Activité non renseignée' }}</p>
+        <small>{{ c.postal_code }} {{ c.city }}</small>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{{ companies_geo|json_script:"pfmp-companies-data" }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQPD8UXnT3nf9F2BtGfrKA7K2qjH0cw=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+  const companies = JSON.parse(document.getElementById('pfmp-companies-data').textContent || '[]');
+  const results = document.getElementById('map-results');
+  const count = document.getElementById('map-count');
+  const originLat = document.getElementById('origin-lat');
+  const originLng = document.getElementById('origin-lng');
+  const maxDistance = document.getElementById('max-distance');
+  let map, group, originMarker, radiusCircle;
+
+  function haversineKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const toRad = value => value * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function hasOrigin() {
+    return originLat.value !== '' && originLng.value !== '' && !Number.isNaN(Number(originLat.value)) && !Number.isNaN(Number(originLng.value));
+  }
+
+  function setOrigin(lat, lng) {
+    originLat.value = Number(lat).toFixed(6);
+    originLng.value = Number(lng).toFixed(6);
+    if (originMarker) originMarker.setLatLng([lat, lng]);
+    else originMarker = L.marker([lat, lng], {draggable: true}).addTo(map).bindPopup('Point élève');
+    originMarker.on('dragend', function (event) {
+      const pos = event.target.getLatLng();
+      setOrigin(pos.lat, pos.lng);
+      render();
+    });
+    render();
+  }
+
+  function visibleCompanies() {
+    const maxKm = Number(maxDistance.value || 0);
+    if (!hasOrigin() || !maxKm) return companies.map(c => ({...c, distance: null}));
+    const lat = Number(originLat.value);
+    const lng = Number(originLng.value);
+    return companies
+      .map(c => ({...c, distance: haversineKm(lat, lng, c.lat, c.lng)}))
+      .filter(c => c.distance <= maxKm)
+      .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+  }
+
+  function renderResults(items) {
+    count.textContent = items.length + ' entreprise(s) affichée(s) sur ' + companies.length + ' géolocalisée(s).';
+    results.innerHTML = '';
+    if (!items.length) {
+      results.innerHTML = '<p class="muted">Aucune entreprise dans ce rayon.</p>';
+      return;
+    }
+    for (const c of items.slice(0, 80)) {
+      const distance = c.distance === null ? '' : '<small>Distance : ' + c.distance.toFixed(1) + ' km</small>';
+      const el = document.createElement('a');
+      el.className = 'mini-card map-result-card';
+      el.href = c.detail_url;
+      el.innerHTML = '<h3>' + escapeHtml(c.name) + '</h3><p>' + escapeHtml(c.activity || 'Activité non renseignée') + '</p><small>' + escapeHtml((c.postal_code || '') + ' ' + (c.city || '')) + '</small><br>' + distance;
+      results.appendChild(el);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>'"]/g, function (c) {
+      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;'}[c];
+    });
+  }
+
+  function render() {
+    group.clearLayers();
+    const items = visibleCompanies();
+    for (const c of items) {
+      L.marker([c.lat, c.lng]).addTo(group).bindPopup('<b>' + escapeHtml(c.name) + '</b><br>' + escapeHtml(c.city || '') + '<br><a href="' + c.detail_url + '">Voir fiche</a>');
+    }
+    if (radiusCircle) radiusCircle.remove();
+    if (hasOrigin() && Number(maxDistance.value || 0)) {
+      const lat = Number(originLat.value);
+      const lng = Number(originLng.value);
+      radiusCircle = L.circle([lat, lng], {radius: Number(maxDistance.value) * 1000}).addTo(map);
+    }
+    renderResults(items);
+  }
+
+  function initMap() {
+    if (typeof L === 'undefined') {
+      document.getElementById('pfmp-map').innerHTML = '<div class="map-fallback">Carte indisponible : Leaflet n’a pas pu être chargé. Vérifie l’accès Internet du poste client ou utilise la liste des entreprises.</div>';
+      renderResults(companies.map(c => ({...c, distance: null})));
+      return;
+    }
+    map = L.map('pfmp-map');
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    group = L.layerGroup().addTo(map);
+    if (companies.length) {
+      const bounds = L.latLngBounds(companies.map(c => [c.lat, c.lng]));
+      map.fitBounds(bounds, {padding: [25, 25], maxZoom: 12});
+    } else {
+      map.setView([48.006110, 0.199556], 9);
+    }
+    map.on('click', function (event) { setOrigin(event.latlng.lat, event.latlng.lng); });
+    render();
+  }
+
+  document.getElementById('apply-distance').addEventListener('click', render);
+  document.getElementById('clear-origin').addEventListener('click', function () {
+    originLat.value = '';
+    originLng.value = '';
+    if (originMarker) { originMarker.remove(); originMarker = null; }
+    if (radiusCircle) { radiusCircle.remove(); radiusCircle = null; }
+    render();
+  });
+  document.getElementById('locate-me').addEventListener('click', function () {
+    if (!navigator.geolocation) return alert('Géolocalisation non disponible sur ce navigateur.');
+    navigator.geolocation.getCurrentPosition(function (position) {
+      setOrigin(position.coords.latitude, position.coords.longitude);
+      map.setView([position.coords.latitude, position.coords.longitude], 12);
+    }, function () {
+      alert('Géolocalisation refusée ou impossible. Clique directement sur la carte pour placer le point élève.');
+    }, {enableHighAccuracy: true, timeout: 8000});
+  });
+  maxDistance.addEventListener('change', render);
+  originLat.addEventListener('change', function () { if (hasOrigin()) setOrigin(Number(originLat.value), Number(originLng.value)); });
+  originLng.addEventListener('change', function () { if (hasOrigin()) setOrigin(Number(originLat.value), Number(originLng.value)); });
+  initMap();
+})();
+</script>
+{% endblock %}

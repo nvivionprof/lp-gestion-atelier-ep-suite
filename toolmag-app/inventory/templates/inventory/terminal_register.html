@@ -1,0 +1,11 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Enregistrer ce terminal</h1>
+<section class="panel">
+  <p>Cette opération doit être faite depuis la tablette ou le PC à autoriser. Une clé de confiance/token sera générée par ToolMag et stockée dans ce navigateur.</p><ol><li>Connecte-toi comme responsable ou admin.</li><li>Ouvre cette page depuis le terminal à autoriser.</li><li>Donne un nom explicite au terminal.</li><li>Coche l’autorisation d’ouverture casier si nécessaire.</li><li>Valide : le token est posé dans le navigateur. Si les cookies sont supprimés, il faudra réenregistrer le terminal.</li></ol>
+  <form method="post" class="form">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="button" type="submit">Enregistrer ce terminal</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{
+  "suite": "LP Gestion Atelier EP Suite",
+  "current_version": "V0.0.1-RC1",
+  "version_scheme": {
+    "format": "VMAJOR.MINOR.PATCH",
+    "update": "Vx.y.z -> Vx.y.(z+1)",
+    "upgrade": "Vx.y.z -> Vx.(y+1).0",
+    "major_release": "Vx.y.z -> V(x+1).0.0"
+  },
+  "release_policy": {
+    "install": "Aucune version existante détectée : installation complète.",
+    "update": "Même version majeure et mineure, patch supérieur : mise à jour compatible.",
+    "upgrade": "Même version majeure, mineure supérieure : montée de version avec sauvegarde obligatoire.",
+    "major_release": "Version majeure supérieure : sauvegarde complète, installation du nouveau socle et reprise des sauvegardes compatibles.",
+    "downgrade": "Retour arrière interdit automatiquement ; restauration manuelle depuis sauvegarde nécessaire.",
+    "release_candidate": "Pré-version exploitable sous contrôle terrain ; passage à V0.0.1 après recette."
+  },
+  "releases": [
+    {
+      "version": "V0.0.1",
+      "type": "initial_install_base",
+      "date": "2026-06-06",
+      "notes": "Première base officielle normalisée : PostgreSQL, GitHub/wget, install/update/upgrade, sauvegarde/restauration web des bases."
+    },
+    {
+      "version": "V0.0.1-RC1",
+      "type": "release_candidate",
+      "date": "2026-06-07",
+      "notes": "RC1 exploitation encadrée : périmètre prioritaire ToolMag, System Manager minimal et PedaShop ; mobile uniquement pour prise de poste, inventaire et photo."
+    }
+  ],
+  "github": {
+    "repository": "nvivionprof/lp-gestion-atelier-ep-suite",
+    "release_asset_pattern": "lp-gestion-atelier-ep-suite-{version}.zip",
+    "checksum_asset_pattern": "lp-gestion-atelier-ep-suite-{version}.zip.sha256",
+    "bootstrap_raw_path": "scripts/github_bootstrap.sh",
+    "emergency_restore_command": "./scripts/restore_last_backup.sh --yes",
+    "bootstrap_wget_command": "wget -O /tmp/lp-suite-bootstrap.sh https://raw.githubusercontent.com/nvivionprof/lp-gestion-atelier-ep-suite/main/scripts/github_bootstrap.sh && bash /tmp/lp-suite-bootstrap.sh V0.0.1-RC1 --dir /home/user/docker/lp-gestion-atelier/lp-gestion-atelier-ep-suite"
+  }
+}

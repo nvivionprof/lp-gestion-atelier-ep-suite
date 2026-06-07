@@ -1,0 +1,113 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>{% if mode == 'create' %}Créer un matériel{% else %}Modifier {{ equipment.code }} — {{ equipment.name }}{% endif %}</h1>
+  <form method="post" enctype="multipart/form-data" id="equipment-form">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer</button>
+    {% if equipment %}<a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Annuler</a>{% else %}<a class="button secondary" href="{% url 'equipment_list' %}">Annuler</a>{% endif %}
+  </form>
+</section>
+
+<dialog id="lookup-dialog" class="lookup-dialog">
+  <form method="dialog" class="lookup-dialog-card">
+    <h2 id="lookup-title">Ajouter</h2>
+    <p class="hint" id="lookup-help">Saisis le libellé à ajouter à la liste.</p>
+    <label>Nom
+      <input type="text" id="lookup-name" autocomplete="off">
+    </label>
+    <p id="lookup-error" class="error" style="display:none"></p>
+    <div class="actions">
+      <button type="button" id="lookup-submit">Ajouter</button>
+      <button type="button" class="button secondary" id="lookup-cancel">Annuler</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(function(){
+  const config = {
+    category: {selectId: 'id_category', url: '{% url "api_category_create" %}', label: 'catégorie'},
+    location: {selectId: 'id_location', url: '{% url "api_location_create" %}', label: 'emplacement'}
+  };
+  const dialog = document.getElementById('lookup-dialog');
+  const title = document.getElementById('lookup-title');
+  const input = document.getElementById('lookup-name');
+  const err = document.getElementById('lookup-error');
+  const submit = document.getElementById('lookup-submit');
+  const cancel = document.getElementById('lookup-cancel');
+  const csrf = document.querySelector('#equipment-form input[name="csrfmiddlewaretoken"]').value;
+  let active = null;
+
+  function attachButton(key){
+    const cfg = config[key];
+    const select = document.getElementById(cfg.selectId);
+    if(!select) return;
+    const wrap = document.createElement('span');
+    wrap.className = 'select-add-wrap';
+    select.parentNode.insertBefore(wrap, select);
+    wrap.appendChild(select);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'button add-inline';
+    btn.textContent = '+ Ajouter';
+    btn.title = 'Ajouter une nouvelle ' + cfg.label;
+    wrap.appendChild(btn);
+    btn.addEventListener('click', function(){
+      active = cfg;
+      title.textContent = 'Ajouter une ' + cfg.label;
+      input.value = '';
+      err.style.display = 'none';
+      err.textContent = '';
+      dialog.showModal();
+      setTimeout(()=>input.focus(), 50);
+    });
+  }
+
+  cancel.addEventListener('click', ()=>dialog.close());
+  submit.addEventListener('click', async function(){
+    if(!active) return;
+    const name = input.value.trim();
+    if(!name){ err.textContent='Nom obligatoire.'; err.style.display='block'; return; }
+    submit.disabled = true;
+    try{
+      const response = await fetch(active.url, {
+        method:'POST',
+        body: JSON.stringify({name: name}),
+        credentials:'same-origin',
+        headers:{'Accept':'application/json', 'Content-Type':'application/json', 'X-CSRFToken': csrf}
+      });
+      let data = null;
+      const responseText = await response.text();
+      try {
+        data = JSON.parse(responseText);
+      } catch(parseError) {
+        err.textContent = 'Réponse serveur non JSON. Vérifie la connexion et les droits ponctuels. Début réponse : ' + responseText.slice(0, 160);
+        err.style.display = 'block';
+        return;
+      }
+      if(!response.ok || !data.ok){
+        err.textContent = data.error || ('Ajout impossible. Code erreur : ' + response.status);
+        err.style.display = 'block';
+        return;
+      }
+      const select = document.getElementById(active.selectId);
+      let option = Array.from(select.options).find(o => o.value == data.id);
+      if(!option){
+        option = new Option(data.name, data.id, true, true);
+        select.add(option);
+      }
+      select.value = data.id;
+      dialog.close();
+    } catch(e){
+      err.textContent = 'Erreur réseau pendant l’ajout.';
+      err.style.display = 'block';
+    } finally {
+      submit.disabled = false;
+    }
+  });
+  attachButton('category');
+  attachButton('location');
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "pedashop/base.html" %}
+{% block content %}
+<section class="page-card help-page">
+<h1>Aide — PedaShop</h1>
+<p>PedaShop gère les consommables, stocks, bons, réservations et approvisionnements pédagogiques.</p>
+<h2>Index</h2>
+<ol>
+<li><a href="#aide-1">Articles et magasins</a></li>
+<li><a href="#aide-2">Bons, sorties et retours</a></li>
+<li><a href="#aide-3">Stocks et alertes</a></li>
+</ol>
+<h2 id="aide-1">Articles et magasins</h2>
+<ul>
+<li>Créer les articles avec référence, désignation, unité, seuil et magasin.</li>
+<li>Renseigner les emplacements pour faciliter la préparation des commandes.</li>
+<li>Conserver l’import/export XLSX pour les bases articles et stocks.</li>
+</ul>
+<h2 id="aide-2">Bons, sorties et retours</h2>
+<ul>
+<li>Créer un bon pour une demande de consommables ou une réservation TP.</li>
+<li>Le magasinier prépare, distribue et clôture le bon.</li>
+<li>Distinguer les sorties définitives et les sorties temporaires avec retour prévu.</li>
+</ul>
+<h2 id="aide-3">Stocks et alertes</h2>
+<ul>
+<li>Utiliser Inventaire pour ajuster un stock après contrôle physique.</li>
+<li>Surveiller les seuils mini et les alertes de réapprovisionnement.</li>
+<li>Consulter les mouvements pour tracer qui a pris, distribué ou réceptionné le matériel.</li>
+</ul>
+<p class="muted">Cette aide doit être ajustée à chaque évolution du module.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% load static %}
+<!doctype html>
+<html lang="{{ TOOLMAG_LANG|default:'fr' }}" data-toolmag-lang="{{ TOOLMAG_LANG|default:'fr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ToolMag — LP Gestion Atelier EP Suite</title>
+  <script>window.TOOLMAG_LANG = "{{ TOOLMAG_LANG|default:'fr' }}";</script>
+  <link rel="stylesheet" href="{% static 'inventory/style.css' %}">
+  <link rel="stylesheet" href="{% static 'inventory/camera_upload.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand brand-logo">
+    <a href="/" aria-label="Accueil ToolMag"><img src="{% static 'inventory/img/logo_toolmag_education.png' %}" alt="ToolMag Éducation" class="brand-img"></a>
+    <span class="version-badge">{{ TOOLMAG_VERSION_LABEL }}</span>
+  </div>
+  <nav>
+    <a href="{% url 'dashboard' %}">Tableau de bord</a>
+    <a href="{% url 'equipment_list' %}">Inventaire</a>
+    <a href="{% url 'display_current_loans' %}">Affichage dynamique</a>
+    <a href="{% url 'dnl_glossary' %}">Glossaire DNL</a>
+    {% if tm_is_prof %}
+      <details class="admin-dropdown">
+        <summary>Fonctions admin</summary>
+        <div class="admin-dropdown-menu" aria-label="Fonctions administrateur ToolMag">
+          <a class="admin-menu-item" title="Retour LP Core" href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core élèves</a>
+          <a class="admin-menu-item" title="Utilisateurs synchronisés" href="{% url 'users_management' %}">Utilisateurs synchronisés</a>
+          <span class="admin-menu-separator"></span>
+          <a class="admin-menu-item" title="Évaluation" href="{% url 'evaluation_dashboard' %}">Évaluation</a>
+          <a class="admin-menu-item" title="Droits matériel" href="{% url 'material_rights_management' %}">Droits matériel</a>
+          <a class="admin-menu-item" title="Terminaux" href="{% url 'terminals_management' %}">Terminaux</a>
+          <a class="admin-menu-item" title="Forçage casier" href="{% url 'locker_force' %}">Forçage casier</a>
+          <a class="admin-menu-item" title="Synchroniser LP Core" href="{% url 'sync_core_users' %}">Synchroniser LP Core</a>
+          <a class="admin-menu-item" title="Sauvegardes" href="{% url 'backups_management' %}">Sauvegardes</a>
+          <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
+          <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
+        </div>
+      </details>
+    {% endif %}
+    {% if request.session.borrower_code or request.session.storekeeper_code %}
+      <span class="role-indicators" aria-label="Rôles actifs ToolMag">
+        {% if request.session.borrower_code %}<a class="role-pill" href="{% url 'user_logout' %}" title="Déconnexion utilisateur">Utilisateur : {{ request.session.borrower_code }}</a>{% endif %}
+        {% if request.session.storekeeper_code %}<a class="role-pill role-storekeeper" href="{% url 'storekeeper_logout' %}" title="Déconnexion magasinier">Magasinier : {{ request.session.storekeeper_code }}</a>{% endif %}
+      </span>
+    {% else %}
+      <a href="{% url 'user_login' %}">Connexion utilisateur</a>
+      <a href="{% url 'storekeeper_login' %}">Connexion magasinier</a>
+    {% endif %}
+    <span class="language-switch">
+      <a href="{% url 'set_interface_language' 'fr' %}?next={{ request.get_full_path|urlencode }}">FR</a> |
+      <a href="{% url 'set_interface_language' 'en' %}?next={{ request.get_full_path|urlencode }}">EN</a>
+    </span>
+    <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide ToolMag">
+      <a class="admin-menu-item" href="{% url 'help' %}">Aide ToolMag</a>
+      <a class="admin-menu-item" href="{% url 'about' %}">À propos</a>
+    </div></details>
+  </nav>
+</header>
+<main class="container">
+  {% if messages %}
+    {% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'inventory/app.js' %}"></script>
+<script src="{% static 'inventory/i18n_ui.js' %}"></script>
+<script src="{% static 'inventory/camera_upload.js' %}"></script>
+</body>
+</html>

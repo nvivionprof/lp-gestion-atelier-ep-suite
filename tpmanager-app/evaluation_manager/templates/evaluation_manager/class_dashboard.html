@@ -1,0 +1,7 @@
+{% extends "tp_manager/base.html" %}
+{% block content %}
+<section class="hero-card"><h1>Vue classe — compétences travaillées</h1><p>Filtrage par formation / classe. Synthèse professeur pour préparer bilans ou remédiations.</p></section>
+<section class="panel"><form method="get" class="inline-form"><label>Formation <input name="formation" value="{{ formation }}"></label><label>Classe <input name="classe" value="{{ classe }}"></label><button class="btn" type="submit">Filtrer</button></form></section>
+<section class="panel"><h2>Compétences touchées</h2><table class="data-table"><thead><tr><th>Compétence</th><th>NE</th><th>NA</th><th>EC</th><th>A</th><th>PA</th><th>AB</th></tr></thead><tbody>{% for comp, counts in competence_counts %}<tr><td>{{ comp.code }} — {{ comp.libelle_officiel }}</td><td>{{ counts.NE|default:0 }}</td><td>{{ counts.NA|default:0 }}</td><td>{{ counts.EC|default:0 }}</td><td>{{ counts.A|default:0 }}</td><td>{{ counts.PA|default:0 }}</td><td>{{ counts.AB|default:0 }}</td></tr>{% empty %}<tr><td colspan="7">Aucune donnée.</td></tr>{% endfor %}</tbody></table></section>
+<section class="panel"><h2>Élèves</h2><div class="button-row">{% for e in students %}<a class="btn secondary" href="{% url 'evaluation_manager:student_dashboard' e.pk %}">{{ e.full_name }}</a>{% empty %}<span class="muted">Aucun élève.</span>{% endfor %}</div></section>
+{% endblock %}

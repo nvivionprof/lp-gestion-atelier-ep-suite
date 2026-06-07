@@ -1,0 +1,5 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Séquences</p><h1>Séquences pédagogiques</h1><p class="lead">Une séquence sélectionne des TP modèles puis les affecte à une classe, un groupe ou des élèves.</p></div><div class="hero-actions"><a class="button" href="{% url 'sequence_create' %}">Créer une séquence</a></div></section>
+<section class="panel"><table><tr><th>Titre</th><th>Formation</th><th>Classe/groupe</th><th>Professeur</th><th>Statut</th></tr>{% for s in sequences %}<tr><td><a href="{% url 'sequence_detail' s.pk %}">{{ s.titre }}</a></td><td>{{ s.formation.code|default:"—" }} {{ s.niveau.code|default:"" }}</td><td>{{ s.classe_ou_groupe }}</td><td>{{ s.professeur.full_name|default:"—" }}</td><td><span class="badge status-{{ s.statut }}">{{ s.get_statut_display }}</span></td></tr>{% empty %}<tr><td colspan="5">Aucune séquence.</td></tr>{% endfor %}</table></section>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Bon de réparation — {{ equipment.code }} — {{ equipment.name }}</h1>
+
+<section class="panel detail">
+  {% if equipment.photo %}<div class="equipment-photo-wrap"><img class="equipment-photo" src="{{ equipment.photo.url }}" alt="Photo {{ equipment.name }}"></div>{% endif %}
+  <p><strong>Statut actuel :</strong> <span class="badge {{ equipment.status }}">{{ equipment.get_status_display }}</span></p>
+  <p><strong>État actuel :</strong> {{ equipment.get_current_condition_display }}</p>
+  <p><strong>Magasinier connecté :</strong> {{ current_storekeeper.first_name }} {{ current_storekeeper.last_name }} — {{ current_storekeeper.code }}</p>
+  {% if equipment.secure_storage %}<p><strong>Armoire sécurisée :</strong> {{ equipment.secure_cabinet }} / {{ equipment.secure_locker }}</p>{% endif %}
+</section>
+
+{% include 'inventory/_locker_button.html' with equipment=equipment locker_info=locker_info locker_context='maintenance' %}
+
+<section class="panel">
+  <h2>Renseigner le bon de réparation</h2>
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="actions"><button class="button danger" type="submit">Enregistrer le bon de réparation</button><a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Annuler</a></div>
+  </form>
+  <p class="hint">Si le résultat est “Dépanné et disponible”, le matériel repasse automatiquement en statut Disponible. Les autres résultats conservent une trace et appliquent le statut correspondant.</p>
+</section>
+
+{% if recent_repairs %}
+<section class="panel">
+  <h2>Derniers bons de réparation</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Magasinier</th><th>Type</th><th>Résultat</th><th>Commentaire</th></tr></thead>
+    <tbody>
+    {% for r in recent_repairs %}
+      <tr>
+        <td>{{ r.repaired_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ r.storekeeper.first_name }} {{ r.storekeeper.last_name }}<br><small>{{ r.storekeeper.code }}</small></td>
+        <td>{{ r.get_repair_type_display }}</td>
+        <td>{{ r.get_result_display }}</td>
+        <td>{% if r.comment %}{{ r.comment }}{% elif r.action_done %}{{ r.action_done }}{% else %}-{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

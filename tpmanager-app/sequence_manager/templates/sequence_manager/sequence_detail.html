@@ -1,0 +1,36 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}{{ sequence.titre }}{% endblock %}
+{% block seq_content %}
+<section class="card seq-summary">
+  <div><strong>{{ sequence.code }}</strong><br>{{ sequence.date_debut }} → {{ sequence.date_fin }} · {{ sequence.nb_semaines }} semaine(s)</div>
+  <div>Zone : {{ sequence.zone_principale|default:'—' }}<br>Coloration : {{ sequence.coloration|default:'—' }}</div>
+  <div>Parcours libre direct : {% if sequence.auto_inscription_libre %}<span class="badge success">Oui</span>{% else %}<span class="badge">Non</span>{% endif %}</div>
+  <div class="seq-actions-inline">
+    <a class="btn small" href="{% url 'sequence_manager:formation_add' sequence.pk %}">+ Formation/classe</a>
+    <a class="btn small" href="{% url 'sequence_manager:wave_add' sequence.pk %}">+ Vague élèves</a>
+    <a class="btn small" href="{% url 'sequence_manager:group_add' sequence.pk %}">+ Groupe</a>
+    <a class="btn small" href="{% url 'sequence_manager:assignment_add' sequence.pk %}">+ Affectation</a>
+    <a class="btn small secondary" href="{% url 'sequence_manager:skills_by_class' sequence.pk %}">Compétences</a>
+    <a class="btn small secondary" href="{% url 'sequence_manager:free_choice' sequence.pk %}">Parcours libre</a>
+    <a class="btn small secondary" href="{% url 'sequence_manager:sequence_duplicate' sequence.pk %}">Dupliquer</a>
+  </div>
+</section>
+<section class="grid two-col">
+  <article class="card"><h2>Formations / classes</h2>{% for f in sequence.formations.all %}<p><span class="badge">{{ f.formation_code }}</span> {{ f.classe|default:'—' }} · {{ f.niveau|default:'—' }} · {{ f.effectif }} élève(s)</p>{% empty %}<p>Aucune formation renseignée.</p>{% endfor %}</article>
+  <article class="card"><h2>Groupes</h2>{% for g in groups %}<p><a href="{% url 'sequence_manager:group_members' g.pk %}"><strong>{{ g.nom }}</strong></a> · {{ g.get_type_groupe_display }} · {% for m in g.members.all %}{{ m.eleve.full_name }}{% if not forloop.last %}, {% endif %}{% empty %}<span class="muted">aucun élève</span>{% endfor %}</p>{% empty %}<p>Aucun groupe.</p>{% endfor %}</article>
+</section>
+<section class="card">
+  <div class="seq-section-title"><h2>Planning de rotation</h2><form method="post" action="{% url 'sequence_manager:sessions_generate' sequence.pk %}">{% csrf_token %}<button class="btn small secondary" type="submit">Générer les séances</button><button class="btn small danger" name="replace" value="1" type="submit">Regénérer</button></form></div>
+  <div class="planning-scroll">
+  <table class="table planning-table">
+    <thead><tr><th>Groupe / élèves</th>{% for s in sessions %}<th>S{{ s.semaine }}<br>{{ s.date|date:'d/m' }}<br>{{ s.slot|default:'' }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for row in rows %}
+      <tr><th>{{ row.label }}{% if row.group %}<br><small>{% for m in row.group.members.all %}{{ m.eleve.full_name }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</small>{% endif %}</th>
+      {% for cell in row.cells %}<td>{% for a in cell.assignments %}<div class="assign {{ a.mode }}"><strong>{% if a.tp %}{{ a.tp.code }}{% else %}{{ a.get_mode_display }}{% endif %}</strong><br><small>{{ a.systeme|default:'' }}</small></div>{% empty %}<a class="add-cell" href="{% url 'sequence_manager:assignment_add' sequence.pk %}?session={{ cell.session.id }}{% if row.group %}&group={{ row.group.id }}{% endif %}">+</a>{% endfor %}</td>{% endfor %}</tr>
+    {% empty %}<tr><td colspan="99">Crée d’abord des groupes puis ajoute les affectations.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endblock %}

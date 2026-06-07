@@ -1,0 +1,42 @@
+{% extends 'tp_manager/base.html' %}
+
+{% block content %}
+<section class="card">
+  <h1>Base SQL — {{ app_label }}</h1>
+  <p class="muted">Téléchargement et import SQL réservés à l’administrateur du module. Une sauvegarde automatique est créée avant chaque import.</p>
+  <div class="grid-2">
+    <div class="panel">
+      <h2>État de la base</h2>
+      <p><strong>Chemin :</strong> <code>{{ db_path }}</code></p>
+      <p><strong>Taille :</strong> {{ db_size_mb }} Mo</p>
+      <p><strong>Moteur :</strong> {{ engine }}</p>
+      <p><a class="btn" href="{% url 'sql_database_export' %}">Télécharger la base SQL</a></p>
+    </div>
+    <div class="panel danger-zone">
+      <h2>Importer un SQL</h2>
+      <p><strong>Prudence :</strong> l’import en remplacement écrase la base du module après sauvegarde. Il faut redémarrer le module puis relancer les migrations.</p>
+      <form method="post" action="{% url 'sql_database_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Fichier SQL</label>
+        <input type="file" name="sql_file" accept=".sql" required>
+        <label>Mode d’import</label>
+        <select name="mode">
+          <option value="replace">Remplacement complet de la base du module</option>
+          <option value="additive">Script additif / correctif SQL</option>
+        </select>
+        <label class="inline-check"><input type="checkbox" name="confirm" value="yes" required> Je confirme avoir sauvegardé et vouloir importer ce SQL.</label>
+        <button type="submit" class="btn danger">Importer SQL</button>
+      </form>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Usage conseillé</h2>
+    <ul>
+      <li><strong>Export SQL</strong> : archivage ou transfert d’une base existante.</li>
+      <li><strong>Remplacement complet</strong> : reprise d’une ancienne base dans une installation neuve.</li>
+      <li><strong>Script additif</strong> : correction contrôlée, pas adapté à un dump complet Django.</li>
+    </ul>
+    <p>PedaShop conserve ses imports/exports XLSX existants pour les articles, stocks et utilisateurs. Cette page ajoute seulement une couche SQL complète.</p>
+  </div>
+</section>
+{% endblock %}

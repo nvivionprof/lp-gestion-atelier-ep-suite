@@ -1,0 +1,56 @@
+{% extends 'safety_manager/public_base.html' %}
+{% load static %}
+{% block title %}Safety Manager — Affichage dynamique{% endblock %}
+{% block head %}<meta http-equiv="refresh" content="15">{% endblock %}
+{% block content %}
+<div class="safety-screen">
+  <header class="screen-header">
+    <div class="screen-brand">
+      <div class="shield-mark">⚙✓</div>
+      <div><h1>SAFETY MANAGER</h1><p>Affichage dynamique sécurité atelier</p></div>
+    </div>
+    <img src="{% static 'safety_manager/img/logo_stjoseph_lasalle.png' %}" alt="Campus & Métiers — Saint Joseph LaSalle" class="school-logo">
+    <div class="suite-title"><strong>LP GESTION ATELIER EP SUITE</strong><span>La sécurité, notre priorité</span></div>
+  </header>
+
+  <section class="screen-kpis">
+    <article class="kpi-card green"><span>Jours sans accident</span><strong>{{ days_without_accident|stringformat:'04d' }}</strong></article>
+    <article class="kpi-card green"><span>Record de jours sans accident</span><strong>{{ record_days_without_accident|stringformat:'04d' }}</strong></article>
+    <article class="kpi-card red"><span>Accidents depuis le 1er janvier</span><strong>{{ accidents_year|stringformat:'04d' }}</strong></article>
+    <article class="kpi-card orange"><span>Presqu’accidents déclarés</span><strong>{{ near_misses_year|stringformat:'04d' }}</strong></article>
+  </section>
+
+  <section class="screen-main-grid">
+    <article class="screen-panel priorities">
+      <h2>Situations dangereuses par priorité</h2>
+      <div class="priority-cards">
+        <div class="priority p1"><span>Priorité 1</span><b>⚠</b><strong>{{ p1_count|stringformat:'03d' }}</strong></div>
+        <div class="priority p2"><span>Priorité 2</span><b>◇</b><strong>{{ p2_count|stringformat:'03d' }}</strong></div>
+        <div class="priority p3"><span>Priorité 3</span><b>!</b><strong>{{ p3_count|stringformat:'03d' }}</strong></div>
+      </div>
+    </article>
+
+    <article class="screen-panel action-counter">
+      <h2>Actions de prévention</h2>
+      <div class="action-row red"><span>En retard</span><strong>{{ actions_late|stringformat:'03d' }}</strong></div>
+      <div class="action-row orange"><span>En cours</span><strong>{{ actions_current|stringformat:'03d' }}</strong></div>
+      <div class="action-row green"><span>Réalisées</span><strong>{{ actions_done|stringformat:'03d' }}</strong></div>
+    </article>
+
+    <article class="screen-panel instructions">
+      <h2>Consignes de sécurité</h2>
+      <div class="instruction-columns">
+        <div class="instruction red"><h3>Incendie</h3><p>Gardez votre calme.</p><p>Alertez le feu puis l’extérieur.</p><p>Déclenchez l’alarme la plus proche.</p></div>
+        <div class="instruction green"><h3>Évacuation</h3><p>Dès l’ordre d’évacuation, quittez les lieux.</p><p>Suivez les indications et issues de secours.</p><p>Rejoignez le point de rassemblement.</p></div>
+        <div class="instruction yellow"><h3>Accident</h3><p>Protégez la victime.</p><p>Appelez les secours.</p><p>Ne déplacez pas la victime sauf danger immédiat.</p></div>
+        <div class="instruction blue"><h3>Incident</h3><p>Signalez toute situation anormale.</p><p>Informez le responsable atelier.</p><p>Participez à l’analyse pour faire progresser la sécurité.</p></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="bottom-strip">
+    <div class="callout">☎ Prévenez immédiatement : <strong>responsable atelier ou personne compétente</strong></div>
+    <div class="transparent-red-frame" aria-label="Cadre message sécurité personnalisable"><strong>SST du jour</strong><br>{% for sst in sst_users %}{{ sst.first_name }} {{ sst.last_name }}{% if not forloop.last %}<br>{% endif %}{% empty %}À renseigner dans LP Core{% endfor %}</div>
+  </section>
+</div>
+{% endblock %}

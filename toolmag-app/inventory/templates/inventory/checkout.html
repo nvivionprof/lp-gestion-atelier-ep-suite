@@ -1,0 +1,105 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+{% if current_storekeeper %}<div class="alert success">Magasinier connecté : <strong>{{ current_storekeeper.first_name }} {{ current_storekeeper.last_name }}</strong> — code {{ current_storekeeper.code }}. Lui seul valide la sortie.</div>{% endif %}
+{% if current_borrower %}<div class="alert success">Emprunteur connecté : <strong>{{ current_borrower.first_name }} {{ current_borrower.last_name }}</strong> — code {{ current_borrower.code }}. L’inventaire du kit sera tracé sur cet utilisateur.</div>{% else %}<div class="alert">Aucun emprunteur connecté : la sortie peut quand même être validée par le magasinier avec le champ code utilisateur. L’inventaire sera alors tracé sur le magasinier.</div>{% endif %}
+{% if inventory_actor %}<div class="alert">Acteur de l’inventaire sortie : <strong>{{ inventory_actor.first_name }} {{ inventory_actor.last_name }}</strong> — fonction : {{ inventory_actor_role }}</div>{% endif %}
+<h1>Sortie de matériel</h1>
+{% if page_qr %}<section class="panel qr-panel"><div><h2>QR code inventaire utilisateur</h2><p>Ce QR code lance l’inventaire utilisateur de sortie ou de retour, après connexion utilisateur si nécessaire.</p><p><code>{{ control_url }}</code></p></div><img class="qr-img" src="{{ page_qr }}" alt="QR code contrôle"></section>{% endif %}
+<section class="panel">
+  <h2>Recherche emprunteur</h2>
+  <p>Le magasinier peut rechercher l’élève par nom, prénom, classe ou code. Un clic préremplit le champ <strong>Code utilisateur</strong>.</p>
+  <div class="search-card" data-search-url="{% url 'api_person_search' %}">
+    <label>Rechercher dans la base utilisateurs
+      <input type="search" id="checkout-borrower-search" placeholder="Exemple : Martin, Lucas, 1CIEL, USR-0001" autocomplete="off">
+    </label>
+    <div id="checkout-borrower-search-results" class="search-results" aria-live="polite"></div>
+  </div>
+</section>
+{% if equipment %}{% include 'inventory/_locker_button.html' with equipment=equipment locker_info=locker_info locker_context='checkout' %}{% endif %}
+{% if selected_user_inventory %}<section class="panel alert success"><strong>Inventaire utilisateur de sortie reçu.</strong><br>Utilisateur : {{ selected_user_inventory.borrower }} — soumis le {{ selected_user_inventory.submitted_at }}.<br>Commentaire : {{ selected_user_inventory.comment|default:'-' }}<br>Le formulaire ci-dessous est prérempli ; le magasinier relit puis valide la sortie.</section>{% endif %}
+<form method="post" class="panel form">{% csrf_token %}
+  {{ form.non_field_errors }}
+  {% if selected_user_inventory %}<input type="hidden" name="user_inventory_id" value="{{ selected_user_inventory.id }}">{% endif %}
+  <div class="formgrid">
+    {% for field in form %}<label>{{ field.label }}{{ field }}{% if field.help_text %}<small class="hint">{{ field.help_text }}</small>{% endif %}{% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}</label>{% endfor %}
+  </div>
+  {% if components %}
+  <h2>Inventaire de sortie</h2>
+  <div class="checklist">
+    {% for row in component_rows %}
+    {% with c=row.component item=row.item %}
+    <div class="checkrow checkrow-photo {% if item %}from-user-inventory{% endif %}">
+      <div class="check-photo">{% if c.photo %}<img class="component-thumb" src="{{ c.photo.url }}" alt="{{ c.name }}">{% else %}-{% endif %}</div>
+      <label><input type="checkbox" class="component-present" name="component_{{ c.id }}_present" {% if item %}{% if item.present %}checked{% endif %}{% else %}checked{% endif %}> {{ c.name }} {% if c.required %}<strong>*</strong>{% endif %}</label>
+      <select class="component-condition" name="component_{{ c.id }}_condition">{% for value,label in component_conditions %}<option value="{{ value }}" {% if item and item.condition == value %}selected{% elif not item and value == c.default_condition %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <input name="component_{{ c.id }}_comment" value="{% if item %}{{ item.comment }}{% endif %}" placeholder="Commentaire composant">
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}<p class="hint">Pour afficher une checklist, ouvre cette page depuis la fiche d’un matériel composé.</p>{% endif %}
+  <button class="button" type="submit">Valider la sortie</button>
+</form>
+<script>
+(function(){
+  const box = document.querySelector('.search-card');
+  const input = document.getElementById('checkout-borrower-search');
+  const results = document.getElementById('checkout-borrower-search-results');
+  const codeField = document.getElementById('id_borrower_code');
+  if (!box || !input || !results || !codeField) return;
+  const url = box.dataset.searchUrl;
+  let timer = null;
+  function clearResults(){ results.innerHTML = ''; }
+  function render(items){
+    clearResults();
+    if (!items.length) { results.innerHTML = '<div class="search-empty">Aucun utilisateur trouvé.</div>'; return; }
+    items.forEach(person => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'search-result';
+      const subtitle = [person.code, person.formation, person.class_name, person.group_name].filter(Boolean).join(' · ');
+      button.innerHTML = `<strong>${person.name}</strong><span>${subtitle}</span>`;
+      button.addEventListener('click', () => {
+        codeField.value = person.code;
+        input.value = `${person.name} — ${person.code}`;
+        clearResults();
+        codeField.focus();
+      });
+      results.appendChild(button);
+    });
+  }
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    clearTimeout(timer);
+    if (q.length < 2) { clearResults(); return; }
+    timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`${url}?q=${encodeURIComponent(q)}`, {headers: {'Accept': 'application/json'}});
+        const data = await response.json();
+        render(data.results || []);
+      } catch(e) { results.innerHTML = '<div class="search-empty">Recherche indisponible.</div>'; }
+    }, 180);
+  });
+})();
+</script>
+
+<script>
+(function(){
+  document.querySelectorAll('.checkrow').forEach(row => {
+    const present = row.querySelector('.component-present');
+    const condition = row.querySelector('.component-condition');
+    if (!present || !condition) return;
+    function syncFromCondition(){
+      if (condition.value === 'absent') present.checked = false;
+    }
+    function syncFromPresent(){
+      if (!present.checked) condition.value = 'absent';
+      else if (condition.value === 'absent') condition.value = 'good';
+    }
+    condition.addEventListener('change', syncFromCondition);
+    present.addEventListener('change', syncFromPresent);
+  });
+})();
+</script>
+
+{% endblock %}

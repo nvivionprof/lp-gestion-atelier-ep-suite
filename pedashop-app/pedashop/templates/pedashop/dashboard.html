@@ -1,0 +1,26 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}
+<div class="logo-hero"><h1>Tableau de bord PedaShop</h1></div>
+{% if is_public %}<div class="alert">Accès public : consultation sans connexion. Les actions sont masquées.</div>{% endif %}
+<div class="grid">
+  <div class="stat"><div class="label">Demandes</div><div class="value">{{ cards.demandes }}</div></div>
+  <div class="stat"><div class="label">En cours</div><div class="value">{{ cards.preparation }}</div></div>
+  <div class="stat"><div class="label">Commandes prêtes</div><div class="value">{{ cards.pretes }}</div></div>
+  <div class="stat"><div class="label">À inventorier</div><div class="value">{{ cards.distribuees_a_inventorier }}</div></div>
+  <div class="stat"><div class="label">Retours attendus</div><div class="value">{{ cards.retours }}</div></div>
+  <div class="stat"><div class="label">Réclamations</div><div class="value">{{ cards.reclamations }}</div></div>
+</div>
+{% if not is_public %}
+<div class="actions">
+  {% if can_all_actions or can_simple_request %}<a class="btn primary" href="{% url 'pedashop_bon_create' %}">Nouvelle demande</a>{% endif %}
+  <a class="btn dark" href="{% url 'pedashop_bon_list' %}">Accès aux bons</a>
+  {% if can_all_actions %}<a class="btn" href="{% url 'pedashop_projection_create' %}">Pré-réservation prof</a>{% endif %}
+  {% if can_all_actions or can_storekeep %}<a class="btn" href="{% url 'pedashop_inventory_adjustment' %}">Inventaire / mise à niveau stock</a><a class="btn" href="{% url 'pedashop_stock_entry' %}">Entrée magasin / réassort</a><a class="btn" href="{% url 'pedashop_alert_list' %}">Alertes stock</a><a class="btn" href="{% url 'pedashop_consultation_list' %}">Consultations fournisseur</a>{% endif %}
+  {% if can_all_actions %}<a class="btn" href="{% url 'pedashop_user_list' %}">Utilisateurs</a>{% endif %}
+</div>
+{% endif %}
+<div class="grid-2">
+  <section class="card"><h2>Bons et préparations visibles</h2><div class="table-wrap"><table><thead><tr><th>Bon</th><th>Demandeur</th><th>TP</th><th>Statut</th>{% if not is_public %}<th>Action</th>{% endif %}</tr></thead><tbody>{% for b in bons_a_traiter %}<tr><td>{{ b.code }}</td><td>{{ b.demandeur.first_name }} {{ b.demandeur.last_name }}<br><span class="muted">{{ b.demandeur.code }}</span></td><td>{{ b.nom_tp }}</td><td><span class="badge {{ b.status_class|default:'blue' }}">{{ b.get_statut_display }}</span></td>{% if not is_public %}<td><a class="btn small" href="{% url 'pedashop_bon_detail' b.pk %}">Voir</a></td>{% endif %}</tr>{% empty %}<tr><td colspan="5">Aucun bon en cours.</td></tr>{% endfor %}</tbody></table></div></section>
+  <section class="card"><h2>Alertes stock</h2><div class="table-wrap"><table><thead><tr><th>Alerte</th><th>Article</th><th>Magasin</th><th>Dispo.</th></tr></thead><tbody>{% for a in alertes %}<tr><td><span class="badge {% if 'RUPTURE' in a.statut_alerte or 'NEGATIF' in a.statut_alerte %}red{% elif 'ZERO' in a.statut_alerte %}orange{% else %}yellow{% endif %}">{{ a.get_statut_alerte_display }}</span></td><td>{{ a.article.reference_interne }}<br><span class="muted">{{ a.article.designation }}</span></td><td>{{ a.magasin.code }}</td><td>{{ a.stock_disponible }}</td></tr>{% empty %}<tr><td colspan="4">Aucune alerte.</td></tr>{% endfor %}</tbody></table></div></section>
+</div>
+{% endblock %}

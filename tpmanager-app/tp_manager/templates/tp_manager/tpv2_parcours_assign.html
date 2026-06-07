@@ -1,0 +1,27 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Parcours élèves</p><h1>Affecter des TP aux élèves</h1><p class="lead">Sélectionne un ou plusieurs TP, puis un ou plusieurs élèves. L’application crée ou met à jour les lignes de parcours.</p></div></section>
+<section class="panel">
+  <h2>Filtres</h2>
+  <form method="get" class="filter-row">
+    <p><label>Diplôme TP</label><select name="diplome"><option value="">Tous</option>{% for d in diplomes %}<option value="{{ d.id }}" {% if filters.diplome == d.id|stringformat:'s' %}selected{% endif %}>{{ d.code }}</option>{% endfor %}</select></p>
+    <p><label>Recherche TP</label><input name="q_tp" value="{{ filters.q_tp }}" placeholder="code, titre..."></p>
+    <p><label>Thème TP</label><input name="theme" value="{{ filters.theme }}" placeholder="DOM, RES, PAC..."></p>
+    <p><label>Niveau TP</label><input name="niveau" value="{{ filters.niveau }}" placeholder="1MELEC..."></p>
+    <p><label>Formation élève</label><input name="formation" value="{{ filters.formation }}" placeholder="MELEC, CIEL..."></p>
+    <p><label>Classe élève</label><input name="classe" value="{{ filters.classe }}" placeholder="1MELEC..."></p>
+    <p><label>Recherche élève</label><input name="q_eleve" value="{{ filters.q_eleve }}" placeholder="nom, code..."></p>
+    <p><button type="submit">Mettre à jour les listes</button></p>
+  </form>
+</section>
+<form method="post" class="panel">{% csrf_token %}
+  <div class="grid2">
+    <div class="select-large"><p>{{ form.tps.label_tag }}{{ form.tps }}</p></div>
+    <div class="select-large"><p>{{ form.eleves.label_tag }}{{ form.eleves }}</p></div>
+  </div>
+  <div class="formgrid"><p>{{ form.sequence.label_tag }}{{ form.sequence }}</p><p>{{ form.statut.label_tag }}{{ form.statut }}</p></div>
+  <p>{{ form.commentaire_prof.label_tag }}{{ form.commentaire_prof }}</p>
+  <button type="submit">Affecter aux élèves sélectionnés</button>
+  <a class="button secondary" href="{% url 'parcours_list' %}">Annuler</a>
+</form>
+{% endblock %}

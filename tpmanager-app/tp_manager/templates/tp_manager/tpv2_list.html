@@ -1,0 +1,25 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">Bibliothèque TP</p><h1>TP Manager V2</h1><p class="lead">Recherche par diplôme, usage pédagogique, compétence pivot ou mots-clés de parcours élève.</p></div>
+  {% if tp_current_user and tp_current_user.is_prof_like %}<a class="button" href="{% url 'tp_create' %}">Créer un TP</a>{% endif %}
+</section>
+<form method="get" class="panel">
+  <div class="filters">{{ form.as_p }}</div>
+  <button type="submit">Filtrer</button>
+</form>
+<section class="panel">
+  <table><thead><tr><th>Code</th><th>TP</th><th>Diplôme</th><th>Usage</th><th>Durée</th><th>Statut</th></tr></thead><tbody>
+    {% for tp in tps %}
+    <tr>
+      <td><a href="{% url 'tp_detail' tp.pk %}"><strong>{{ tp.code }}</strong></a></td>
+      <td>{{ tp.titre }}<br><span class="muted">{{ tp.resume_eleve|truncatechars:140 }}</span></td>
+      <td><span class="badge">{{ tp.diplome.code }}</span></td>
+      <td>{{ tp.get_usage_pedagogique_display }}</td>
+      <td>{{ tp.duree_heures_affichage }}</td>
+      <td><span class="badge status-{{ tp.statut }}">{{ tp.get_statut_display }}</span></td>
+    </tr>
+    {% empty %}<tr><td colspan="6">Aucun TP trouvé.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

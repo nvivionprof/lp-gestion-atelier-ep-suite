@@ -1,0 +1,91 @@
+{% extends "tp_manager/base.html" %}
+{% block content %}
+<section class="hero-card">
+  <h1>Tableau de bord compétences — {{ eleve.full_name }}</h1>
+  <p>{{ eleve.formation_code }} · {{ eleve.class_name }} · Vue compacte ou développée avec regroupement par année de réalisation.</p>
+  <div class="button-row">
+    <a class="btn {% if mode == 'compact' %}primary{% endif %}" href="?mode=compact">Vue compacte</a>
+    <a class="btn {% if mode == 'detail' %}primary{% endif %}" href="?mode=detail">Vue développée</a>
+  </div>
+</section>
+<section class="panel legend-row">
+  <span class="eval-badge" style="background:#2f80ed">NE</span> Non évaluable
+  <span class="eval-badge" style="background:#d90429">NA</span> Non acquis
+  <span class="eval-badge" style="background:#f59e0b">EC</span> En cours
+  <span class="eval-badge" style="background:#9be37d;color:#123">A</span> Acquis
+  <span class="eval-badge" style="background:#3f8f29">PA</span> Parfaitement acquis
+  <span class="eval-badge" style="background:#9ca3af">AB</span> Absent
+</section>
+<section class="panel eval-scroll eval-scroll-dense">
+  <table class="eval-matrix eval-matrix-dense">
+    <thead>
+      <tr>
+        <th class="sticky-col eval-title-col" rowspan="2">Compétence / critère</th>
+        {% for group in column_groups %}
+          <th class="eval-year-header" colspan="{{ group.count }}">{{ group.label }}</th>
+        {% endfor %}
+      </tr>
+      <tr>
+        {% for col in columns %}
+          {% if col.kind == 'activity' %}
+            <th class="eval-col {% if col.is_bilan %}bilan-col{% endif %}">
+              <a href="{% url 'evaluation_manager:activity_detail' col.obj.pk %}" title="{{ col.obj.intitule }} — {{ col.short_date }}">{{ col.display_code }}</a>
+            </th>
+          {% else %}
+            <th class="eval-col bilan-col">
+              <a href="{% url 'evaluation_manager:bilan_detail' col.obj.pk %}" title="{{ col.obj.nom }} — {{ col.short_date }}">{{ col.display_code }}</a>
+            </th>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+    {% if mode == 'detail' %}
+      {% for row in detail_rows %}
+        {% if row.type == 'competence' %}
+          <tr class="competence-row">
+            <td class="sticky-col"><strong>{{ row.competence.code }}</strong> — {{ row.competence.libelle_officiel }}</td>
+            {% for level in row.col_levels %}<td class="eval-cell level-{{ level|default:'empty' }}">{{ level }}</td>{% endfor %}
+          </tr>
+        {% else %}
+          <tr>
+            <td class="sticky-col critere-cell">{{ row.critere.libelle_officiel }}</td>
+            {% for level in row.col_levels %}<td class="eval-cell level-{{ level|default:'empty' }}">{{ level }}</td>{% endfor %}
+          </tr>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% for row in compact_rows %}
+        <tr>
+          <td class="sticky-col"><strong>{{ row.competence.code }}</strong> — {{ row.competence.libelle_officiel }}</td>
+          {% for level in row.col_levels %}<td class="eval-cell level-{{ level|default:'empty' }}">{{ level }}</td>{% endfor %}
+        </tr>
+      {% endfor %}
+    {% endif %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th class="sticky-col">Note TP si activée</th>
+        {% for col in columns %}
+          {% if col.kind == 'activity' %}
+            <td class="eval-note">{% if col.obj.tp_note and col.obj.note_calculee != None %}{{ col.obj.note_calculee }}/{{ col.obj.bareme_total }}{% else %}—{% endif %}</td>
+          {% else %}
+            <td class="eval-note bilan-col">Bilan</td>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </tfoot>
+  </table>
+</section>
+<section class="panel">
+  <h2>Activités à reprendre / non faites</h2>
+  <table class="data-table">
+    <thead><tr><th>Date</th><th>Code</th><th>TP</th><th>Motif</th></tr></thead>
+    <tbody>
+      {% for activity in activities %}{% if activity.absent or activity.non_fait or activity.a_refaire or activity.remediation_necessaire %}
+      <tr><td>{{ activity.date_activite|date:"d/m/Y" }}</td><td>{{ activity.code_eval }}</td><td>{{ activity.intitule }}</td><td>{% if activity.absent %}Absent{% elif activity.non_fait %}Non fait{% elif activity.a_refaire %}À refaire{% elif activity.remediation_necessaire %}Remédiation{% endif %}</td></tr>
+      {% endif %}{% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

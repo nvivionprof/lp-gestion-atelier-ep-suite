@@ -1,0 +1,14 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Base systèmes</p><h1>Systèmes pédagogiques</h1></div><div class="hero-actions">{% if system_can_create %}<a class="button" href="{% url 'system_create' %}">Créer un système</a>{% endif %}</div></section>
+<section class="panel">
+<form method="get" class="filters">
+  <input type="search" name="q" value="{{ q }}" placeholder="Code, désignation, description">
+  <select name="zone"><option value="">Toutes les zones</option>{% for z in zones %}<option value="{{ z.id }}" {% if selected_zone == z.id|stringformat:'s' %}selected{% endif %}>{{ z.code }} — {{ z.nom }}</option>{% endfor %}</select>
+  <select name="formation"><option value="">Toutes formations</option>{% for f in formations %}<option value="{{ f.id }}" {% if selected_formation == f.id|stringformat:'s' %}selected{% endif %}>{{ f.code }}</option>{% endfor %}</select>
+  <select name="statut"><option value="">Tous statuts</option>{% for key,label in status_choices %}<option value="{{ key }}" {% if selected_statut == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <button type="submit">Filtrer</button>
+</form>
+<table><tr><th>Photo</th><th>Système</th><th>Zone</th><th>Formations</th><th>Statut</th><th>Actions</th></tr>{% for s in systems %}<tr><td>{% if s.photo %}<img class="thumb" src="{{ s.photo.url }}" alt="{{ s.designation }}">{% else %}<div class="thumb placeholder">SYS</div>{% endif %}</td><td><a href="{% url 'system_detail' s.pk %}"><strong>{{ s.code }}</strong></a><br>{{ s.designation }}</td><td>{{ s.zone.code|default:'—' }}{% if s.sous_zone %}<br><small>{{ s.sous_zone.nom }}</small>{% endif %}</td><td>{% for f in s.formations.all %}<span class="badge">{{ f.code }}</span>{% empty %}—{% endfor %}</td><td><span class="badge status-{{ s.statut }}">{{ s.get_statut_display }}</span></td><td><a class="mini-button" href="{% url 'worksession_start' s.pk %}">QR / prise</a> <a class="mini-button secondary" href="{% url 'reservation_create' %}?systeme={{ s.pk }}">Réserver</a></td></tr>{% empty %}<tr><td colspan="6">Aucun système.</td></tr>{% endfor %}</table>
+</section>
+{% endblock %}

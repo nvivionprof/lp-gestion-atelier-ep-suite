@@ -1,0 +1,8 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}Créer une séquence{% endblock %}
+{% block seq_content %}
+<form method="post" class="card form-grid">{% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn" type="submit">Créer</button>
+</form>
+{% endblock %}

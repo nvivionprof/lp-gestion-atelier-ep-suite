@@ -1,0 +1,20 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Composants — {{ equipment.code }} {{ equipment.name }}</h1>
+<section class="panel">
+  <h2>{% if component %}Modifier un composant{% else %}Ajouter un composant{% endif %}</h2>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer</button>
+    <a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Retour fiche</a>
+  </form>
+</section>
+<section class="panel">
+  <h2>Composants existants</h2>
+  <table><thead><tr><th>Nom</th><th>Qté</th><th>Présent</th><th>Statut</th><th>Photo</th><th>Action</th></tr></thead><tbody>
+  {% for c in components %}
+    <tr><td>{{ c.name }}</td><td>{{ c.expected_quantity }}</td><td>{{ c.required|yesno:'Oui,Non' }}</td><td>{{ c.get_default_condition_display }}</td><td>{% if c.photo %}<img class="component-thumb" src="{{ c.photo.url }}">{% else %}-{% endif %}</td><td><a class="button secondary" href="?edit={{ c.id }}">Modifier</a>{% if can_delete %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="delete_id" value="{{ c.id }}"><button class="danger" type="submit">Supprimer</button></form>{% endif %}</td></tr>
+  {% empty %}<tr><td colspan="6">Aucun composant.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

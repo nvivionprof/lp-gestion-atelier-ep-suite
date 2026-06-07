@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120">
+  <rect width="520" height="120" rx="22" fill="#0b2d4d"/>
+  <rect x="24" y="24" width="72" height="72" rx="16" fill="#ffffff"/>
+  <path d="M43 48h34M43 60h34M43 72h24" stroke="#1d4f7f" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="82" cy="82" r="10" fill="#2563eb"/>
+  <text x="116" y="56" font-family="Arial, sans-serif" font-size="34" font-weight="800" fill="#ffffff">System Manager</text>
+  <text x="118" y="86" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#bfdbfe">Systèmes • Réservations • QR code</text>
+</svg>

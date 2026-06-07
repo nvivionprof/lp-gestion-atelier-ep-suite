@@ -1,0 +1,85 @@
+:root{
+  --navy:#0f2f57;
+  --navy-dark:#0b1f3a;
+  --teal:#0f766e;
+  --teal-light:#14b8a6;
+  --orange:#f97316;
+  --bg:#f3f6f8;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#dbe3ea;
+  --red:#dc2626;
+  --amber:#f59e0b;
+  --dark-orange:#c2410c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg)}
+.topbar{height:66px;background:linear-gradient(90deg,var(--navy-dark),var(--navy),var(--teal));display:flex;align-items:center;gap:18px;padding:0 18px;color:white;box-shadow:0 2px 8px rgba(15,23,42,.18)}
+.brand{display:flex;align-items:center;gap:10px;min-width:210px}.brand-img{height:48px;max-width:178px;object-fit:contain;background:white;border-radius:9px;padding:4px 8px}.version-badge{font-size:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:3px 8px;border-radius:999px;color:white;white-space:nowrap}
+nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}nav a{color:white;text-decoration:none;font-weight:600;font-size:14px;opacity:.94}nav a:hover{text-decoration:underline}.role-pill{font-size:12px;background:var(--orange);padding:4px 8px;border-radius:999px;color:white;font-weight:700}
+.container{max-width:1180px;margin:26px auto;padding:0 18px}.container-wide{max-width:1500px;margin:22px auto;padding:0 18px}
+h1{font-size:28px;margin:0 0 20px}h2{font-size:21px;margin:0 0 14px}.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid-main{display:grid;grid-template-columns:minmax(300px,1.1fr) minmax(360px,1.4fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 8px 20px rgba(15,23,42,.05)}.stat{background:var(--card);border-radius:13px;padding:14px 16px;box-shadow:0 8px 20px rgba(15,23,42,.05)}.stat .label{color:var(--muted);font-size:13px}.stat .value{font-size:32px;font-weight:800;color:var(--navy)}
+.btn{display:inline-block;border:1px solid var(--border);background:white;border-radius:8px;padding:8px 12px;text-decoration:none;color:var(--navy);font-weight:700;cursor:pointer}.btn.primary{background:var(--teal);border-color:var(--teal);color:white}.btn.dark{background:var(--navy);border-color:var(--navy);color:white}.btn.orange{background:var(--orange);border-color:var(--orange);color:white}.btn.small{padding:5px 8px;font-size:12px}.btn.danger{background:var(--red);border-color:var(--red);color:white}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.alert{padding:10px 12px;border-radius:10px;margin-bottom:12px;background:#e0f2fe;border:1px solid #bae6fd}.alert.error{background:#fee2e2;border-color:#fecaca}.alert.success{background:#dcfce7;border-color:#bbf7d0}.alert.warning{background:#fef9c3;border-color:#fde68a}
+table{width:100%;border-collapse:separate;border-spacing:0}th,td{text-align:left;border-bottom:1px solid var(--border);padding:10px;vertical-align:top;font-size:14px}th{background:#f8fafc;color:#334155;font-weight:800}tr:hover td{background:#fcfdff}.table-wrap{overflow:auto;border-radius:12px;border:1px solid var(--border)}
+.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:12px;font-weight:800;background:#e2e8f0;color:#334155}.badge.green{background:#dcfce7;color:#166534}.badge.yellow{background:#fef3c7;color:#92400e}.badge.orange{background:#ffedd5;color:#9a3412}.badge.red{background:#fee2e2;color:#991b1b}.badge.blue{background:#dbeafe;color:#1d4ed8}
+form p{margin:10px 0}input,select,textarea{max-width:100%;border:1px solid var(--border);border-radius:8px;padding:8px;background:white}label{font-weight:700;color:#334155}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.filterbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:14px}
+.logo-hero{display:flex;align-items:center;gap:16px;margin-bottom:20px}.logo-hero img{height:80px;max-width:360px;object-fit:contain}.footer,.app-footer{text-align:center;color:var(--muted);font-size:13px;margin:30px 0}
+.display-body{background:#0b1f3a;color:white}.display-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:20px}.display-card table td,.display-card table th{border-color:rgba(255,255,255,.15);color:white}.display-card table th{background:rgba(255,255,255,.08)}
+@media(max-width:900px){.topbar{height:auto;align-items:flex-start;padding:12px;flex-direction:column}.grid-main,.grid-2{grid-template-columns:1fr}nav{gap:8px}.brand{min-width:0}}
+/* V2.0 — droits publics/loggés, états de bons et inventaire renforcé */
+.badge.dark{background:#e5e7eb;color:#374151}
+.badge.reclamation,.badge.orange{background:#ffedd5;color:#9a3412}
+input[type=checkbox]{width:auto}
+
+
+
+/* V2.9.5 — correctif transversal menus admin : libellés toujours visibles */
+.admin-dropdown{position:relative;display:inline-block;vertical-align:top;}
+.admin-dropdown summary{list-style:none;cursor:pointer;white-space:nowrap;}
+.admin-dropdown summary::-webkit-details-marker{display:none;}
+.admin-dropdown summary::after{content:' ▾';font-size:.85em;}
+.admin-dropdown[open] summary::after{content:' ▴';}
+.admin-dropdown-menu{display:grid !important;gap:4px;}
+.admin-dropdown-menu form{display:block !important;margin:0 !important;padding:0 !important;width:100% !important;}
+.admin-dropdown-menu a,
+.admin-dropdown-menu button,
+.admin-dropdown-menu .admin-menu-item{
+  display:block !important;
+  width:100% !important;
+  min-height:34px !important;
+  line-height:1.25 !important;
+  padding:8px 10px !important;
+  border-radius:8px !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#111827 !important;
+  font-size:.94rem !important;
+  font-weight:700 !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  cursor:pointer !important;
+}
+.admin-dropdown-menu a:hover,
+.admin-dropdown-menu button:hover,
+.admin-dropdown-menu .admin-menu-item:hover{background:#f3f4f6 !important;color:#111827 !important;}
+.admin-dropdown-menu button span{display:inline !important;color:inherit !important;visibility:visible !important;}
+.admin-dropdown-menu .admin-menu-separator{height:1px;background:#e5e7eb;margin:4px 0;}
+@media(max-width:780px){.admin-dropdown-menu{position:static !important;margin-top:6px !important;}}
+
+/* v0.0.4 aide / à propos */
+.help-page { max-width: 1100px; margin: 0 auto; }
+.help-page h1 { margin-top: 0; }
+.help-page ol { margin-bottom: 1.5rem; }
+.help-page li { margin: .35rem 0; }
+.help-page .muted { opacity: .75; font-size: .95rem; }
+
+
+/* V0.0.1-RC1 — PedaShop prioritaire PC/tablette, lisibilité consultation */
+.pedashop-rc-note{border:1px solid #bfdbfe;background:#eff6ff;border-radius:14px;padding:.8rem 1rem;margin:.8rem 0;color:#1e3a8a;}

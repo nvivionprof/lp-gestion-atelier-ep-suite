@@ -1,0 +1,44 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Bon d’intervention — {{ equipment.code }}</h1>
+<section class="panel detail">
+  <p><strong>Matériel :</strong> {{ equipment.name }}</p>
+  <p><strong>Statut actuel :</strong> <span class="badge {{ equipment.status }}">{{ equipment.get_status_display }}</span></p>
+  <p><strong>État actuel :</strong> {{ equipment.get_current_condition_display }}</p>
+  <p><strong>Emplacement :</strong> {{ equipment.location|default:'-' }}</p>
+  {% if equipment.secure_storage %}<p><strong>Armoire / casier :</strong> {{ equipment.secure_cabinet }} / {{ equipment.secure_locker }}</p>{% endif %}
+</section>
+
+{% include 'inventory/_locker_button.html' with equipment=equipment locker_info=locker_info locker_context='maintenance' %}
+
+<section class="panel">
+  <h2>Créer un bon d’intervention</h2>
+  <p class="hint">Utilise ce bon pour un contrôle, un nettoyage, un reconditionnement, une vérification périodique ou une maintenance légère. Pour une panne déclarée, le bon de réparation reste disponible dans le module réparation / dépannage.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer le bon d’intervention</button>
+    <a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Annuler</a>
+  </form>
+</section>
+
+{% if recent_interventions %}
+<section class="panel">
+  <h2>Interventions récentes</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Magasinier</th><th>Type</th><th>Résultat</th><th>Commentaire</th></tr></thead>
+    <tbody>
+      {% for i in recent_interventions %}
+      <tr>
+        <td>{{ i.intervention_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ i.storekeeper.first_name }} {{ i.storekeeper.last_name }}<br><small>{{ i.storekeeper.code }}</small></td>
+        <td>{{ i.get_intervention_type_display }}</td>
+        <td>{{ i.get_result_display }}</td>
+        <td>{{ i.comment|default:'-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="card">
+  <h1>Supervision des bases PostgreSQL</h1>
+  <p class="muted">Vue de contrôle rapide depuis LP Core : état des bases de chaque module, taille, nombre de tables et dernière migration Django connue.</p>
+
+  <div class="cards compact">
+    <article><strong>Moteur</strong><br><code>{{ engine }}</code></article>
+    <article><strong>Hôte PostgreSQL</strong><br><code>{{ host }}:{{ port }}</code></article>
+    <article><strong>Utilisateur</strong><br><code>{{ user }}</code></article>
+    <article><strong>État</strong><br>{{ ok_count }} / {{ total_count }} base(s) accessibles</article>
+  </div>
+
+  {% if not postgres_mode %}
+    <p class="alert warning">Installation actuellement en SQLite : la supervision multi-bases complète sera disponible après bascule PostgreSQL.</p>
+  {% endif %}
+
+  <table>
+    <tr>
+      <th>Module</th>
+      <th>Base</th>
+      <th>État</th>
+      <th>Taille</th>
+      <th>Tables</th>
+      <th>Migrations</th>
+      <th>Dernière migration</th>
+      <th>Détail</th>
+    </tr>
+    {% for db in items %}
+    <tr>
+      <td><strong>{{ db.label }}</strong><br><small>{{ db.code }}</small></td>
+      <td><code>{{ db.database }}</code></td>
+      <td>{% if db.ok %}<span class="badge success">OK</span>{% else %}<span class="badge danger">Erreur</span>{% endif %}</td>
+      <td>{{ db.size_pretty }}</td>
+      <td>{{ db.table_count|default:'—' }}</td>
+      <td>{{ db.migration_count|default:'—' }}</td>
+      <td><code>{{ db.last_migration }}</code></td>
+      <td>{% if db.error %}<pre class="mini-pre">{{ db.error }}</pre>{% else %}<span class="muted">—</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div class="panel">
+    <h2>Commandes utiles côté serveur</h2>
+    <pre class="mini-pre">docker compose ps
+docker exec -it lp-suite-postgres pg_isready -U lp_suite_user -d lp_core
+docker compose logs --tail=150 postgres</pre>
+  </div>
+</section>
+{% endblock %}

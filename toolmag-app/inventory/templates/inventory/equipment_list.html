@@ -1,0 +1,28 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Inventaire</h1>
+{% if can_create_equipment %}<p><a class="button" href="{% url 'equipment_create' %}">Créer un matériel</a></p>{% endif %}
+<form class="filters" method="get">
+  <input name="q" value="{{ q }}" placeholder="Recherche code, nom, descriptif, marque, série, lieu...">
+  <select name="status"><option value="">Tous statuts</option>{% for value,label in statuses %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <button>Filtrer</button>
+</form>
+<table>
+  <thead><tr><th>Photo</th><th>Code</th><th>Nom</th><th>Descriptif</th><th>Type</th><th>Catégorie</th><th>Statut</th><th>État</th><th>Lieu</th></tr></thead>
+  <tbody>
+  {% for eq in equipments %}
+    <tr>
+      <td>{% if eq.photo %}<img class="list-thumb" src="{{ eq.photo.url }}" alt="{{ eq.name }}">{% else %}-{% endif %}</td>
+      <td><a href="{% url 'equipment_detail' eq.code %}">{{ eq.code }}</a></td>
+      <td>{{ eq.name }}</td>
+      <td>{{ eq.description|default:'-' }}</td>
+      <td>{{ eq.get_equipment_type_display }}</td>
+      <td>{{ eq.category|default:'-' }}</td>
+      <td><span class="badge {{ eq.status }}">{{ eq.get_status_display }}</span></td>
+      <td>{{ eq.get_current_condition_display }}</td>
+      <td>{{ eq.location|default:'-' }}</td>
+    </tr>
+  {% empty %}<tr><td colspan="9">Aucun matériel.</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

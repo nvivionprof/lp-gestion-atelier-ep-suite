@@ -1,0 +1,14 @@
+{% extends 'safety_manager/public_base.html' %}
+{% load static %}
+{% block title %}Consignes de sécurité{% endblock %}
+{% block content %}
+<main class="regulatory-board">
+  <header><img src="{% static 'safety_manager/img/logo_stjoseph_lasalle.png' %}" alt="Saint Joseph LaSalle"><div><h1>Consignes de sécurité</h1><p>Norme ISO 7010 — atelier pédagogique</p></div></header>
+  <section class="reg-grid">
+    <article class="red"><h2>Incendie</h2><ul><li>Gardez votre calme.</li><li>Déclenchez l’alarme la plus proche.</li><li>Attaquez le feu uniquement si vous êtes formé et sans risque.</li><li>Évacuez et rejoignez le point de rassemblement.</li></ul></article>
+    <article class="green"><h2>Évacuation</h2><ul><li>Quittez les lieux dès le signal sonore.</li><li>Suivez les issues de secours.</li><li>N’utilisez pas les ascenseurs ou monte-charges.</li><li>Ne revenez pas sans autorisation.</li></ul></article>
+    <article class="yellow"><h2>Accident</h2><ul><li>Protégez la zone.</li><li>Alertez un adulte / SST.</li><li>Appelez les secours si nécessaire.</li><li>Ne déplacez pas la victime sauf danger immédiat.</li></ul></article>
+    <article class="blue"><h2>Incident</h2><ul><li>Signalez toute situation dangereuse.</li><li>Prévenez le responsable atelier.</li><li>Conservez les faits observables.</li><li>Participez au retour d’expérience.</li></ul></article>
+  </section>
+</main>
+{% endblock %}

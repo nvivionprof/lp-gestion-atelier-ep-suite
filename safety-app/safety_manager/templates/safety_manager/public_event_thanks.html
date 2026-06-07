@@ -1,0 +1,4 @@
+{% extends 'safety_manager/base.html' %}
+{% block content %}
+<section class="hero safety-hero"><div><p class="eyebrow">Déclaration enregistrée</p><h1>Merci. Numéro {{ code }}</h1><p class="lead">Votre signalement a été enregistré. Un responsable sécurité ou atelier devra qualifier l’événement.</p></div><div class="hero-actions"><a class="button" href="{% url 'safety_public_event_create' %}">Nouvelle déclaration</a><a class="button secondary" href="{% url 'safety_public_dashboard' %}">Tableau public</a></div></section>
+{% endblock %}

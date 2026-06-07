@@ -1,0 +1,2 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}<div class="card"><h1>Créer une pré-réservation professeur</h1><p class="muted">V1.7 : création simple avec une première ligne article. Les lignes supplémentaires pourront être ajoutées ensuite depuis l’évolution panier projection.</p><form method="post">{% csrf_token %}<h2>Projection</h2>{{ proj_form.as_p }}<h2>Article réservé</h2>{{ line_form.as_p }}<button class="btn primary">Créer</button></form></div>{% endblock %}

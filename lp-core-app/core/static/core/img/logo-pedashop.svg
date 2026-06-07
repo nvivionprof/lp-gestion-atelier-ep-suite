@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="180" viewBox="0 0 520 180" role="img" aria-label="PedaShop">
+  <rect width="520" height="180" fill="white"/>
+  <g transform="translate(28 30)">
+    <rect x="18" y="42" width="118" height="70" rx="14" fill="#0f4c81"/>
+    <rect x="32" y="28" width="90" height="28" rx="10" fill="#0f9f9a"/>
+    <path d="M42 68h72M42 87h72" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <path d="M149 43h55" stroke="#d97706" stroke-width="9" stroke-linecap="round"/>
+    <path d="M149 80h45" stroke="#0f9f9a" stroke-width="9" stroke-linecap="round"/>
+    <path d="M149 112h72" stroke="#0f4c81" stroke-width="9" stroke-linecap="round"/>
+    <rect x="215" y="28" width="54" height="96" rx="8" fill="#f97316"/>
+    <path d="M228 44v64M242 44v64M256 44v64" stroke="white" stroke-width="7"/>
+    <path d="M285 52l22 28 42-49" fill="none" stroke="#0f9f9a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="315" y="78" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" fill="#0f172a">LP Gestion Atelier</text>
+  <text x="315" y="130" font-family="Arial, Helvetica, sans-serif" font-size="55" font-weight="800" fill="#0f4c81">Peda<tspan fill="#d97706">Shop</tspan></text>
+</svg>

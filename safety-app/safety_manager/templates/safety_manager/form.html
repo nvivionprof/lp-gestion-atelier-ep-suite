@@ -1,0 +1,7 @@
+{% extends 'safety_manager/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'safety_manager/safety.css' %}">
+{% include 'safety_manager/_nav.html' %}
+<section class="panel form-card"><h1>{{ title }}</h1><form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<div class="toolbar"><button type="submit">Enregistrer</button><a class="button secondary" href="javascript:history.back()">Annuler</a></div></form></section>
+{% endblock %}

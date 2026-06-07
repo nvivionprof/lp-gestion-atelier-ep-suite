@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h1>Gestion par lot — droits, magasins, habilitations et RGPD</h1>
+<form method="get" class="toolbar">
+  <input name="q" value="{{ q }}" placeholder="Recherche">
+  <select name="class_name"><option value="">Toutes classes</option>{% for c in classes %}<option {% if c == class_name %}selected{% endif %}>{{ c }}</option>{% endfor %}</select>
+  <select name="formation"><option value="">Toutes formations</option>{% for f in formations %}<option value="{{ f.code }}" {% if f.code == formation %}selected{% endif %}>{{ f.code }}</option>{% endfor %}</select>
+  <select name="role"><option value="">Tous rôles</option>{% for code,label in roles %}<option value="{{ code }}" {% if code == role %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <button>Filtrer</button>
+</form>
+<form method="post">{% csrf_token %}<input type="hidden" name="q" value="{{ q }}"><input type="hidden" name="class_name" value="{{ class_name }}"><input type="hidden" name="formation" value="{{ formation }}"><input type="hidden" name="role" value="{{ role }}">
+  <div class="panel"><button type="button" onclick="document.querySelectorAll('.user-check').forEach(c=>c.checked=true)">Tout cocher dans le filtre</button> <button type="button" onclick="document.querySelectorAll('.user-check').forEach(c=>c.checked=false)">Tout décocher</button></div>
+  <section class="panel"><h2>Action à appliquer</h2>
+    <label>Action<select name="bulk_action" id="bulk-action" onchange="updateBulkBlocks()"><option value="add_right">Ajouter droit</option><option value="remove_right">Retirer droit</option><option value="add_store">Affecter magasin</option><option value="remove_store">Retirer magasin</option><option value="add_certification">Ajouter habilitation / certification</option><option value="set_image_authorization">Droit à l'image / opposition parentale</option></select></label>
+
+    <div class="bulk-block" data-actions="add_right remove_right">
+      <h3>Droits</h3>
+      <div class="rights-grid">{% for right in rights_defs %}<label><input type="checkbox" name="rights_codes" value="{{ right.code }}"> <span>{{ right.code }}</span><small>{{ right.module }} — {{ right.label }}</small></label>{% empty %}<p>Aucun droit paramétré.</p>{% endfor %}</div>
+    </div>
+
+    <div class="bulk-block" data-actions="add_store remove_store">
+      <h3>Magasins</h3>
+      <div class="rights-grid">{% for s in stores %}<label><input type="checkbox" name="stores" value="{{ s.pk }}"> <span>{{ s.code }}</span><small>{{ s.nom }} — {{ s.module }}</small></label>{% empty %}<p>Aucun magasin.</p>{% endfor %}</div>
+    </div>
+
+    <div class="bulk-block" data-actions="add_certification">
+      <h3>Certification / habilitation</h3>
+      <div class="form-grid compact">
+        <label>Type certification<select name="type_certification">{% for code,label in certification_types %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+        <label>Niveau<input name="niveau"></label>
+        <label>Date obtention<input name="date_obtention" type="date"></label>
+        <label>Date fin validité<input name="date_fin_validite" type="date"></label>
+      </div>
+    </div>
+
+    <div class="bulk-block" data-actions="set_image_authorization">
+      <h3>Droit à l'image / RGPD</h3>
+      <div class="form-grid compact">
+        <label>Statut<select name="image_consent_status"><option value="unknown">Non renseigné</option><option value="authorized">Autorisation accordée</option><option value="refused">Refus / opposition</option></select></label>
+        <label class="checkline"><input type="checkbox" name="parent_image_opposition" value="1"> Opposition parentale mineur</label>
+        <label class="checkline"><input type="checkbox" name="personal_upload_blocked" value="1"> Bloquer ajout photo/documents</label>
+        <label class="span-all">Commentaire<input name="image_consent_comment" placeholder="Ex. formulaire papier signé / opposition parentale"></label>
+      </div>
+    </div>
+
+    <button type="submit">Appliquer au lot coché ou filtré</button>
+  </section>
+  <section class="panel"><h2>Utilisateurs filtrés</h2><table><tr><th></th><th>Code</th><th>Nom</th><th>Classe</th><th>Formation</th><th>Rôle</th><th>Droit image</th><th>Droits</th></tr>{% for u in users %}<tr><td><input class="user-check" type="checkbox" name="selected_users" value="{{ u.pk }}"></td><td>{{ u.code }}</td><td>{{ u.last_name }} {{ u.first_name }}</td><td>{{ u.class_name }}</td><td>{% if u.formation %}{{ u.formation.code }}{% endif %}</td><td>{{ u.role_principal }}</td><td>{{ u.get_image_consent_status_display }}{% if u.parent_image_opposition %}<br><strong>opposition</strong>{% endif %}</td><td>{{ u.rights|truncatechars:45 }}</td></tr>{% empty %}<tr><td colspan="8">Aucun utilisateur.</td></tr>{% endfor %}</table></section>
+</form>
+<script>
+function updateBulkBlocks(){
+  const action=document.getElementById('bulk-action').value;
+  document.querySelectorAll('.bulk-block').forEach(block=>{
+    const allowed=(block.dataset.actions||'').split(' ');
+    block.style.display=allowed.includes(action)?'block':'none';
+  });
+}
+updateBulkBlocks();
+</script>
+{% endblock %}

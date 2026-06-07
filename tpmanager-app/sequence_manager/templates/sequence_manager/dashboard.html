@@ -1,0 +1,16 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}Sequence Manager{% endblock %}
+{% block seq_content %}
+<section class="grid cards-4">
+  <article class="card"><h3>Séquences</h3><p class="metric">{{ sequence_count }}</p></article>
+  <article class="card"><h3>Actives</h3><p class="metric">{{ active_count }}</p></article>
+  <article class="card"><h3>Modèles</h3><p class="metric">{{ model_count }}</p></article>
+  <article class="card"><h3>Zones</h3><p class="metric">{{ zone_count }}</p></article>
+</section>
+<section class="card">
+  <h2>Dernières séquences</h2>
+  <table class="table"><thead><tr><th>Code</th><th>Titre</th><th>Zone</th><th>Coloration</th><th>Dates</th><th></th></tr></thead><tbody>
+    {% for seq in recent_sequences %}<tr><td>{{ seq.code }}</td><td>{{ seq.titre }}</td><td>{{ seq.zone_principale|default:'—' }}</td><td>{{ seq.coloration|default:'—' }}</td><td>{{ seq.date_debut }} → {{ seq.date_fin }}</td><td><a class="btn small" href="{% url 'sequence_manager:sequence_detail' seq.pk %}">Ouvrir</a></td></tr>{% empty %}<tr><td colspan="6">Aucune séquence.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

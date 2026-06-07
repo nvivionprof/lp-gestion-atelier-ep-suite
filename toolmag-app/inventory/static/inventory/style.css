@@ -1,0 +1,167 @@
+:root{--bg:#f4f6f8;--panel:#fff;--text:#111827;--muted:#6b7280;--accent:#2563eb;--danger:#dc2626;--warn:#d97706;--ok:#059669}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}a{color:var(--accent);text-decoration:none}.topbar{background:#111827;color:#fff;padding:14px 24px;display:flex;gap:24px;align-items:center;flex-wrap:wrap}.brand a{font-size:1.35rem;font-weight:800;color:#fff}.topbar nav{display:flex;gap:12px;flex-wrap:wrap}.topbar nav a{color:#e5e7eb}.container{max-width:1220px;margin:0 auto;padding:24px}h1{margin-top:0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:22px}.card,.panel{background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 8px 25px rgba(0,0,0,.06)}.card span{display:block;color:var(--muted);font-size:.95rem}.card strong{font-size:2.2rem}.card.danger strong{color:var(--danger)}.card.warn strong{color:var(--warn)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.actions{display:flex;gap:12px;margin:18px 0}.button,button{display:inline-block;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer}.button.secondary{background:#374151;color:#fff}table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden}th,td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:left}th{background:#f9fafb;color:#4b5563}.late td{background:#fee2e2}.badge{border-radius:999px;padding:5px 10px;font-size:.85rem;background:#e5e7eb}.badge.available{background:#d1fae5;color:#065f46}.badge.out,.badge.late{background:#fee2e2;color:#991b1b}.badge.maintenance,.badge.incomplete{background:#fef3c7;color:#92400e}.filters,.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}.filters input,.filters select,input,select,textarea{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:10px;background:#fff}.form label{display:block;font-weight:600}.form label input,.form label select,.form label textarea{margin-top:6px;font-weight:400}.checklist{display:grid;gap:8px;margin:12px 0}.checkrow{display:grid;grid-template-columns:1.4fr 1fr 1.3fr;gap:10px;align-items:center;background:#f9fafb;border-radius:12px;padding:10px}.alert{padding:12px 16px;border-radius:12px;margin-bottom:14px;background:#dbeafe}.alert.success{background:#d1fae5}.error{display:block;color:var(--danger)}.hint{color:var(--muted)}code{background:#f3f4f6;padding:2px 6px;border-radius:6px}@media(max-width:780px){.grid2{grid-template-columns:1fr}.checkrow{grid-template-columns:1fr}.topbar{align-items:flex-start}.container{padding:14px}table{font-size:.9rem}}
+
+
+.equipment-photo-wrap { margin: 0 0 1rem 0; }
+.equipment-photo { max-width: 280px; max-height: 220px; object-fit: contain; border: 1px solid #d7dee8; border-radius: 10px; background: #fff; padding: .4rem; }
+.list-thumb { width: 52px; height: 42px; object-fit: contain; border: 1px solid #d7dee8; border-radius: 6px; background: #fff; }
+.component-thumb { width: 64px; height: 48px; object-fit: contain; border: 1px solid #d7dee8; border-radius: 6px; background: #fff; }
+.checkrow-photo { grid-template-columns: 76px 1.4fr 1fr 1.5fr; align-items: center; }
+.check-photo { text-align: center; }
+
+
+.qr-panel, .control-header { display: grid; grid-template-columns: 1fr 220px; gap: 18px; align-items: start; }
+.qr-card { background:#f9fafb; border-radius:14px; padding:14px; border:1px solid #e5e7eb; }
+.qr-img { width: 180px; height: 180px; object-fit: contain; background:#fff; border:1px solid #d1d5db; border-radius:12px; padding:8px; }
+.component-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:14px; }
+.component-card { background:#f9fafb; border:1px solid #e5e7eb; border-radius:14px; padding:14px; }
+.component-card h3 { margin:10px 0 8px 0; }
+.component-photo-large { width:100%; height:140px; object-fit:contain; background:#fff; border:1px solid #d7dee8; border-radius:10px; }
+.no-photo { height:140px; display:flex; align-items:center; justify-content:center; color:var(--muted); background:#fff; border:1px dashed #d1d5db; border-radius:10px; }
+@media(max-width:780px){.qr-panel,.control-header{grid-template-columns:1fr}.qr-img{width:160px;height:160px}}
+.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; }
+.button { display: inline-block; padding: 0.65rem 0.9rem; border-radius: 0.5rem; background: #e8eef7; color: #123; text-decoration: none; border: 1px solid #cbd6e2; cursor: pointer; }
+.button.primary { background: #1f6feb; color: white; border-color: #1f6feb; }
+.form-grid p, .inline-form p, .side-card p { margin: 0.5rem 0; }
+.form-grid input[type="text"], .form-grid input[type="file"], .form-grid textarea, .form-grid select,
+.inline-form input, .inline-form select, .side-card input, .side-card select, .side-card textarea { max-width: 100%; padding: 0.45rem; border: 1px solid #ccd; border-radius: 0.35rem; }
+.promotion-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1rem; align-items: start; }
+.side-card { padding: 1rem; border: 1px solid #dde3ea; border-radius: 0.75rem; background: #f8fafc; position: sticky; top: 1rem; }
+.row-danger { background: #ffe9e9; }
+@media (max-width: 900px) { .promotion-layout { grid-template-columns: 1fr; } .side-card { position: static; } }
+
+
+.search-card{margin:1rem 0;padding:1rem;border:1px solid #d8dee9;border-radius:.75rem;background:#f8fafc}
+.search-card label{display:block;font-weight:600}
+.search-card input[type="search"]{width:100%;margin-top:.35rem;padding:.7rem;border:1px solid #cbd5e1;border-radius:.5rem;font-size:1rem}
+.search-results{margin-top:.75rem;display:grid;gap:.45rem}
+.search-result{display:flex;justify-content:space-between;gap:1rem;align-items:center;text-align:left;border:1px solid #cbd5e1;background:white;border-radius:.55rem;padding:.7rem;cursor:pointer}
+.search-result:hover{background:#eef6ff;border-color:#60a5fa}
+.search-result span{color:#64748b;font-size:.9rem}
+.search-empty{color:#64748b;font-size:.95rem;padding:.5rem 0}
+
+
+.version-badge{display:inline-block;margin-left:.6rem;padding:.22rem .55rem;border-radius:999px;background:#fef3c7;color:#92400e;font-size:.78rem;font-weight:800;vertical-align:middle}.app-footer{max-width:1220px;margin:0 auto 24px auto;padding:12px 24px;color:#6b7280;font-size:.9rem}.topbar .brand{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
+.competence-chip {
+  display: inline-block;
+  margin: 0.15rem 0.2rem 0.15rem 0;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid #c9d6e2;
+  border-radius: 0.45rem;
+  background: #f6f9fc;
+}
+
+
+/* V14 — historique détaillé fiche matériel */
+.history-table th, .history-table td { vertical-align: top; }
+.history-comments { min-width: 240px; max-width: 420px; white-space: normal; }
+.history-comments div { margin-bottom: 0.35rem; }
+.alert-text { font-weight: 700; color: #9a3412; }
+.row-warning { background: rgba(251, 191, 36, 0.12); }
+.row-maintenance { background: rgba(239, 68, 68, 0.10); }
+.history-table small { color: #64748b; font-size: 0.78rem; }
+
+/* V16 — sauvegardes/restauration web */
+.btn{display:inline-block;background:#e8eef7;color:#123;border:1px solid #cbd6e2;border-radius:.5rem;padding:.55rem .8rem;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.primary{background:#1f6feb;color:#fff;border-color:#1f6feb}.btn.warning{background:#fef3c7;color:#92400e;border-color:#f59e0b}.btn.danger{background:#fee2e2;color:#991b1b;border-color:#ef4444}.danger-zone{border:1px solid #fecaca;background:#fff7f7}.actions-cell{display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-start}.inline-form{display:inline-block;margin:0}.restore-details{display:inline-block}.restore-details summary{list-style:none}.restore-details summary::-webkit-details-marker{display:none}.confirm-box{margin-top:.5rem;padding:.75rem;border:1px solid #f59e0b;border-radius:.75rem;background:#fffbeb;min-width:260px}.confirm-box label{display:block;margin:.4rem 0;font-weight:700}.muted{color:#6b7280}
+.row-ok { background: rgba(46, 160, 67, 0.08); }
+.repair-summary { border-left: 4px solid #b45309; padding-left: 0.75rem; }
+.from-user-inventory { outline: 2px solid #6aa84f; background: rgba(106,168,79,.08); }
+
+/* V26 — vérification inventaire utilisateur de sortie */
+.row-inventory-alert td { background:#fecaca !important; color:#7f1d1d; font-weight:700; }
+.row-inventory-alert td:first-child { border-left:6px solid #dc2626; }
+.user-inventory-empty-note { background:#fef3c7; }
+
+/* Bêta V1.4 — ajout élégant catégorie/emplacement */
+.select-add-wrap{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}.select-add-wrap select{flex:1 1 260px}.button.add-inline{padding:.55rem .8rem;background:#eef2ff;color:#1e3a8a;border:1px solid #c7d2fe}.lookup-dialog{border:0;border-radius:16px;padding:0;box-shadow:0 25px 80px rgba(15,23,42,.25);max-width:480px;width:calc(100% - 32px)}.lookup-dialog::backdrop{background:rgba(15,23,42,.35)}.lookup-dialog-card{padding:20px;background:#fff}.lookup-dialog-card h2{margin-top:0}.lookup-dialog-card label{display:block;font-weight:700}.lookup-dialog-card input{margin-top:.4rem}
+
+/* Bêta V1.8 — sélecteur FR/EN */
+.language-switch{display:inline-flex;gap:.35rem;align-items:center;background:#1f2937;border:1px solid #374151;border-radius:999px;padding:.25rem .55rem;color:#d1d5db}.language-switch a{font-weight:800;color:#fff}.glossary-table td,.glossary-table th{vertical-align:top}.copy-box{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.section-note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:14px;margin:12px 0}
+
+/* Production V1.0.1 — logo, crédits et menu Fonctions admin */
+.brand-logo{min-width:260px}.brand-img{height:62px;max-width:320px;object-fit:contain;background:#fff;border-radius:10px;padding:6px}.admin-dropdown{position:relative}.admin-dropdown summary{list-style:none;cursor:pointer;color:#e5e7eb;font-weight:700;padding:.25rem .35rem}.admin-dropdown summary::-webkit-details-marker{display:none}.admin-dropdown summary:after{content:' ▾';font-size:.85em}.admin-dropdown[open] summary:after{content:' ▴'}.admin-dropdown-menu{position:absolute;z-index:20;top:100%;left:0;min-width:210px;background:#fff;color:#111827;border:1px solid #d1d5db;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:8px;display:grid;gap:4px}.admin-dropdown-menu a{color:#111827!important;padding:8px 10px;border-radius:8px}.admin-dropdown-menu a:hover{background:#f3f4f6}.credit-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}.cc-logo{height:34px;width:auto;object-fit:contain}@media(max-width:780px){.brand-logo{min-width:0}.brand-img{height:48px;max-width:220px}.admin-dropdown-menu{position:static;margin-top:6px}}
+
+/* V1.2 — duplication équipement composé et sélection collective */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0}.compact-actions{align-items:center;gap:8px}.confirm-box{display:block;margin:12px 0;padding:12px;border:1px solid #f59e0b;border-radius:12px;background:#fffbeb;font-weight:700}.row-to-verify td,.badge.to_verify{background:#e0f2fe;color:#075985}
+
+
+
+/* V2.9.5 — correctif transversal menus admin : libellés toujours visibles */
+.admin-dropdown{position:relative;display:inline-block;vertical-align:top;}
+.admin-dropdown summary{list-style:none;cursor:pointer;white-space:nowrap;}
+.admin-dropdown summary::-webkit-details-marker{display:none;}
+.admin-dropdown summary::after{content:' ▾';font-size:.85em;}
+.admin-dropdown[open] summary::after{content:' ▴';}
+.admin-dropdown-menu{display:grid !important;gap:4px;}
+.admin-dropdown-menu form{display:block !important;margin:0 !important;padding:0 !important;width:100% !important;}
+.admin-dropdown-menu a,
+.admin-dropdown-menu button,
+.admin-dropdown-menu .admin-menu-item{
+  display:block !important;
+  width:100% !important;
+  min-height:34px !important;
+  line-height:1.25 !important;
+  padding:8px 10px !important;
+  border-radius:8px !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#111827 !important;
+  font-size:.94rem !important;
+  font-weight:700 !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  cursor:pointer !important;
+}
+.admin-dropdown-menu a:hover,
+.admin-dropdown-menu button:hover,
+.admin-dropdown-menu .admin-menu-item:hover{background:#f3f4f6 !important;color:#111827 !important;}
+.admin-dropdown-menu button span{display:inline !important;color:inherit !important;visibility:visible !important;}
+.admin-dropdown-menu .admin-menu-separator{height:1px;background:#e5e7eb;margin:4px 0;}
+@media(max-width:780px){.admin-dropdown-menu{position:static !important;margin-top:6px !important;}}
+
+
+/* ToolMag v0.0.3 — fiche utilisateur PDF et gestion élèves centralisée LP Core */
+.user-detail-main{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:1.25rem;align-items:start}
+.user-detail-identity h1{margin-bottom:1.25rem}.user-detail-identity p{margin:.65rem 0}
+.user-detail-actions{background:#fff;border-left:1px solid #e5e7eb;padding-left:1.2rem;display:flex;flex-direction:column;gap:.55rem;align-self:stretch}
+.user-detail-actions h2{margin:.25rem 0 .5rem;font-size:1.25rem}.button.compact,button.compact{padding:.55rem .75rem;border-radius:.55rem;font-size:.92rem;line-height:1.15;width:auto;min-height:auto;text-align:center}.user-detail-actions .button{width:100%;max-width:230px}.user-period-filters{grid-template-columns:minmax(160px,220px) minmax(160px,220px) minmax(120px,190px) minmax(120px,190px);align-items:end}.user-period-filters label{margin:0}.user-period-filters button,.user-period-filters .button{height:42px;display:inline-flex;align-items:center;justify-content:center}.compact-actions{margin:.65rem 0 0 0}.section-note summary{cursor:pointer}
+@media(max-width:900px){.user-detail-main{grid-template-columns:1fr}.user-detail-actions{border-left:0;border-top:1px solid #e5e7eb;padding-left:0;padding-top:1rem}.user-period-filters{grid-template-columns:1fr}.user-detail-actions .button{max-width:none}}
+
+/* v0.0.4 aide / à propos */
+.help-page { max-width: 1100px; margin: 0 auto; }
+.help-page h1 { margin-top: 0; }
+.help-page ol { margin-bottom: 1.5rem; }
+.help-page li { margin: .35rem 0; }
+.help-page .muted { opacity: .75; font-size: .95rem; }
+
+
+/* Bêta V0.1.0 — bandeau ToolMag : alignement, rôles actifs et menu admin allégé */
+.topbar nav{align-items:center;}
+.topbar nav > a,.topbar nav > .admin-dropdown,.topbar nav > .language-switch,.topbar nav > .role-indicators{display:inline-flex;align-items:center;min-height:34px;}
+.topbar .admin-dropdown summary{display:inline-flex;align-items:center;min-height:34px;padding:.42rem .55rem;border-radius:9px;line-height:1;color:#e5e7eb;}
+.topbar .admin-dropdown summary:hover{background:#1f2937;}
+.role-indicators{gap:.45rem;flex-wrap:wrap;}
+.role-pill{display:inline-flex!important;align-items:center;min-height:30px;border:1px solid #475569;border-radius:999px;background:#172033;color:#f8fafc!important;padding:.22rem .6rem;font-weight:800;white-space:nowrap;}
+.role-pill.role-storekeeper{background:#1e3a8a;border-color:#60a5fa;}
+.admin-menu-separator{display:block;height:1px;background:#e5e7eb;margin:4px 0;}
+
+
+/* V0.0.1-RC1 — ergonomie téléphone ciblée inventaire ToolMag */
+@media (max-width: 720px) {
+  .mobile-action-page, .toolmag-inventory-mobile { max-width: 100%; }
+  .toolmag-inventory-mobile h1, .mobile-action-page h1 { font-size: 1.35rem; line-height: 1.15; }
+  .toolmag-inventory-mobile .panel, .toolmag-inventory-mobile.panel { padding: .85rem; border-radius: 14px; }
+  .toolmag-inventory-mobile .formgrid { display: grid; grid-template-columns: 1fr !important; gap: .75rem; }
+  .toolmag-inventory-mobile textarea, .toolmag-inventory-mobile select, .toolmag-inventory-mobile input { font-size: 1rem; min-height: 44px; }
+  .toolmag-inventory-mobile .checklist { display: grid; gap: .7rem; }
+  .toolmag-inventory-mobile .checkrow { display: grid; grid-template-columns: 74px 1fr; gap: .55rem; align-items: center; padding: .7rem; border: 1px solid #d1d5db; border-radius: 14px; background: #fff; }
+  .toolmag-inventory-mobile .checkrow label { font-size: 1rem; font-weight: 800; }
+  .toolmag-inventory-mobile input[type=checkbox] { width: 28px; height: 28px; vertical-align: middle; margin-right: .35rem; }
+  .toolmag-inventory-mobile .component-condition, .toolmag-inventory-mobile .checkrow input[type=text], .toolmag-inventory-mobile .checkrow input:not([type]) { grid-column: 1 / -1; width: 100%; }
+  .toolmag-inventory-mobile .component-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; }
+  .toolmag-inventory-mobile .actions { display: grid; grid-template-columns: 1fr; gap: .6rem; }
+  .toolmag-inventory-mobile .button, .toolmag-inventory-mobile button { width: 100%; min-height: 50px; font-size: 1.05rem; }
+}

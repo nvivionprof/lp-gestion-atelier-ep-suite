@@ -1,0 +1,145 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">TP Manager V2</p>
+    <h1>{{ title }}</h1>
+    <p class="lead">Création guidée par le diplôme sélectionné. Les éléments officiels du référentiel sont cochables, mais non modifiables depuis le TP.</p>
+  </div>
+</section>
+{% if not selected_diplome %}
+<section class="panel">
+  <h2>Choisir le diplôme pour charger les bons champs</h2>
+  <p class="muted">Le diplôme est choisi ici puis masqué dans le formulaire de création pour éviter les erreurs de rattachement.</p>
+  <div class="actions">
+    {% for d in diplomes %}<a class="mini-button" href="?diplome={{ d.id }}">{{ d.code }} — {{ d.intitule }}</a>{% endfor %}
+  </div>
+</section>
+{% endif %}
+<form method="post" enctype="multipart/form-data" class="form-card tpv2-create-form">
+  {% csrf_token %}
+  {% if selected_diplome %}<input type="hidden" name="diplome" value="{{ selected_diplome.id }}">{% endif %}
+
+  <datalist id="tpv2-type-list">{% for value in form_options.types %}<option value="{{ value }}">{% endfor %}</datalist>
+  <datalist id="tpv2-theme-list">{% for value in form_options.themes %}<option value="{{ value }}">{% endfor %}</datalist>
+  <datalist id="tpv2-sous-theme-list">{% for value in form_options.sous_themes %}<option value="{{ value }}">{% endfor %}</datalist>
+  <datalist id="tpv2-classe-list">{% for value in form_options.classes %}<option value="{{ value }}">{% endfor %}</datalist>
+
+  <h2>Cadre général et numérotation</h2>
+  <div class="tpv2-section-line"></div>
+  {% if selected_diplome %}
+    <p class="muted">Formation utilisée pour le repère : <strong data-formation-repere>{{ selected_diplome.code }}</strong>. Le repère reprend les trois caractères du thème principal et du sous-thème : <strong>RES</strong>, <strong>DOM</strong>, <strong>GTB</strong>...</p>
+  {% endif %}
+
+  <div class="tpv2-form-grid tpv2-row-1">
+    <div class="field title-field"><label for="{{ form.titre.id_for_label }}">Titre</label>{{ form.titre }}{{ form.titre.errors }}</div>
+    <div class="field"><label for="{{ form.domaine_principal.id_for_label }}">Thème principal *</label><div class="input-action">{{ form.domaine_principal }}<button type="button" class="mini-button add-datalist" data-target="tpv2-theme-list" data-input="{{ form.domaine_principal.id_for_label }}">Ajouter</button></div>{{ form.domaine_principal.errors }}<span class="small muted">Format conseillé : <strong>RES - Réseau</strong>.</span></div>
+    <div class="field"><label for="{{ form.duree_heures.id_for_label }}">Durée (h)</label>{{ form.duree_heures }}{{ form.duree_heures.errors }}<span class="small muted">Saisie en heures : 1,5 = 1 h 30.</span></div>
+  </div>
+
+  <div class="tpv2-form-grid tpv2-row-2">
+    <div class="field"><label for="{{ form.sous_theme.id_for_label }}">Sous-thème *</label><div class="input-action">{{ form.sous_theme }}<button type="button" class="mini-button add-datalist" data-target="tpv2-sous-theme-list" data-input="{{ form.sous_theme.id_for_label }}">Ajouter</button></div>{{ form.sous_theme.errors }}<span class="small muted">Format conseillé : <strong>IPA - Adressage IP</strong>.</span></div>
+    <div class="field"><label for="{{ form.niveau_classe.id_for_label }}">Niveau</label>{{ form.niveau_classe }}{{ form.niveau_classe.errors }}</div>
+    <div class="field"><label for="{{ form.type_activite.id_for_label }}">Type *</label><div class="input-action">{{ form.type_activite }}<button type="button" class="mini-button add-datalist" data-target="tpv2-type-list" data-input="{{ form.type_activite.id_for_label }}">Ajouter</button></div>{{ form.type_activite.errors }}</div>
+    <div class="field"><label for="{{ form.usage_pedagogique.id_for_label }}">Usage</label>{{ form.usage_pedagogique }}{{ form.usage_pedagogique.errors }}</div>
+  </div>
+
+  <div class="tpv2-form-grid tpv2-row-name">
+    <div class="field auto-name-field">
+      <label class="label-with-check" for="{{ form.code.id_for_label }}">Nom - Auto <input type="checkbox" id="nom-auto-check" {% if not tp %}checked{% endif %}></label>
+      {{ form.code }}{{ form.code.errors }}
+      <span class="small muted">Format auto : FORMATION-THÈME-SOUS-THÈME-001 — Titre. Décoche pour saisir/modifier manuellement le repère.</span>
+    </div>
+    <div class="field auto-name-preview-field">
+      <label>Prévisualisation complète</label>
+      <input type="text" id="nom-auto-preview" value="REPERE — Titre" readonly>
+    </div>
+  </div>
+
+  <div class="field wide-field"><label for="{{ form.resume_eleve.id_for_label }}">Résumé Élève</label>{{ form.resume_eleve }}{{ form.resume_eleve.errors }}</div>
+  <div class="field wide-field"><label for="{{ form.objectifs_prof.id_for_label }}">Description du contexte/Mise en situation professionnelle</label>{{ form.objectifs_prof }}{{ form.objectifs_prof.errors }}</div>
+  <div class="field wide-field"><label for="{{ form.problematique_metier.id_for_label }}">Problématique liée au métier/Missions à réaliser</label>{{ form.problematique_metier }}{{ form.problematique_metier.errors }}</div>
+
+  <details class="advanced-box" {% if tp %}open{% endif %}>
+    <summary>Paramètres avancés</summary>
+    <div class="formgrid"><p>{{ form.statut.label_tag }}{{ form.statut }}</p><p>{{ form.version.label_tag }}{{ form.version }}</p><p>{{ form.commentaire_interne.label_tag }}{{ form.commentaire_interne }}</p></div>
+  </details>
+
+  {% if selected_diplome %}
+  <hr>
+  <h2>2 — Champs spécifiques {{ selected_diplome.code }}</h2>
+  <p class="muted">Ces champs guident la création du TP. Ils ne remplacent pas le référentiel officiel.</p>
+  <div class="formgrid">
+    {% for champ in dynamic_fields %}
+      <p>
+        <label for="dyn_{{ champ.id }}">{{ champ.libelle }}{% if champ.obligatoire %} *{% endif %}</label>
+        {% if champ.type_champ == 'textarea' %}<textarea id="dyn_{{ champ.id }}" name="dyn_{{ champ.id }}" rows="3">{{ champ.current_value }}</textarea>
+        {% elif champ.type_champ == 'choice' %}<input id="dyn_{{ champ.id }}" name="dyn_{{ champ.id }}" list="dyn_list_{{ champ.id }}" value="{{ champ.current_value }}"><datalist id="dyn_list_{{ champ.id }}">{% for opt in champ.options.all %}<option value="{{ opt.valeur }}">{{ opt.libelle }}</option>{% endfor %}</datalist><span class="small muted">Liste + ajout manuel possible.</span>
+        {% elif champ.type_champ == 'boolean' %}<input id="dyn_{{ champ.id }}" type="checkbox" name="dyn_{{ champ.id }}" {% if champ.current_value == 'oui' %}checked{% endif %}>
+        {% elif champ.type_champ == 'number' %}<input id="dyn_{{ champ.id }}" type="number" name="dyn_{{ champ.id }}" value="{{ champ.current_value }}">
+        {% else %}<input id="dyn_{{ champ.id }}" type="text" name="dyn_{{ champ.id }}" value="{{ champ.current_value }}">{% endif %}
+        {% if champ.aide %}<span class="small muted">{{ champ.aide }}</span>{% endif %}
+      </p>
+    {% empty %}<p class="muted">Aucun champ dynamique pour ce diplôme. Charger la base V2 si nécessaire.</p>{% endfor %}
+  </div>
+  {% if referentiel_context %}
+  <hr>
+  <section class="ref-builder">
+    <h2>3 — Liens référentiel officiels</h2>
+    <p class="muted">Mécanique : activités → tâches → compétences → critères officiels et AP. Le statut mobilisé/travaillé/certification se règle ensuite sur la fiche du TP. Les pourcentages et points sont portés uniquement par les critères/sous-compétences.</p>
+    <div class="ref-columns">
+      <div class="ref-column"><h3>Activités et tâches</h3>
+        {% for activity in referentiel_context.activities %}
+          <div class="ref-card"><label class="checkline"><input type="checkbox" class="ref-activity" name="ref_activities" value="{{ activity.obj.id }}" data-activity="{{ activity.obj.id }}" {% if activity.selected %}checked{% endif %}> <strong>{{ activity.obj.code }}</strong> — {{ activity.obj.libelle_officiel }}</label>
+            <div class="task-list" data-activity-panel="{{ activity.obj.id }}">
+              {% for task in activity.tasks %}<label class="checkline task-row" data-activity="{{ activity.obj.id }}" data-task="{{ task.obj.id }}" data-competences="{{ task.competence_ids }}"><input type="checkbox" class="ref-task" name="ref_tasks" value="{{ task.obj.id }}" data-task="{{ task.obj.id }}" data-competences="{{ task.competence_ids }}" {% if task.selected %}checked{% endif %}><span><strong>{{ task.obj.code }}</strong> — {{ task.obj.libelle_officiel }}<br><span class="small muted">Autonomie : {{ task.obj.get_autonomie_display }} · Responsabilité : {{ task.obj.responsabilite_resume }}</span></span></label>{% empty %}<p class="small muted">Aucune tâche détaillée importée pour cette activité.</p>{% endfor %}
+            </div>
+          </div>
+        {% empty %}<p class="muted">Aucune mécanique activité/tâche détaillée importée pour ce diplôme.</p>{% endfor %}
+      </div>
+      <div class="ref-column"><h3>Compétences associées</h3>
+        {% for comp in referentiel_context.competences %}
+          <div class="ref-card competence-row" data-competence="{{ comp.obj.id }}" data-tasks="{{ comp.task_ids }}"><label class="checkline"><input type="checkbox" class="ref-competence" name="ref_competences" value="{{ comp.obj.id }}" data-competence="{{ comp.obj.id }}" data-attitudes="{{ comp.attitude_ids }}" {% if comp.selected %}checked{% endif %}> <strong>{{ comp.obj.code }}</strong> — {{ comp.obj.libelle_officiel }}</label>
+            <div class="criteria-list" data-criteria-panel="{{ comp.obj.id }}">
+              {% for crit in comp.criteria %}<div class="criterion-row" data-competence="{{ comp.obj.id }}"><label class="checkline"><input type="checkbox" name="ref_criteria" value="{{ crit.obj.id }}" {% if crit.selected %}checked{% endif %}> {{ crit.obj.libelle_officiel }}</label></div>{% empty %}<p class="small muted">Aucun critère officiel détaillé importé.</p>{% endfor %}
+            </div>
+          </div>
+        {% empty %}<p class="muted">Aucune compétence disponible.</p>{% endfor %}
+      </div>
+      <div class="ref-column"><h3>AP — attitudes professionnelles</h3><p class="small muted">Les AP liées aux compétences cochées restent visibles et cochables.</p>
+        {% for attitude in referentiel_context.attitudes %}<label class="checkline ref-card attitude-row" data-competences="{{ attitude.competence_ids }}"><input type="checkbox" class="ref-attitude" name="ref_attitudes" value="{{ attitude.obj.id }}" {% if attitude.selected %}checked{% endif %}> <strong>{{ attitude.obj.code }}</strong> — {{ attitude.obj.libelle_officiel }}</label>{% empty %}<p class="muted">Aucune AP importée.</p>{% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+  {% endif %}
+  <button type="submit">Enregistrer</button>
+  <a class="button secondary" href="{% url 'tp_list' %}">Annuler</a>
+</form>
+<script>
+(function(){
+  const diplomaAliases = {'CIEL':'CIEL','MELEC':'MELEC','MFER':'MFER','BTS_FED':'FED','BTS_ELEC':'STEL'};
+  const selectedDiplomaCode = "{% if selected_diplome %}{{ selected_diplome.code }}{% endif %}";
+  const formAlias = diplomaAliases[selectedDiplomaCode] || selectedDiplomaCode || 'FORMATION';
+  const titleEl = document.querySelector('[name="titre"]'); const themeEl = document.querySelector('[name="domaine_principal"]'); const sousThemeEl = document.querySelector('[name="sous_theme"]'); const codeEl = document.querySelector('[name="code"]'); const autoEl = document.getElementById('nom-auto-preview'); const autoCheck = document.getElementById('nom-auto-check'); const repereEl = document.querySelector('[data-formation-repere]');
+  if(repereEl){ repereEl.textContent = formAlias; }
+  function norm(v, fallback){ v = (v || fallback || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toUpperCase(); return v || fallback || 'X'; }
+  function themeCode(v){ v=(v||'DOM').trim(); let p=v.includes('-') ? v.split('-')[0].trim() : v; p=p.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]/g,'').toUpperCase(); return (p || 'DOM').substring(0,3).padEnd(3,'X'); }
+  function refreshName(){
+    const repere = [formAlias, themeCode(themeEl && themeEl.value), themeCode(sousThemeEl && sousThemeEl.value), '001'].join('-');
+    const title = titleEl && titleEl.value ? titleEl.value : 'Titre';
+    if(autoCheck && codeEl){
+      codeEl.readOnly = !!autoCheck.checked;
+      if(autoCheck.checked){ codeEl.value = repere; }
+    }
+    if(autoEl){ autoEl.value = ((codeEl && codeEl.value) ? codeEl.value : repere) + ' — ' + title; }
+  }
+  [titleEl,themeEl,sousThemeEl,codeEl,autoCheck].forEach(el => { if(el){ el.addEventListener('input', refreshName); el.addEventListener('change', refreshName); }}); refreshName();
+  document.querySelectorAll('.add-datalist').forEach(btn => btn.addEventListener('click', () => { const input=document.getElementById(btn.dataset.input); const list=document.getElementById(btn.dataset.target); if(!input || !list || !input.value.trim()) return; const exists=Array.from(list.options).some(o => o.value === input.value.trim()); if(!exists){ const opt=document.createElement('option'); opt.value=input.value.trim(); list.appendChild(opt); } }));
+  function ids(str){ return (str || '').split(',').map(x => x.trim()).filter(Boolean); }
+  function checkedValues(selector){ return new Set(Array.from(document.querySelectorAll(selector + ':checked')).map(el => String(el.value))); }
+  function refreshReferentiel(){ const activeActivities = checkedValues('.ref-activity'); document.querySelectorAll('[data-activity-panel]').forEach(panel => { panel.style.display = activeActivities.has(String(panel.dataset.activityPanel)) ? '' : 'none'; }); document.querySelectorAll('.ref-task').forEach(cb => { const row=cb.closest('[data-activity]'); if(row && !activeActivities.has(String(row.dataset.activity))){ cb.checked = false; } }); const activeTasks = checkedValues('.ref-task'); document.querySelectorAll('.competence-row').forEach(row => { const linkedTasks = ids(row.dataset.tasks); const visible = linkedTasks.length === 0 ? true : linkedTasks.some(id => activeTasks.has(id)); row.style.display = visible ? '' : 'none'; if(!visible){ const cb=row.querySelector('.ref-competence'); if(cb) cb.checked=false; } }); const activeCompetences = checkedValues('.ref-competence'); document.querySelectorAll('.criteria-list').forEach(panel => { const visible = activeCompetences.has(String(panel.dataset.criteriaPanel)); panel.style.display = visible ? '' : 'none'; if(!visible){ panel.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked=false); } }); document.querySelectorAll('.attitude-row').forEach(row => { const compIds = ids(row.dataset.competences); const visible = compIds.length === 0 ? true : compIds.some(id => activeCompetences.has(id)); row.style.display = visible ? '' : 'none'; if(!visible){ const cb=row.querySelector('input[type="checkbox"]'); if(cb) cb.checked=false; } }); }
+  document.querySelectorAll('.ref-activity,.ref-task,.ref-competence').forEach(el => el.addEventListener('change', refreshReferentiel)); refreshReferentiel();
+})();
+</script>
+{% endblock %}

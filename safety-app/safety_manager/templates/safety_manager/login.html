@@ -1,0 +1,14 @@
+{% extends 'safety_manager/base.html' %}
+{% block content %}
+<section class="form-card login-card">
+  <h1>Connexion Safety Manager</h1>
+  <p class="muted">Utilise un compte synchronisé depuis LP Core : PROF-0001, USR-0001, etc.</p>
+  <form method="post">{% csrf_token %}
+    <label>Code utilisateur ou identifiant</label>
+    <input name="username" autocomplete="username" required>
+    <label>Mot de passe</label>
+    <input name="password" type="password" autocomplete="current-password" required>
+    <button type="submit">Connexion</button>
+  </form>
+</section>
+{% endblock %}

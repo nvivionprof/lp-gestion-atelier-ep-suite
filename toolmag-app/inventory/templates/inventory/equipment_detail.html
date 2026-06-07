@@ -1,0 +1,216 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>{{ equipment.code }} — {{ equipment.name }}</h1>
+<section class="panel detail">
+  {% if equipment.photo %}<div class="equipment-photo-wrap"><img class="equipment-photo" src="{{ equipment.photo.url }}" alt="Photo {{ equipment.name }}"></div>{% endif %}
+  <p><strong>Type :</strong> {{ equipment.get_equipment_type_display }}</p>
+  <p><strong>Statut :</strong> <span class="badge {{ equipment.status }}">{{ equipment.get_status_display }}</span></p>
+  <p><strong>État actuel :</strong> {{ equipment.get_current_condition_display }}</p>
+  <p><strong>Marque / modèle :</strong> {{ equipment.brand|default:'-' }} {{ equipment.model|default:'' }}</p>
+  <p><strong>N° série :</strong> {{ equipment.serial_number|default:'-' }}</p>
+  <p><strong>Emplacement :</strong> {{ equipment.location|default:'-' }}</p>
+  <p><strong>Descriptif matériel :</strong> {{ equipment.description|default:'-' }}</p>
+  <p><strong>QR payload :</strong> <code>{{ equipment.qr_payload }}</code></p>
+</section>
+<section class="panel qr-panel">
+  <div>
+    <h2>QR code inventaire utilisateur sortie / retour</h2>
+    <p>Ce QR code lance l’inventaire utilisateur adapté : il envoie vers l’inventaire de sortie si le matériel est disponible, puis vers l’inventaire de retour si le matériel est déjà sorti par l’utilisateur connecté.</p>
+    <p><code>{{ inventory_entry_url }}</code></p>
+    <p class="hint">Si aucun utilisateur n’est connecté, ToolMag demande d’abord la connexion utilisateur.</p>
+  </div>
+  <img class="qr-img" src="{{ page_qr }}" alt="QR code inventaire utilisateur sortie / retour {{ equipment.code }}">
+</section>
+
+{% if has_inventory_components %}
+<section class="panel">
+  <h2>Inventaire utilisateur du matériel composé</h2>
+  {% if open_loan %}
+    <p><strong>Matériel sorti par :</strong> {{ open_loan.borrower.first_name }} {{ open_loan.borrower.last_name }} — {{ open_loan.borrower.code }}</p>
+    <p><strong>Magasinier de sortie :</strong> {{ open_loan.checkout_storekeeper.first_name }} {{ open_loan.checkout_storekeeper.last_name }} — {{ open_loan.checkout_storekeeper.code }}</p>
+    <p><strong>Inventaire utilisateur de sortie :</strong> {% if loan_inventory_status.out_done %}<span class="badge available">fait</span>{% else %}<span class="badge maintenance">à faire</span>{% endif %}</p>
+    <p><strong>Inventaire utilisateur de retour :</strong> {% if loan_inventory_status.return_done %}<span class="badge available">fait</span>{% else %}<span class="badge incomplete">non fait</span>{% endif %}</p>
+    <div class="actions"><a class="button secondary" href="{% url 'user_inventory_auto' equipment.code %}">Ouvrir l’inventaire utilisateur sortie / retour</a></div>
+    <p class="hint">Si aucun utilisateur n’est connecté, ToolMag demandera d’abord la connexion de l’emprunteur. Si un autre utilisateur est connecté, ToolMag demandera de connecter l’emprunteur réel.</p>
+  {% else %}
+    <p>Aucune sortie ouverte actuellement.</p>
+    <div class="actions"><a class="button secondary" href="{% url 'user_inventory_auto' equipment.code %}">Préparer l’inventaire utilisateur de sortie</a></div>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="actions">
+  <a class="button" href="{% url 'equipment_control' equipment.code %}">Contrôler</a>
+  {% if can_edit_equipment %}<a class="button secondary" href="{% url 'equipment_edit' equipment.code %}">Modifier la fiche</a>{% endif %}
+  {% if can_edit_equipment %}<a class="button secondary" href="{% url 'equipment_duplicate' equipment.code %}">Dupliquer / créer depuis modèle</a>{% endif %}
+  {% if can_edit_components %}<a class="button secondary" href="{% url 'equipment_components_edit' equipment.code %}">Composants</a>{% endif %}
+  {% if can_add_document %}<a class="button secondary" href="{% url 'equipment_documents_edit' equipment.code %}">Documents</a>{% endif %}
+  {% if current_storekeeper %}<a class="button secondary" href="{% url 'intervention_equipment' equipment.code %}">Bon d’intervention</a>{% endif %}
+  {% if has_inventory_components %}
+    <a class="button secondary" href="{% url 'user_inventory_auto' equipment.code %}">Inventaire utilisateur sortie / retour</a>
+  {% endif %}
+  {% if equipment.status == 'maintenance' or equipment.status == 'incomplete' or equipment.status == 'out_of_service' %}
+    <a class="button danger" href="{% url 'repair_equipment' equipment.code %}">Réparation / dépannage</a>
+  {% else %}
+    <a class="button" href="{% url 'checkout' %}?equipment={{ equipment.code }}">Sortir</a>
+    <a class="button secondary" href="{% url 'return_equipment' %}?equipment={{ equipment.code }}">Retourner</a>
+  {% endif %}
+</div>
+
+{% include 'inventory/_locker_button.html' with equipment=equipment locker_info=locker_info locker_context='detail' %}
+{% if documents %}
+<section class="panel">
+  <h2>Documents du matériel</h2>
+  <p class="hint">Notices, fiches de prise en main, consignes de sécurité ou documents de maintenance associés à ce matériel.</p>
+  <table>
+    <thead><tr><th>Type</th><th>Titre</th><th>Description</th><th>Fichier</th></tr></thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr>
+        <td>{{ doc.get_document_type_display }}</td>
+        <td>{{ doc.title }}</td>
+        <td>{{ doc.description|default:'-' }}</td>
+        <td><a href="{{ doc.file.url }}" target="_blank" rel="noopener">Ouvrir / télécharger</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if locker_logs %}
+<section class="panel">
+  <h2>Journal récent des ouvertures casier</h2>
+  <table><thead><tr><th>Date</th><th>Armoire</th><th>Casier</th><th>Magasinier</th><th>Terminal</th><th>Contexte</th><th>Résultat</th></tr></thead><tbody>
+  {% for log in locker_logs %}<tr><td>{{ log.created_at|date:"d/m/Y H:i:s" }}</td><td>{{ log.cabinet }}</td><td>{{ log.locker }}</td><td>{% if log.storekeeper %}{{ log.storekeeper.first_name }} {{ log.storekeeper.last_name }}{% else %}-{% endif %}</td><td>{% if log.terminal %}{{ log.terminal.name }}{% else %}-{% endif %}</td><td>{{ log.get_context_display }}</td><td>{% if log.success %}OK{% elif log.refused %}Refus : {{ log.refusal_reason }}{% else %}Erreur{% endif %}</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endif %}
+
+{% if equipment.components.all %}
+<section class="panel">
+  <h2>Composants attendus</h2>
+  <table><thead><tr><th>Photo</th><th>Composant</th><th>Présent</th><th>Qté</th><th>Statut</th></tr></thead><tbody>
+  {% for c in equipment.components.all %}<tr><td>{% if c.photo %}<img class="component-thumb" src="{{ c.photo.url }}" alt="{{ c.name }}">{% else %}-{% endif %}</td><td>{{ c.name }}</td><td>Oui</td><td>{{ c.expected_quantity }}</td><td>{{ c.get_default_condition_display }}</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endif %}
+
+
+{% if interventions %}
+<section class="panel">
+  <h2>Bons d’intervention</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Magasinier</th><th>Type</th><th>Résultat</th><th>État final</th><th>Bon d’intervention</th></tr></thead>
+    <tbody>
+      {% for i in interventions %}
+      <tr class="{% if i.result == 'send_maintenance' or i.result == 'out_of_service' %}row-warning{% else %}row-ok{% endif %}">
+        <td>{{ i.intervention_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ i.storekeeper.first_name }} {{ i.storekeeper.last_name }}<br><small>{{ i.storekeeper.code }}</small></td>
+        <td>{{ i.get_intervention_type_display }}</td>
+        <td><strong>{{ i.get_result_display }}</strong></td>
+        <td>{{ i.get_resulting_condition_display }}</td>
+        <td class="history-comments">
+          {% if i.finding %}<div><strong>Constat :</strong> {{ i.finding }}</div>{% endif %}
+          {% if i.action_done %}<div><strong>Action :</strong> {{ i.action_done }}</div>{% endif %}
+          {% if i.comment %}<div><strong>Commentaire :</strong> {{ i.comment }}</div>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+{% if repairs %}
+<section class="panel">
+  <h2>Bons de réparation / dépannage</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Magasinier</th><th>Type</th><th>Résultat</th><th>État final</th><th>Bon de réparation</th></tr></thead>
+    <tbody>
+      {% for r in repairs %}
+      <tr class="{% if r.result == 'repaired_available' %}row-ok{% else %}row-warning{% endif %}">
+        <td>{{ r.repaired_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ r.storekeeper.first_name }} {{ r.storekeeper.last_name }}<br><small>{{ r.storekeeper.code }}</small></td>
+        <td>{{ r.get_repair_type_display }}</td>
+        <td><strong>{% if r.result == 'repaired_available' %}Dépanné{% else %}{{ r.get_result_display }}{% endif %}</strong></td>
+        <td>{{ r.get_resulting_condition_display }}</td>
+        <td class="history-comments">
+          {% if r.diagnosis %}<div><strong>Constat :</strong> {{ r.diagnosis }}</div>{% endif %}
+          {% if r.action_done %}<div><strong>Action :</strong> {{ r.action_done }}</div>{% endif %}
+          {% if r.parts_replaced %}<div><strong>Pièces :</strong> {{ r.parts_replaced }}</div>{% endif %}
+          {% if r.comment %}<div><strong>Commentaire :</strong> {{ r.comment }}</div>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+
+
+{% if user_inventories %}
+<section class="panel">
+  <h2>Inventaires utilisateurs soumis</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Type</th><th>Utilisateur</th><th>Statut</th><th>Validé par</th><th>État global</th><th>Commentaire</th></tr></thead>
+    <tbody>
+    {% for inv in user_inventories %}
+      <tr class="{% if inv.status == 'submitted' %}row-warning{% elif inv.status == 'applied' %}row-ok{% endif %}">
+        <td>{{ inv.submitted_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ inv.get_inventory_type_display }}</td>
+        <td>{{ inv.borrower.first_name }} {{ inv.borrower.last_name }}<br><small>{{ inv.borrower.code }}</small></td>
+        <td>{{ inv.get_status_display }}</td>
+        <td>{% if inv.applied_by %}{{ inv.applied_by.first_name }} {{ inv.applied_by.last_name }}<br><small>{{ inv.applied_by.code }}</small>{% else %}-{% endif %}</td>
+        <td>{{ inv.get_global_condition_display }}</td>
+        <td>{{ inv.comment|default:'-' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2>Historique détaillé</h2>
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>Sortie</th>
+        <th>Magasinier sortie</th>
+        <th>Emprunteur</th>
+        <th>Retour</th>
+        <th>Magasinier retour</th>
+        <th>Statut</th>
+        <th>État sortie</th>
+        <th>État retour</th>
+        <th>Commentaires / maintenance</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for loan in loans %}
+      <tr class="{% if loan.status == 'problem' %}row-warning{% elif loan.equipment.status == 'maintenance' %}row-maintenance{% endif %}">
+        <td>{{ loan.checked_out_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ loan.checkout_storekeeper.first_name }} {{ loan.checkout_storekeeper.last_name }}<br><small>{{ loan.checkout_storekeeper.code }}</small></td>
+        <td>{{ loan.borrower.first_name }} {{ loan.borrower.last_name }}<br><small>{{ loan.borrower.code }}</small></td>
+        <td>{% if loan.returned_at %}{{ loan.returned_at|date:"d/m/Y H:i" }}{% else %}-{% endif %}</td>
+        <td>{% if loan.return_storekeeper %}{{ loan.return_storekeeper.first_name }} {{ loan.return_storekeeper.last_name }}<br><small>{{ loan.return_storekeeper.code }}</small>{% else %}-{% endif %}</td>
+        <td>{{ loan.get_status_display }}</td>
+        <td>{{ loan.get_condition_out_display }}</td>
+        <td>{% if loan.condition_return %}{{ loan.get_condition_return_display }}{% else %}-{% endif %}</td>
+        <td class="history-comments">
+          {% if loan.comment_out %}<div><strong>Sortie :</strong> {{ loan.comment_out }}</div>{% endif %}
+          {% if loan.comment_return %}<div><strong>Retour :</strong> {{ loan.comment_return }}</div>{% endif %}
+          {% if loan.status == 'problem' %}<div class="alert-text">Anomalie signalée sur ce mouvement.</div>{% endif %}
+          {% if loan.condition_return == 'damaged' or loan.condition_return == 'incomplete' or loan.condition_return == 'dangerous' %}<div class="alert-text">Retour nécessitant vérification / maintenance.</div>{% endif %}
+          {% if not loan.comment_out and not loan.comment_return and loan.status != 'problem' %}-{% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="9">Aucun historique.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

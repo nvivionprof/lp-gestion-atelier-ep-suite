@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Maintenance serveur</p>
+    <h1>Mises à jour web</h1>
+    <p class="lead">Dépose une archive ZIP de mise à jour, vérifie son contenu, lance une sauvegarde puis l’installation depuis l’interface. Les dossiers de données, médias, sauvegardes, SSL et le fichier .env sont préservés par le script serveur.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>État de l’agent serveur</h2>
+  <p>Agent configuré : <code>{{ agent_url }}</code></p>
+  {% if web_maintenance_enabled %}
+    <p class="muted">Maintenance web activée. Les actions sont limitées à une liste de commandes autorisées.</p>
+  {% else %}
+    <p class="alert error">Maintenance web désactivée par la configuration serveur.</p>
+  {% endif %}
+  <div class="actions">
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="agent_action"><input type="hidden" name="agent_action" value="backup_all"><button type="submit">Sauvegarder maintenant</button></form>
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="agent_action"><input type="hidden" name="agent_action" value="migrate_all"><button type="submit" class="button secondary">Lancer les migrations</button></form>
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="agent_action"><input type="hidden" name="agent_action" value="restart_services"><button type="submit" class="button secondary">Redémarrer les services</button></form>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Envoyer un ZIP de mise à jour</h2>
+  <form method="post" enctype="multipart/form-data" class="form-grid">
+    {% csrf_token %}
+    <input type="hidden" name="form_action" value="upload_update">
+    <label class="span-all">Archive ZIP de mise à jour
+      <input type="file" name="update_zip" accept=".zip" required>
+    </label>
+    <p class="muted span-all">Taille maximale : {{ max_zip_mb }} Mo. Le ZIP est analysé avant installation : chemins dangereux interdits, manifest détecté si présent, hash SHA-256 calculé.</p>
+    <div class="span-all actions"><button type="submit">Déposer et analyser le ZIP</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Paquets déposés</h2>
+  <table>
+    <tr><th>Date</th><th>Fichier</th><th>Version</th><th>Statut</th><th>SHA-256</th><th>Action</th></tr>
+    {% for pkg in packages %}
+      <tr>
+        <td>{{ pkg.created_at|date:'d/m/Y H:i' }}</td>
+        <td><strong>{{ pkg.original_filename }}</strong><br><small>{{ pkg.size_bytes }} octets</small><pre class="mini-pre">{{ pkg.analysis_report }}</pre></td>
+        <td>{{ pkg.detected_version|default:'—' }}</td>
+        <td>{{ pkg.get_status_display }}</td>
+        <td><code>{{ pkg.sha256|slice:':16' }}...</code></td>
+        <td>
+          {% if pkg.status == 'analyzed' or pkg.status == 'failed' %}
+          <form method="post" onsubmit="return confirm('Sauvegarde et installation de ce ZIP ?');">
+            {% csrf_token %}
+            <input type="hidden" name="form_action" value="install_update">
+            <input type="hidden" name="package_id" value="{{ pkg.id }}">
+            <button type="submit">Installer</button>
+          </form>
+          {% else %}
+          <span class="muted">Non installable</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Aucun ZIP déposé.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+
+<section class="panel">
+  <h2>Journal des actions</h2>
+  <table>
+    <tr><th>Date</th><th>Action</th><th>Statut</th><th>Job agent</th><th>Message / logs</th></tr>
+    {% for job in jobs %}
+      <tr>
+        <td>{{ job.created_at|date:'d/m/Y H:i' }}</td>
+        <td>{{ job.get_action_display }}</td>
+        <td>{{ job.get_status_display }}</td>
+        <td><code>{{ job.agent_job_id|default:'—' }}</code></td>
+        <td>{% if job.result_message %}<p>{{ job.result_message }}</p>{% endif %}{% if job.log_tail %}<pre class="mini-pre">{{ job.log_tail }}</pre>{% endif %}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Aucune action serveur récente.</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

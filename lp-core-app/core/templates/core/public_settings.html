@@ -1,0 +1,127 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Publication / accès</p>
+    <h1>URLs, HTTPS et profils d’accès</h1>
+    <p class="lead">La suite utilise une seule passerelle. Tu peux choisir le profil actif : local, réseau interne ou domaine extérieur. Les modules restent accessibles par chemins : <code>/toolmag</code>, <code>/safety</code>, <code>/pedashop</code>, <code>/system</code>, <code>/tpmanager</code>, <code>/pfmp</code>.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Profil d’accès actif</h2>
+  <form method="post" enctype="multipart/form-data" class="form-grid">
+    {% csrf_token %}
+
+    <label>Mode d’accès à utiliser pour les liens internes et QR codes
+      <select name="exposure_mode">
+        <option value="local" {% if settings_obj.exposure_mode == 'local' %}selected{% endif %}>Local — ce poste / WSL / localhost</option>
+        <option value="network" {% if settings_obj.exposure_mode == 'network' %}selected{% endif %}>Réseau local — IP ou nom DNS interne</option>
+        <option value="domain" {% if settings_obj.exposure_mode == 'domain' or settings_obj.exposure_mode == 'reverse_proxy' %}selected{% endif %}>Domaine extérieur — DuckDNS / nom public</option>
+      </select>
+    </label>
+
+    <label>Adresse locale
+      <input type="text" name="local_public_host" value="{{ settings_obj.local_public_host|default:'localhost:9000' }}" placeholder="localhost:9000">
+      <small>Exemple : <code>localhost:9000</code>. Utilisé pour les tests sur le serveur.</small>
+    </label>
+
+    <label>Adresse réseau interne
+      <input type="text" name="network_public_host" value="{{ settings_obj.network_public_host }}" placeholder="192.168.101.19:9000">
+      <small>Exemple : <code>192.168.101.19:9000</code>. Un seul port de passerelle, pas un port par application.</small>
+    </label>
+
+    <label>Domaine extérieur
+      <input type="text" name="external_public_domain" value="{{ settings_obj.external_public_domain|default:settings_obj.public_domain }}" placeholder="stjoseph-lpsuite.duckdns.org">
+      <small>Exemple : <code>stjoseph-lpsuite.duckdns.org</code>. En HTTPS public, pas besoin d’ajouter <code>:9000</code>.</small>
+    </label>
+
+    <label>Protocole du profil actif
+      <select name="public_scheme">
+        <option value="http" {% if settings_obj.public_scheme == 'http' %}selected{% endif %}>HTTP</option>
+        <option value="https" {% if settings_obj.public_scheme == 'https' %}selected{% endif %}>HTTPS</option>
+      </select>
+    </label>
+
+    <label>Activer HTTPS sur la passerelle Nginx
+      <select name="enable_https">
+        <option value="1" {% if settings_obj.enable_https %}selected{% endif %}>Oui</option>
+        <option value="0" {% if not settings_obj.enable_https %}selected{% endif %}>Non</option>
+      </select>
+    </label>
+
+    <label>Méthode Let's Encrypt
+      <select name="challenge_method">
+        <option value="dns_duckdns" {% if settings_obj.challenge_method == 'dns_duckdns' %}selected{% endif %}>DNS-01 via DuckDNS</option>
+        <option value="http_01" {% if settings_obj.challenge_method == 'http_01' %}selected{% endif %}>HTTP-01 via passerelle HTTP</option>
+      </select>
+    </label>
+    <label>Email Let's Encrypt
+      <input type="email" name="letsencrypt_email" value="{{ settings_obj.letsencrypt_email }}" placeholder="adresse@exemple.fr">
+    </label>
+    <label>Token DuckDNS {% if duckdns_token_configured %}<small>— déjà enregistré</small>{% endif %}
+      <input type="password" name="duckdns_token" value="" placeholder="laisser vide pour conserver le token actuel">
+    </label>
+    <label>Certificat utilisé par lp-gateway
+      <input type="text" name="ssl_cert_file" value="{{ settings_obj.ssl_cert_file }}">
+    </label>
+    <label>Clé privée utilisée par lp-gateway
+      <input type="text" name="ssl_key_file" value="{{ settings_obj.ssl_key_file }}">
+    </label>
+    <label>Importer fullchain.pem
+      <input type="file" name="certificate_file" accept=".pem,.crt,.cer">
+    </label>
+    <label>Importer privkey.pem
+      <input type="file" name="private_key_file" accept=".pem,.key">
+    </label>
+
+    <div class="span-all notice">
+      <strong>Important :</strong> les anciens ports par module ne sont plus utilisés pour les liens publics. On choisit seulement le point d’entrée actif : local, réseau ou domaine. Les applications restent ensuite sous le même domaine avec des chemins fixes.
+    </div>
+
+    <div class="span-all actions">
+      <button class="button" type="submit">Enregistrer les paramètres</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>URLs qui seront utilisées pour les liens et QR codes</h2>
+  <table>
+    <tr><th>Variable</th><th>URL</th></tr>
+    {% for key, url in module_urls.items %}<tr><td>{{ key }}</td><td><code>{{ url }}</code></td></tr>{% endfor %}
+  </table>
+</section>
+
+<section class="panel">
+  <h2>État fichiers certificat</h2>
+  <table>
+    <tr><th>Fichier</th><th>Chemin</th><th>Présent</th><th>Détail</th></tr>
+    <tr><td>Certificat</td><td><code>{{ cert_file_status.path }}</code></td><td>{{ cert_file_status.exists|yesno:'oui,non' }}</td><td>{{ cert_file_status.details }}</td></tr>
+    <tr><td>Clé privée</td><td><code>{{ key_file_status.path }}</code></td><td>{{ key_file_status.exists|yesno:'oui,non' }}</td><td>{{ key_file_status.details }}</td></tr>
+  </table>
+</section>
+
+<section class="panel">
+  <h2>Application serveur depuis l’interface</h2>
+  <p>Les boutons ci-dessous demandent à <code>suite-admin-agent</code> d’exécuter uniquement des actions prédéfinies.</p>
+  <div class="actions wrap-actions">
+    <form method="post" action="{% url 'core_public_settings_action' %}" onsubmit="return confirm('Cette action modifie les URLs publiques dans .env et peut changer tous les liens/QR codes de la suite. Continuer ?')">{% csrf_token %}<input type="hidden" name="server_action" value="apply_public_settings"><button type="submit">Appliquer les URLs dans .env</button></form>
+    <form method="post" action="{% url 'core_public_settings_action' %}" onsubmit="return confirm('Cette action lance la génération du certificat depuis le serveur. Vérifie le domaine, le token DuckDNS et les redirections avant de continuer.')">{% csrf_token %}<input type="hidden" name="server_action" value="issue_cert"><button type="submit" class="button secondary">Générer le certificat</button></form>
+    <form method="post" action="{% url 'core_public_settings_action' %}">{% csrf_token %}<input type="hidden" name="server_action" value="renew_cert"><button type="submit" class="button secondary">Renouveler le certificat</button></form>
+    <form method="post" action="{% url 'core_public_settings_action' %}">{% csrf_token %}<input type="hidden" name="server_action" value="cert_status"><button type="submit" class="button secondary">Tester / état certificat</button></form>
+    <form method="post" action="{% url 'core_public_settings_action' %}">{% csrf_token %}<input type="hidden" name="server_action" value="restart_services"><button type="submit" class="button secondary">Redémarrer les services</button></form>
+  </div>
+  <p>Fichier généré pour les scripts : <code>{{ cert_env_path }}</code></p>
+  <p>Origines CSRF générées :</p>
+  <pre><code>{{ csrf_origins }}</code></pre>
+</section>
+
+<section class="panel">
+  <h2>Commandes SSH équivalentes</h2>
+  <p>À utiliser seulement si l’agent serveur n’est pas actif ou pour dépannage.</p>
+  <pre><code>./scripts/apply_public_settings.sh
+./scripts/cert_manager.sh issue
+docker compose up -d --build</code></pre>
+</section>
+{% endblock %}

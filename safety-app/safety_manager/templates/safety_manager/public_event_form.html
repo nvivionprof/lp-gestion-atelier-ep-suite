@@ -1,0 +1,10 @@
+{% extends 'safety_manager/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'safety_manager/public_safety.css' %}">
+<section class="hero safety-hero public-declare-hero"><div><p class="eyebrow">Déclaration rapide</p><h1>Accident, incident, presqu’accident ou situation dangereuse</h1><p class="lead">Déclarez rapidement les faits observés. Un responsable qualifiera ensuite l’événement dans Safety Manager.</p></div><div class="hero-actions"><a class="button secondary" href="{% url 'safety_public_dashboard' %}">Tableau public</a></div></section>
+<form method="post" class="form-card public-event-form">{% csrf_token %}
+  <div class="formgrid">{{ form.as_p }}</div>
+  <button type="submit">Enregistrer la déclaration</button>
+</form>
+{% endblock %}

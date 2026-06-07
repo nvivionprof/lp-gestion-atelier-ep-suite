@@ -1,0 +1,5 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">System Manager</p><h1>Sauvegarde / import du module</h1><p class="lead">Sauvegarde locale de la base System Manager et accès à l’import/export SQL du module.</p></div></section>
+<div class="grid2"><section class="panel"><h2>Sauvegarde base du module</h2><form method="post">{% csrf_token %}<input type="hidden" name="action" value="download_backup"><button type="submit">Télécharger une sauvegarde ZIP</button></form><p class="muted">La sauvegarde contient la base SQLite du module. Les sauvegardes complètes de la suite restent gérées par LP Core.</p></section><section class="panel"><h2>Import / export SQL</h2><p>Pour importer ou exporter la base en SQL, utiliser l’outil intégré.</p><p><a class="button secondary" href="{% url 'sql_database_admin' %}">Ouvrir l’administration SQL System Manager</a></p></section></div>
+{% endblock %}

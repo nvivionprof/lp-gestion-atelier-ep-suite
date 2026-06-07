@@ -1,0 +1,24 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <p class="eyebrow">Anomalie système</p><h1>{{ anomaly.titre }}</h1>
+  <p><a class="button secondary" href="{% url 'system_detail' systeme.pk %}">Retour au système</a></p>
+  <table>
+    <tr><th>Système</th><td>{{ systeme.code }} — {{ systeme.designation }}</td></tr>
+    <tr><th>Signalée par</th><td>{{ anomaly.signalee_par.full_name|default:'—' }}</td></tr>
+    <tr><th>Gravité</th><td><span class="badge {{ anomaly.gravite }}">{{ anomaly.get_gravite_display }}</span>{% if anomaly.blocking %} <span class="badge danger">Bloquante</span>{% endif %}</td></tr>
+    <tr><th>Statut</th><td>{{ anomaly.get_statut_display }}</td></tr>
+    <tr><th>Description</th><td>{{ anomaly.description|linebreaksbr }}</td></tr>
+    <tr><th>Action réalisée</th><td>{{ anomaly.action_realisee|linebreaksbr|default:'—' }}</td></tr>
+    {% if anomaly.session %}<tr><th>Session</th><td>{{ anomaly.session.utilisateur.full_name|default:'—' }} — {{ anomaly.session.date_prise|date:'d/m/Y H:i' }}</td></tr>{% endif %}
+    {% if anomaly.lift_requested_at %}<tr><th>Demande de levée</th><td>{{ anomaly.lift_requested_at|date:'d/m/Y H:i' }} par {{ anomaly.lift_requested_by.full_name|default:'—' }}<br>{{ anomaly.lift_request_comment|linebreaksbr }}</td></tr>{% endif %}
+    {% if anomaly.lift_authorized_at %}<tr><th>Levée validée</th><td>{{ anomaly.lift_authorized_at|date:'d/m/Y H:i' }} par {{ anomaly.lift_authorized_by.full_name|default:'—' }}</td></tr>{% endif %}
+  </table>
+</section>
+{% if anomaly.statut != 'resolue' and anomaly.statut != 'annulee' %}
+<section class="panel grid2">
+  <form method="post" action="{% url 'system_anomaly_request_lift' anomaly.pk %}">{% csrf_token %}<h2>Demander / effectuer une levée</h2><p class="muted">Une anomalie non bloquante est levée directement. Une anomalie bloquante génère une demande à valider par un professeur.</p><textarea class="form-control" name="comment" rows="4" placeholder="Contrôle réalisé, justification, mesure corrective..."></textarea><button type="submit">Demander la levée</button></form>
+  {% if system_current_user.is_prof_like %}<form method="post" action="{% url 'system_anomaly_approve_lift' anomaly.pk %}">{% csrf_token %}<h2>Validation professeur</h2><textarea class="form-control" name="comment" rows="4" placeholder="Validation / commentaire professeur..."></textarea><button type="submit">Valider la levée</button></form>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Sauvegardes et restauration</h1>
+<p class="muted">Page réservée super admin / professeur. Les sauvegardes automatiques sont conservées 7 jours. Les sauvegardes manuelles et pré-restauration restent conservées jusqu’à suppression volontaire.</p>
+
+<section class="card">
+  <h2>Créer une sauvegarde manuelle</h2>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="manual_backup">
+    {{ manual_form.as_p }}
+    <button class="btn primary" type="submit">Créer une sauvegarde manuelle</button>
+  </form>
+</section>
+
+<section class="card danger-zone">
+  <h2>Restauration</h2>
+  <p><strong>Règle de sécurité :</strong> avant toute restauration, ToolMag crée automatiquement une sauvegarde <code>pre-restore</code> de l’état actuel.</p>
+  <p>La restauration remplace la base SQLite et le dossier <code>media</code> par ceux contenus dans l’archive choisie. Après restauration, recharge la page. En production, un redémarrage du conteneur est conseillé.</p>
+</section>
+
+<section class="card">
+  <h2>Archives disponibles</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fichier</th>
+        <th>Type</th>
+        <th>Date</th>
+        <th>Taille</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for backup in backups %}
+      <tr>
+        <td><code>{{ backup.name }}</code></td>
+        <td>
+          {% if backup.backup_type == 'auto' %}Automatique{% elif backup.backup_type == 'manual' %}Manuelle{% elif backup.backup_type == 'pre_restore' %}Pré-restauration{% else %}Inconnue{% endif %}
+        </td>
+        <td>{{ backup.created_at|date:"d/m/Y H:i:s" }}</td>
+        <td>{{ backup.size_mb }} Mo</td>
+        <td class="actions-cell">
+          <form method="post" class="inline-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="download">
+            <input type="hidden" name="backup_name" value="{{ backup.name }}">
+            <button type="submit" class="btn">Télécharger</button>
+          </form>
+
+          <details class="restore-details">
+            <summary class="btn warning">Restaurer</summary>
+            <form method="post" class="confirm-box">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="restore">
+              <input type="hidden" name="backup_name" value="{{ backup.name }}">
+              <p>Restaurer <code>{{ backup.name }}</code> ?</p>
+              <p>Une sauvegarde de sécurité sera créée avant restauration.</p>
+              <label>Tapez <strong>RESTAURER</strong></label>
+              <input type="text" name="confirmation" autocomplete="off">
+              <button type="submit" class="btn danger">Confirmer la restauration</button>
+            </form>
+          </details>
+
+          {% if backup.backup_type == 'manual' or backup.backup_type == 'pre_restore' %}
+          <form method="post" class="inline-form" onsubmit="return confirm('Supprimer définitivement cette sauvegarde ?');">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="backup_name" value="{{ backup.name }}">
+            <button type="submit" class="btn danger">Supprimer</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">Aucune sauvegarde disponible.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

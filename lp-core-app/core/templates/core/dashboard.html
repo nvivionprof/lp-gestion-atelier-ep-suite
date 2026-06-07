@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<section class="hero portal-hero">
+  <div>
+    <p class="eyebrow">Portail authentifié</p>
+    <h1>Bonjour {{ core_current_user.first_name|default:core_current_user.username }}</h1>
+    <p class="lead">Depuis cette page, tu peux consulter ta fiche personnelle et lancer les applications autorisées par LP Core.</p>
+  </div>
+  <div class="identity-mini">
+    <strong>{{ core_current_user.last_name }} {{ core_current_user.first_name }}</strong>
+    <span>{{ core_current_user.class_name|default:'—' }} — {{ core_current_user.get_role_principal_display }}</span>
+    <a class="button secondary" href="{% url 'core_my_account' %}">Voir / modifier ma fiche</a>
+  </div>
+</section>
+
+<section class="panel module-launcher-panel">
+  <div class="section-title"><h2>Applications disponibles</h2><p>Les lanceurs ci-dessous correspondent aux droits ouverts pour ton profil LP Core.</p></div>
+  <div class="module-grid">
+    {% for module in suite_modules %}
+      <a class="module-tile module-tile-{{ module.code }}" href="{{ module.url }}" title="Ouvrir {{ module.name }}">
+        <div class="module-icon"><img src="{% static module.icon %}" alt="{{ module.name }}"></div>
+        <div class="module-content"><h3>{{ module.name }}</h3><p>{{ module.subtitle }}</p><small>{{ module.version }}</small></div>
+        <span class="module-status">{{ module.status }}</span>
+      </a>
+    {% empty %}
+      <div class="card muted">Aucun module n’est visible pour ce compte. Contacte un professeur ou un administrateur LP Core.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if core_current_user.is_admin_like %}
+<section class="panel admin-panel">
+  <div class="section-title"><h2>Administration rapide</h2><p>Fonctions réservées aux professeurs, responsables et administrateurs.</p></div>
+  <div class="cards kpis">
+    <div class="card"><strong>{{ users_count }}</strong><span>utilisateurs</span></div>
+    <div class="card"><strong>{{ active_users_count }}</strong><span>actifs</span></div>
+    <div class="card"><strong>{{ classes_count }}</strong><span>classes</span></div>
+    <div class="card"><strong>{{ formations_count }}</strong><span>formations</span></div>
+  </div>
+  <div class="wrap-actions">
+    <a class="button" href="{% url 'core_users_import' %}">Importer une base Excel</a>
+    <a class="button secondary" href="{% url 'core_stores_list' %}">Règles d’accès modules</a>
+    <form method="post" action="{% url 'core_sync_all_modules' %}" class="inline-sync-form">{% csrf_token %}<button class="button secondary" type="submit">Synchroniser toutes les apps</button></form>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Dernières modifications utilisateurs</h2>
+  <table><tr><th>Code</th><th>Nom</th><th>Classe</th><th>Rôle</th></tr>
+  {% for u in recent_users %}<tr><td>{{ u.code }}</td><td>{{ u.last_name }} {{ u.first_name }}</td><td>{{ u.class_name }}</td><td>{{ u.role_principal }}</td></tr>{% empty %}<tr><td colspan="4">Aucun utilisateur.</td></tr>{% endfor %}
+  </table>
+</section>
+{% endif %}
+{% endblock %}

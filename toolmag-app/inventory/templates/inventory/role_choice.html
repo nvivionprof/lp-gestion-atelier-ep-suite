@@ -1,0 +1,15 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="card" style="max-width:560px;margin:auto">
+  <h1>Choisir le rôle ToolMag</h1>
+  <p>Compte : <strong>{{ person.first_name }} {{ person.last_name }}</strong> — {{ person.code }}</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn primary" type="submit" name="role" value="user">Entrer comme utilisateur</button>
+    <button class="btn" type="submit" name="role" value="storekeeper">Entrer comme magasinier</button>
+    {% if person.role == 'admin' or person.role == 'responsible' %}
+      <button class="btn" type="submit" name="role" value="both">Professeur : les deux modes</button>
+    {% endif %}
+  </form>
+  <p class="muted">Les actions demandant un rôle précis, par exemple après lecture d’un QR code, redirigeront vers la connexion adaptée si nécessaire.</p>
+</section>
+{% endblock %}

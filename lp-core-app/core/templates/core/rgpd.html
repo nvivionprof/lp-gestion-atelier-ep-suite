@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h1>Centre RGPD</h1>
+<section class="panel"><h2>Cahier des charges RGPD</h2><p>Le cahier des charges opérationnel est livré dans <code>docs/CAHIER_DES_CHARGES_RGPD.md</code>. Cette page permet de piloter les paramètres essentiels : droit à l’image, blocage des uploads personnels élèves/mineurs, durées de conservation et journal des actions sensibles.</p></section>
+<section class="panel">
+  <h2>Politique opérationnelle</h2>
+  <form method="post" class="form-grid">{% csrf_token %}
+    <label>Conservation logs techniques<input name="technical_logs_retention" value="{{ policy.technical_logs_retention }}"></label>
+    <label>Sauvegardes - jours<input name="backup_retention_days" type="number" min="1" value="{{ policy.backup_retention_days }}"></label>
+    <label class="span-all">Finalité photo<textarea name="photo_purpose" rows="3">{{ policy.photo_purpose }}</textarea></label>
+    <label class="span-all">Mineurs / autorisation image<textarea name="minor_authorization_note" rows="3">{{ policy.minor_authorization_note }}</textarea></label>
+    <label class="span-all">Justification conservation sauvegardes<textarea name="certification_support_note" rows="3">{{ policy.certification_support_note }}</textarea></label>
+    <div class="span-all"><button type="submit">Enregistrer politique RGPD</button></div>
+  </form>
+</section>
+<section class="panel">
+  <h2>Registre simplifié des traitements</h2>
+  <table><tr><th>Traitement</th><th>Finalité</th><th>Données</th><th>Durée</th><th>Accès</th></tr>
+    <tr><td>Comptes utilisateurs</td><td>Authentification et synchronisation modules</td><td>nom, prénom, classe, formation, rôle, droits</td><td>durée scolarité + archivage établissement</td><td>admin/profs autorisés</td></tr>
+    <tr><td>Photo d'identité</td><td>Identification interne et édition attestations/habilitations</td><td>photo facultative, statut consentement</td><td>sortie de l'élève ou retrait autorisation</td><td>admin/profs autorisés</td></tr>
+    <tr><td>Documents personnels</td><td>PFMP, CV, attestations</td><td>documents déposés volontairement</td><td>année scolaire + durée utile PFMP</td><td>personne concernée/admin/profs autorisés</td></tr>
+    <tr><td>Logs techniques</td><td>sécurité, traçabilité et preuve d'administration</td><td>action, date, acteur, cible</td><td>{{ policy.technical_logs_retention }}</td><td>admin</td></tr>
+    <tr><td>Sauvegardes</td><td>restauration, erreurs de manipulation, support certification</td><td>copie bases et fichiers applicatifs</td><td>{{ policy.backup_retention_days }} jours</td><td>admin serveur</td></tr>
+  </table>
+</section>
+<section class="panel"><h2>Journal des actions sensibles</h2><table><tr><th>Date</th><th>Acteur</th><th>Action</th><th>Cible</th><th>Détail</th></tr>{% for log in audit_logs %}<tr><td>{{ log.created_at|date:'d/m/Y H:i' }}</td><td>{% if log.actor %}{{ log.actor.code }}{% else %}—{% endif %}</td><td>{{ log.action }}</td><td>{{ log.target }}</td><td>{{ log.details|truncatechars:120 }}</td></tr>{% empty %}<tr><td colspan="5">Aucune action journalisée.</td></tr>{% endfor %}</table></section>
+{% endblock %}

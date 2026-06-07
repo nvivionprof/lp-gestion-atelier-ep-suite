@@ -1,0 +1,9 @@
+<div class="safety-subnav">
+  <a href="{% url 'safety_event_create' %}">+ Déclarer événement</a>
+  <a href="{% url 'safety_situation_create' %}">+ Situation dangereuse</a>
+  <a href="{% url 'safety_risk_create' %}">+ Ajouter risque</a>
+  <a href="{% url 'safety_export_risks_csv' %}">CSV risques</a>
+  <a href="{% url 'safety_export_actions_csv' %}">CSV actions</a>
+  <a href="{% url 'safety_export_events_pdf' %}">PDF événements</a>
+  {% if safety_current_user and safety_current_user.is_admin_like %}<form method="post" action="{% url 'safety_sync_lp_core' %}" class="inline-sync-form">{% csrf_token %}<button class="button secondary" type="submit">Synchroniser LP Core → Safety</button></form>{% endif %}
+</div>

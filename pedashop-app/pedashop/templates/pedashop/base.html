@@ -1,0 +1,47 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ PEDASHOP_APP_NAME }} — LP Gestion Atelier EP Suite</title>
+  <link rel="stylesheet" href="{% static 'pedashop/pedashop.css' %}">
+  <link rel="stylesheet" href="{% static 'pedashop/camera_upload.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <a href="{% url 'pedashop_dashboard' %}"><img src="{% static 'pedashop/img/logo-pedashop-header.png' %}" alt="PedaShop" class="brand-img"></a>
+    <span class="version-badge">{{ PEDASHOP_VERSION }}</span>
+    {% if pedashop_current_user %}<span class="role-pill">{{ request.session.pedashop_active_role|default:'utilisateur' }}</span>{% endif %}
+  </div>
+  <nav>
+    <a href="{% url 'pedashop_dashboard' %}">Tableau de bord</a>
+    <a href="{% url 'pedashop_stock_list' %}">Stock</a>
+    {% if pedashop_current_user %}
+      <a href="{% url 'pedashop_article_list' %}">Articles</a>
+      <a href="{% url 'pedashop_bon_list' %}">Bons</a>
+      <a href="{% url 'pedashop_inventory_adjustment' %}">Inventaire</a>
+      <a href="{% url 'pedashop_stock_entry' %}">Entrées stock</a>
+      <a href="{% url 'pedashop_user_list' %}">Utilisateurs</a>
+      <a href="{% url 'pedashop_projection_list' %}">Pré-réservations TP</a>
+      <a href="{% url 'pedashop_alert_list' %}">Alertes</a>
+      <a href="{% url 'pedashop_consultation_list' %}">Consultations</a>
+      <a href="{% url 'pedashop_reclamation_list' %}">Réclamations</a>
+      {% if pedashop_current_user and pedashop_current_user.is_admin_like %}<a title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>{% endif %}
+    {% endif %}
+    <a href="{% url 'pedashop_affichage' %}">Affichage dynamique</a>
+    <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
+    {% if pedashop_current_user %}<a href="{% url 'pedashop_logout' %}">Déconnexion {{ pedashop_current_user.username }}</a>{% else %}<a href="{% url 'pedashop_login' %}">Connexion</a>{% endif %}
+    <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide PedaShop">
+      <a class="admin-menu-item" href="{% url 'pedashop_help' %}">Aide PedaShop</a>
+      <a class="admin-menu-item" href="{% url 'pedashop_about' %}">À propos</a>
+    </div></details>
+  </nav>
+</header>
+<main class="container">
+  {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'pedashop/camera_upload.js' %}"></script>
+</body>
+</html>

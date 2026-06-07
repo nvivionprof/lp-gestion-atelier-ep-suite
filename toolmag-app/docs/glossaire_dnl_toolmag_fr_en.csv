@@ -1,0 +1,66 @@
+Zone ToolMag;Champ;Exemple FR;Traduction EN proposée
+Catégorie;Nom de catégorie;Appareil de mesure;Measuring device
+Catégorie;Nom de catégorie;Outillage à main;Hand tools
+Catégorie;Nom de catégorie;Outillage électroportatif;Power tools
+Catégorie;Nom de catégorie;Réseau informatique;Computer networking
+Catégorie;Nom de catégorie;Fibre optique;Optical fiber
+Catégorie;Nom de catégorie;Caméra / vidéo;Camera / video equipment
+Catégorie;Nom de catégorie;Équipement de sécurité;Safety equipment
+Catégorie;Nom de catégorie;Équipement électrique;Electrical equipment
+Emplacement;Nom d’emplacement;Magasin électrique;Electrical store room
+Emplacement;Nom d’emplacement;Atelier CIEL;CIEL workshop
+Emplacement;Nom d’emplacement;Atelier MELEC;MELEC workshop
+Emplacement;Nom d’emplacement;Armoire mesure;Measuring cabinet
+Emplacement;Nom d’emplacement;Armoire fibre;Fiber cabinet
+Emplacement;Nom d’emplacement;Réserve matériel;Equipment storage room
+Emplacement;Nom d’emplacement;Salle professeurs;Teachers’ room
+Matériel;Nom du matériel;Multimètre Fluke;Fluke multimeter
+Matériel;Nom du matériel;Analyseur réseau;Network analyzer / Power quality analyzer
+Matériel;Nom du matériel;Contrôleur d’installation;Installation tester
+Matériel;Nom du matériel;Caméra thermique;Thermal camera
+Matériel;Nom du matériel;Soudeuse fibre optique;Optical fiber fusion splicer
+Matériel;Nom du matériel;Oscilloscope;Oscilloscope
+Matériel;Descriptif matériel;Contrôleur d’installation électrique;Electrical installation tester
+Matériel;Descriptif matériel;Oscilloscope triphasé;Three-phase oscilloscope
+Matériel;Descriptif matériel;Kit de soudure fibre;Fiber splicing kit
+Matériel;Descriptif matériel;Appareil de mesure courant faible;Low-current measuring device
+Composant;Nom du composant;Cordon rouge;Red test lead
+Composant;Nom du composant;Cordon noir;Black test lead
+Composant;Nom du composant;Alimentation secteur;Power supply
+Composant;Nom du composant;Pince ampèremétrique;Current clamp
+Composant;Nom du composant;Câble USB;USB cable
+Composant;Nom du composant;Mallette;Carrying case
+Composant;Nom du composant;Notice rapide;Quick start guide
+Document;Type de document;Notice constructeur;Manufacturer manual
+Document;Type de document;Fiche de prise en main;Getting started guide
+Document;Type de document;Consigne de sécurité;Safety instruction sheet
+Document;Type de document;Fiche maintenance;Maintenance sheet
+Document;Type de document;Procédure de test;Test procedure
+Intervention;Type d’intervention;Contrôle;Inspection
+Intervention;Type d’intervention;Nettoyage;Cleaning
+Intervention;Type d’intervention;Vérification périodique;Periodic check
+Intervention;Type d’intervention;Reconditionnement;Reconditioning
+Intervention;Type d’intervention;Contrôle accessoires;Accessory check
+Intervention;Type d’intervention;Test fonctionnement;Functional test
+Intervention;Type d’intervention;Maintenance légère;Light maintenance
+Réparation;Type d’intervention;Dépannage;Troubleshooting
+Réparation;Type d’intervention;Remplacement accessoire;Accessory replacement
+Réparation;Type d’intervention;Remise en état;Repair / restoration
+Réparation;Type d’intervention;Diagnostic;Diagnosis
+Statut matériel;Statut;Disponible;Available
+Statut matériel;Statut;Sorti;Checked out
+Statut matériel;Statut;En maintenance;Under maintenance
+Statut matériel;Statut;Incomplet;Incomplete
+Statut matériel;Statut;Hors service;Out of service
+Statut matériel;Statut;Perdu;Lost
+État matériel;État;Bon état;Good condition
+État matériel;État;Usure normale;Normal wear
+État matériel;État;À surveiller;To be monitored
+État matériel;État;Abîmé;Damaged
+État matériel;État;Dangereux;Unsafe
+État matériel;État;Absent;Missing
+Rôle;Rôle;Utilisateur;User
+Rôle;Rôle;Magasinier;Storekeeper
+Rôle;Rôle;Responsable;Supervisor
+Rôle;Rôle;Administrateur;Administrator
+Rôle;Rôle ponctuel;Technicien inventaire;Inventory technician

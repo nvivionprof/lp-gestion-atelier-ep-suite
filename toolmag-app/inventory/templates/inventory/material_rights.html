@@ -1,0 +1,20 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Droits ponctuels de modification matériel</h1>
+<section class="panel">
+  <h2>{% if editing %}Modifier une autorisation{% else %}Créer une autorisation{% endif %}</h2>
+  <p class="hint">Ces droits permettent à une formation, classe ou groupe de créer/modifier des fiches matériel depuis ToolMag sans accès à Django admin.</p>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enregistrer</button>
+  </form>
+</section>
+<section class="panel">
+  <h2>Autorisations existantes</h2>
+  <table><thead><tr><th>Formation</th><th>Classe</th><th>Groupe</th><th>Période</th><th>Droits</th><th>Actif</th><th>Prof</th><th>Action</th></tr></thead><tbody>
+  {% for g in grants %}
+  <tr><td>{% if g.formation %}{{ g.formation.code }}{% else %}Toutes{% endif %}</td><td>{{ g.class_name|default:'-' }}</td><td>{{ g.group_name|default:'-' }}</td><td>{{ g.start_date }} → {{ g.end_date|default:'-' }}</td><td>{% if g.can_create_equipment %}Créer {% endif %}{% if g.can_edit_equipment %}Modifier {% endif %}{% if g.can_edit_components %}Composants {% endif %}{% if g.can_add_document %}Docs {% endif %}</td><td>{{ g.active|yesno:'Oui,Non' }}</td><td>{% if g.granted_by %}{{ g.granted_by.code }}{% else %}-{% endif %}</td><td><a class="button secondary" href="?edit={{ g.id }}">Modifier</a></td></tr>
+  {% empty %}<tr><td colspan="8">Aucune autorisation.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

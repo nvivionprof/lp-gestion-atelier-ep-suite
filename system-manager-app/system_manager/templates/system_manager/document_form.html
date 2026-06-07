@@ -1,0 +1,22 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>{{ title }}</h1>
+  <form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="formgrid">
+      {% for field in form %}
+        <div class="field {% if field.field.widget.input_type == 'checkbox' %}checkbox-field checkbox-inline{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>{{ field }}{% endif %}
+          {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}<span class="error">{{ error }}</span>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="actions"><button type="submit">Enregistrer</button><a class="button secondary" href="{% url 'system_detail' systeme.pk %}">Retour système</a></div>
+  </form>
+</section>
+<script>
+document.querySelectorAll('select[data-filterable]').forEach(function(sel){var input=document.createElement('input');input.type='search';input.placeholder='Filtrer la liste...';input.className='form-control';sel.parentNode.insertBefore(input, sel);input.addEventListener('input',function(){var q=input.value.toLowerCase();Array.from(sel.options).forEach(function(o){o.hidden=q && !o.text.toLowerCase().includes(q);});});});
+</script>
+{% endblock %}

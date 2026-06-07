@@ -1,0 +1,51 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ TPMANAGER_APP_NAME }} — LP Gestion Atelier EP Suite</title>
+  <link rel="stylesheet" href="{% static 'tp_manager/tp.css' %}">
+  <link rel="stylesheet" href="{% static 'tp_manager/camera_upload.css' %}">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand brand-logo">
+    <a href="{% url 'tp_dashboard' %}" aria-label="Accueil TP Manager"><img src="{% static 'tp_manager/img/logo_tpmanager.png' %}" alt="TP Manager" class="brand-img"></a>
+    <span class="version-badge">{{ TPMANAGER_VERSION }}</span>
+  </div>
+  <nav>
+    <a href="{% url 'tp_dashboard' %}">Tableau de bord</a>
+    <a href="{% url 'tp_list' %}">Bibliothèque TP</a>
+    <a href="{% url 'parcours_list' %}">Parcours</a>
+    <a href="{% url 'evaluation_manager:dashboard' %}">Évaluations</a>
+    <a href="{% url 'sequence_manager:dashboard' %}">Sequence Manager</a>
+    {% if tp_current_user and tp_current_user.is_prof_like %}<a href="{% url 'sequence_manager:sequence_list' %}">Séquences</a><a class="admin-menu-item" title="Créer un TP" href="{% url 'tp_create' %}">Créer un TP</a>{% elif can_contribute_tp %}<a href="{% url 'tp_create' %}">Proposer un TP</a>{% endif %}
+    {% if tp_current_user and tp_current_user.is_admin_like %}
+      <details class="admin-dropdown"><summary>Fonctions admin</summary><div class="admin-dropdown-menu" aria-label="Fonctions administrateur TP Manager">
+        <a class="admin-menu-item" title="Créer un TP" href="{% url 'tp_create' %}">Créer un TP</a>
+        <a class="admin-menu-item" title="Créer une séquence" href="{% url 'sequence_manager:sequence_create' %}">Créer une séquence</a>
+        <a class="admin-menu-item" title="Evaluation Manager" href="{% url 'evaluation_manager:dashboard' %}">Evaluation Manager</a>
+        <a class="admin-menu-item" title="Paramétrage" href="{% url 'tp_referentials' %}">Paramétrage</a>
+        <form method="post" action="{% url 'tp_sync_lp_core' %}">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser LP Core" type="submit"><span>Synchroniser LP Core</span></button></form>
+        <form method="post" action="{% url 'tp_sync_system_manager' %}">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser systèmes" type="submit"><span>Synchroniser systèmes</span></button></form>
+        <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
+        <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
+      </div></details>
+    {% endif %}
+    <a href="{{ SYSTEM_MANAGER_PUBLIC_URL }}" target="_blank" rel="noopener">System Manager</a>
+    <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
+    {% if tp_current_user %}<a href="{% url 'tp_logout' %}">Déconnexion {{ tp_current_user.username }}</a>{% else %}<a href="{% url 'tp_login' %}">Connexion</a>{% endif %}
+    <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide TP Manager">
+      <a class="admin-menu-item" href="{% url 'tp_help' %}">Aide TP / Séquences / Évaluations</a>
+      <a class="admin-menu-item" href="{% url 'tp_about' %}">À propos</a>
+    </div></details>
+  </nav>
+</header>
+<main class="container">
+  {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'tp_manager/camera_upload.js' %}"></script>
+</body>
+</html>

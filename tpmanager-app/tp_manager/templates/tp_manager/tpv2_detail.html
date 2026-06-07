@@ -1,0 +1,94 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">{{ tp.diplome.code }} — {{ tp.get_usage_pedagogique_display }}</p>
+    <h1>{{ tp.code }} — {{ tp.titre }}</h1>
+    <p class="lead">{{ tp.resume_eleve|default:'Résumé élève non renseigné.' }}</p>
+    <span class="badge status-{{ tp.statut }}">{{ tp.get_statut_display }}</span>
+    {% if tp.source_tp %}<span class="badge">Copie issue de {{ tp.source_tp.code }}</span>{% endif %}
+  </div>
+  <div class="hero-actions">
+    {% if can_edit %}
+      <a class="button" href="{% url 'tp_update' tp.pk %}">Modifier le TP</a>
+      <a class="button secondary" href="{% url 'tpv2_referentiel_affect' tp.pk %}">Affecter / barème</a>
+      <a class="button secondary" href="{% url 'tp_duplicate' tp.pk %}">Dupliquer pour modification</a>
+    {% endif %}
+  </div>
+</section>
+<div class="grid2">
+<section class="panel">
+  <h2>Cadre TP</h2>
+  <table><tbody>
+    <tr><th>Diplôme</th><td>{{ tp.diplome.code }} — {{ tp.diplome.intitule }}</td></tr>
+    <tr><th>Niveau / groupe</th><td>{{ tp.niveau_classe|default:'Non renseigné' }}</td></tr>
+    <tr><th>Thème principal</th><td>{{ tp.domaine_principal|default:'Non renseigné' }}</td></tr>
+    <tr><th>Sous-thème</th><td>{{ tp.sous_theme|default:'Non renseigné' }}</td></tr>
+    <tr><th>Durée</th><td>{{ tp.duree_heures_affichage }}</td></tr>
+    <tr><th>Barème général</th><td>{% if tp.bareme_total %}{{ tp.bareme_total }} pts{% else %}Non renseigné{% endif %}</td></tr>
+    <tr><th>Pivot interne</th><td>{{ tp.competence_pivot|default:'Non renseigné' }}</td></tr>
+    <tr><th>Mots-clés parcours</th><td>{{ tp.mots_cles|default:'Non renseignés' }}</td></tr>
+  </tbody></table>
+</section>
+<section class="panel">
+  <h2>Contexte et mission</h2>
+  <h3>Description du contexte / mise en situation professionnelle</h3>
+  <p>{{ tp.objectifs_prof|linebreaksbr|default:'Non renseignée.' }}</p>
+  <h3>Problématique liée au métier / missions à réaliser</h3>
+  <p>{{ tp.problematique_metier|linebreaksbr|default:'Non renseignée.' }}</p>
+</section>
+</div>
+<section class="panel">
+  <h2>Champs spécifiques {{ tp.diplome.code }}</h2>
+  <table><tbody>{% for val in tp.valeurs_champs.all %}<tr><th>{{ val.champ.libelle }}</th><td>{{ val.valeur|default:'—' }}</td></tr>{% empty %}<tr><td>Aucun champ spécifique renseigné.</td></tr>{% endfor %}</tbody></table>
+</section>
+<section class="panel">
+  <h2>Liens référentiel officiels</h2>
+  <p class="muted">Les activités, tâches, compétences, critères et AP sont issus du référentiel officiel. Le statut mobilisé/travaillé/certification et le barème se règlent dans <strong>Affecter / barème</strong>.</p>
+  <div class="grid3">
+    <div><h3>Activités</h3><ul>{% for a in tp.activites_officielles.all %}<li><strong>{{ a.activite.code }}</strong> — {{ a.activite.libelle_officiel }}</li>{% empty %}<li class="muted">Aucune activité.</li>{% endfor %}</ul></div>
+    <div><h3>Tâches</h3><ul>{% for t in tp.taches_officielles.all %}<li><strong>{{ t.tache.code }}</strong> — {{ t.tache.libelle_officiel }}<br><span class="small muted">Autonomie : {{ t.tache.get_autonomie_display }} · Responsabilité : {{ t.tache.responsabilite_resume }}</span></li>{% empty %}<li class="muted">Aucune tâche.</li>{% endfor %}</ul></div>
+    <div><h3>AP cochées</h3><ul>{% for ap in tp.attitudes_officielles_selectionnees.all %}<li><strong>{{ ap.attitude.code }}</strong> — {{ ap.attitude.libelle_officiel }}</li>{% empty %}<li class="muted">Aucune AP.</li>{% endfor %}</ul></div>
+  </div>
+</section>
+<div class="grid2">
+<section class="panel">
+  <h2>Compétences et critères officiels sélectionnés</h2>
+  <div class="summary-metrics"><span class="metric">Compétences : {{ total_comp_points }} pts</span><span class="metric">Critères : {{ total_crit_points }} pts</span></div>
+  <div class="competence-list">
+    {% for c in tp.competences_officielles.all %}<span class="badge"><strong>{{ c.competence.code }}</strong> — {{ c.competence.libelle_officiel }} · {{ c.get_type_lien_display }}{% if c.pourcentage %} · {{ c.pourcentage }} %{% endif %}{% if c.bareme %} · {{ c.bareme }} pts{% endif %}</span>{% empty %}<span class="muted">Aucune compétence officielle associée.</span>{% endfor %}
+  </div>
+  <h3>Critères officiels cochés</h3>
+  <ul>{% for crit in tp.criteres_officiels_selectionnes.all %}<li><strong>{{ crit.critere.competence.code }}</strong> — {{ crit.critere.libelle_officiel }} <span class="badge">{{ crit.get_type_lien_display }}</span>{% if crit.pourcentage %} <span class="badge">{{ crit.pourcentage }} %</span>{% endif %}{% if crit.bareme %} <span class="badge">{{ crit.bareme }} pts</span>{% endif %}</li>{% empty %}<li class="muted">Aucun critère officiel coché.</li>{% endfor %}</ul>
+  {% if can_edit %}<p><a class="mini-button" href="{% url 'tpv2_referentiel_affect' tp.pk %}">Affecter statuts, % et points</a></p>{% endif %}
+</section>
+<section class="panel">
+  <h2>Critères ajoutables par le professeur</h2>
+  <h3>Critères de réussite</h3>
+  <ul>{% for c in tp.criteres_reussite.all %}<li><strong>{{ c.libelle }}</strong>{% if c.niveau_attendu %} — {{ c.niveau_attendu }}{% endif %}</li>{% empty %}<li class="muted">Aucun critère de réussite.</li>{% endfor %}</ul>
+  <h3>Évaluation finale</h3>
+  <ul>{% for c in tp.criteres_evaluation_finale.all %}<li><strong>{{ c.libelle }}</strong>{% if c.bareme %} — {{ c.bareme }} pts{% endif %}<br><span class="muted">{{ c.indicateur }}</span></li>{% empty %}<li class="muted">Aucun critère d’évaluation finale.</li>{% endfor %}</ul>
+  {% if can_edit %}<p><a class="mini-button" href="{% url 'tpv2_success_add' tp.pk %}">Ajouter réussite</a> <a class="mini-button" href="{% url 'tpv2_final_add' tp.pk %}">Ajouter évaluation finale</a></p>{% endif %}
+</section>
+</div>
+<section class="panel">
+  <h2>TP liés — avant / après</h2>
+  <p class="muted">Les blocs structurent l’arborescence : prérequis avant le TP et prolongements après le TP. Pour les TP liés avant, le lien peut être conseillé ou obligatoire.</p>
+  <div class="grid2">
+    <div><h3>TP liés avant</h3>{% for block in tp.linked_blocks.all %}{% if block.sens == 'avant' %}<div class="doc-row"><div><strong>{{ block.titre }}</strong><br><span class="muted">{{ block.commentaire|default:'' }}</span><ul>{% for item in block.items.all %}<li><span class="badge">{{ item.get_niveau_lien_display }}</span> <strong>{{ item.linked_tp.code }}</strong> — {{ item.linked_tp.titre }}</li>{% empty %}<li class="muted">Aucun TP dans ce bloc.</li>{% endfor %}</ul>{% if can_edit %}<a class="mini-button secondary" href="{% url 'tpv2_linked_item_add' block.pk %}">Ajouter un TP à ce bloc</a>{% endif %}</div></div>{% endif %}{% empty %}{% endfor %}</div>
+    <div><h3>TP liés après</h3>{% for block in tp.linked_blocks.all %}{% if block.sens == 'apres' %}<div class="doc-row"><div><strong>{{ block.titre }}</strong><br><span class="muted">{{ block.commentaire|default:'' }}</span><ul>{% for item in block.items.all %}<li><span class="badge">{{ item.get_niveau_lien_display }}</span> <strong>{{ item.linked_tp.code }}</strong> — {{ item.linked_tp.titre }}</li>{% empty %}<li class="muted">Aucun TP dans ce bloc.</li>{% endfor %}</ul>{% if can_edit %}<a class="mini-button secondary" href="{% url 'tpv2_linked_item_add' block.pk %}">Ajouter un TP à ce bloc</a>{% endif %}</div></div>{% endif %}{% empty %}{% endfor %}</div>
+  </div>
+  {% if can_edit %}<p><a class="mini-button" href="{% url 'tpv2_linked_block_add' tp.pk %}">Ajouter un bloc de TP liés</a></p>{% endif %}
+</section>
+<section class="panel">
+  <h2>Ressources optionnelles — System Manager / ToolMag / PedaShop</h2>
+  <p class="muted">Chaque bloc est un bloc <strong>OU</strong>. Plusieurs blocs successifs sont lus en <strong>ET</strong>.</p>
+  {% for group in tp.resource_groups.all %}<div class="doc-row"><div><strong>{{ group.titre }}</strong> <span class="badge">Bloc OU</span>{% if not group.obligatoire %}<span class="badge">optionnel</span>{% endif %}<br>{{ group.commentaire|default:'' }}<ul>{% for item in group.items.all %}<li>{{ item.get_source_module_display }} — {{ item.get_resource_type_display }} : <strong>{{ item.libelle }}</strong> x {{ item.quantite }} {{ item.unite }}{% if item.external_code %} <span class="muted">({{ item.external_code }})</span>{% endif %}</li>{% empty %}<li class="muted">Aucune ressource dans ce groupe.</li>{% endfor %}</ul>{% if can_edit %}<a class="mini-button secondary" href="{% url 'tpv2_resource_item_add' group.pk %}">Ajouter ressource au groupe</a>{% endif %}</div></div>{% empty %}<p class="muted">Aucun groupe de ressources associé.</p>{% endfor %}
+  {% if can_edit %}<p><a class="mini-button" href="{% url 'tpv2_resource_group_add' tp.pk %}">Ajouter bloc OU</a></p>{% endif %}
+</section>
+<section class="panel">
+  <h2>Documents</h2>
+  <div class="doc-grid">{% for doc in tp.documents_v2.all %}{% if doc.actif %}<div class="doc-row"><div><strong>{{ doc.titre }}</strong><br><span class="badge">{{ doc.get_type_document_display }}</span></div><a class="mini-button" href="{{ doc.fichier.url }}">Ouvrir</a></div>{% endif %}{% empty %}<p class="muted">Aucun document.</p>{% endfor %}</div>
+  {% if can_edit %}<p><a class="mini-button" href="{% url 'tp_document_add' tp.pk %}">Ajouter document</a></p>{% endif %}
+</section>
+{% endblock %}

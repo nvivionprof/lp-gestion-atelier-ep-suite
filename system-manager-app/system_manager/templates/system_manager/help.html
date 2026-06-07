@@ -1,0 +1,32 @@
+{% extends "system_manager/base.html" %}
+{% block content %}
+<section class="page-card help-page">
+<h1>Aide — System Manager</h1>
+<p>System Manager gère les systèmes pédagogiques, zones, réservations, QR codes et prises de poste.</p>
+<h2>Index</h2>
+<ol>
+<li><a href="#aide-1">Créer un système</a></li>
+<li><a href="#aide-2">Réserver et utiliser un système</a></li>
+<li><a href="#aide-3">Liaison avec les autres modules</a></li>
+</ol>
+<h2 id="aide-1">Créer un système</h2>
+<ul>
+<li>Créer une fiche système avec zone, sous-zone, formation et informations techniques.</li>
+<li>Ajouter photo, documents, points de contrôle et consignes associées.</li>
+<li>Utiliser le QR code pour accéder rapidement à la fiche ou à la prise de poste.</li>
+</ul>
+<h2 id="aide-2">Réserver et utiliser un système</h2>
+<ul>
+<li>Consulter le calendrier pour vérifier les disponibilités.</li>
+<li>Créer une réservation en précisant période, groupe, enseignant et usage pédagogique.</li>
+<li>Tracer la prise de poste, la restitution, les anomalies et l’historique.</li>
+</ul>
+<h2 id="aide-3">Liaison avec les autres modules</h2>
+<ul>
+<li>Synchroniser LP Core pour les comptes et droits.</li>
+<li>Partager les systèmes avec TP Manager et Sequence Manager pour planifier les activités.</li>
+<li>Utiliser Base SQL uniquement en maintenance ou reprise contrôlée.</li>
+</ul>
+<p class="muted">Cette aide doit être ajustée à chaque évolution du module.</p>
+</section>
+{% endblock %}

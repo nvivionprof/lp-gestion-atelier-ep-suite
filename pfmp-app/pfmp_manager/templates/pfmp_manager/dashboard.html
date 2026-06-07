@@ -1,0 +1,43 @@
+{% extends 'pfmp_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Gestion des périodes en entreprise</p>
+    <h1>PFMP Manager</h1>
+    <p>Suivi des entreprises, contacts, périodes, démarches élèves et socle Portail Entreprise V2.</p>
+  </div>
+</section>
+
+<section class="cards">
+  <div><b>{{ company_count }}</b><span>Entreprises</span></div>
+  <div><b>{{ period_count }}</b><span>Périodes</span></div>
+  <div><b>{{ assignment_count }}</b><span>Affectations</span></div>
+  <div><b>{{ step_count }}</b><span>Démarches</span></div>
+</section>
+
+<section class="grid2">
+  <div class="panel">
+    <h2>Périodes ouvertes</h2>
+    {% for p in periods %}
+      <p>
+        <a href="{% url 'pfmp_period_list' %}">{{ p.title }}</a><br>
+        <small>{{ p.start_date }} → {{ p.end_date }} — {{ p.get_status_display }}</small>
+      </p>
+    {% empty %}
+      <p>Aucune période.</p>
+    {% endfor %}
+  </div>
+
+  <div class="panel">
+    <h2>Derniers suivis</h2>
+    {% for a in assignments %}
+      <p>
+        {{ a.student.full_name }} — {{ a.period.title }}<br>
+        <small>{{ a.get_status_display }}{% if a.company %} — {{ a.company.name }}{% endif %}</small>
+      </p>
+    {% empty %}
+      <p>Aucune affectation.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

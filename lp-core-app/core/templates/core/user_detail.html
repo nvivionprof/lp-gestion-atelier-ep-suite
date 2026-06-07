@@ -1,0 +1,100 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h1>Fiche utilisateur — {{ target_user.code }}</h1>
+
+<section class="panel user-profile-head">
+  <div class="identity-card">
+    <div class="photo-box">
+      {% if target_user.display_photo_allowed %}
+        <img src="{{ target_user.identity_photo.url }}" alt="Photo {{ target_user.code }}">
+      {% else %}
+        <div class="photo-placeholder">{{ target_user.image_placeholder_text }}</div>
+      {% endif %}
+    </div>
+    <div>
+      <h2>{{ target_user.last_name }} {{ target_user.first_name }}</h2>
+      <p><strong>Classe :</strong> {{ target_user.class_name|default:'—' }} — <strong>Groupe :</strong> {{ target_user.group_name|default:'—' }} — <strong>Formation :</strong> {% if target_user.formation %}{{ target_user.formation.code }}{% else %}—{% endif %}</p>
+      <p><strong>Droit à l'image :</strong> {{ target_user.get_image_consent_status_display }}{% if target_user.parent_image_opposition %} — opposition parentale active{% endif %}</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="panel">
+  <h2>Réinitialisation du mot de passe</h2>
+  <form method="post" class="form-grid" onsubmit="return confirm('Réinitialiser le mot de passe de {{ target_user.code }} ?');">{% csrf_token %}
+    <input type="hidden" name="action" value="reset_password">
+    <label>Nouveau mot de passe<input name="new_password" type="text" autocomplete="new-password" placeholder="ex. prof1234"></label>
+    <label>Confirmation<input name="confirm_password" type="text" autocomplete="new-password"></label>
+    <label class="checkline"><input type="checkbox" name="force_password_change" value="1"> Obliger l'utilisateur à changer son mot de passe dans LP Core</label>
+    <label class="checkline"><input type="checkbox" name="sync_modules" value="1" checked> Resynchroniser immédiatement ce mot de passe vers les modules</label>
+    <p class="span-all help">La resynchronisation cible uniquement cet utilisateur et force la mise à jour du mot de passe dans ToolMag, PedaShop, Safety Manager, System Manager et TP Manager.</p>
+    <div class="span-all"><button type="submit">Réinitialiser le mot de passe</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Profil personnel / RGPD</h2>
+  <form method="post" enctype="multipart/form-data" class="form-grid">{% csrf_token %}
+    <input type="hidden" name="action" value="update_profile">
+    <label>Email personnel<input name="personal_email" type="email" value="{{ target_user.personal_email }}"></label>
+    <label>Téléphone personnel<input name="personal_phone" value="{{ target_user.personal_phone }}"></label>
+    <label>Statut droit à l'image<select name="image_consent_status">{% for code,label in target_user.IMAGE_CONSENT_CHOICES %}<option value="{{ code }}" {% if target_user.image_consent_status == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <label>Photo d'identité facultative<input name="identity_photo" type="file" accept="image/*"></label>
+    <label class="checkline"><input type="checkbox" name="parent_image_opposition" value="1" {% if target_user.parent_image_opposition %}checked{% endif %}> Opposition parentale / refus de diffusion</label>
+    <label class="checkline"><input type="checkbox" name="personal_upload_blocked" value="1" {% if target_user.personal_upload_blocked %}checked{% endif %}> Bloquer les ajouts photo/documents par l'utilisateur</label>
+    <label class="span-all">Commentaire consentement<textarea name="image_consent_comment" rows="2">{{ target_user.image_consent_comment }}</textarea></label>
+    <div class="span-all"><button type="submit">Enregistrer profil / RGPD</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Rôle et droits</h2>
+  <form method="post" class="form-card">{% csrf_token %}
+    <input type="hidden" name="action" value="update_rights">
+    <label>Rôle principal
+      <select name="role_principal">{% for code,label in all_roles %}<option value="{{ code }}" {% if target_user.role_principal == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </label>
+    <div class="rights-grid">
+      {% for right in rights_defs %}
+        <label><input type="checkbox" name="rights_codes" value="{{ right.code }}" {% if right.code in user_rights %}checked{% endif %}> <span>{{ right.code }}</span><small>{{ right.module }}</small></label>
+      {% empty %}
+        <p>Aucun droit paramétré. Ajoutez des droits dans Magasins / droits.</p>
+      {% endfor %}
+    </div>
+    <label>Droits complémentaires éventuels<textarea name="rights_extra" rows="2" placeholder="Droits rares séparés par ;"></textarea></label>
+    <button type="submit">Enregistrer rôle / droits</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Magasins visibles</h2>
+  <table><tr><th>Module</th><th>Code</th><th>Nom</th><th></th></tr>{% for access in store_accesses %}<tr><td>{{ access.store.module }}</td><td>{{ access.store.code }}</td><td>{{ access.store.nom }}</td><td><form method="post">{% csrf_token %}<input type="hidden" name="action" value="remove_store"><input type="hidden" name="access_id" value="{{ access.pk }}"><button type="submit">Retirer</button></form></td></tr>{% empty %}<tr><td colspan="4">Aucun magasin affecté.</td></tr>{% endfor %}</table>
+  <form method="post" class="form-card">{% csrf_token %}<input type="hidden" name="action" value="add_store"><div class="rights-grid">{% for store in stores %}<label><input type="checkbox" name="stores" value="{{ store.pk }}"> <span>{{ store.code }}</span><small>{{ store.nom }} — {{ store.module }}</small></label>{% endfor %}</div><button type="submit">Ajouter magasins cochés</button></form>
+</section>
+
+<section class="panel">
+  <h2>Habilitations / certifications</h2>
+  <table><tr><th>Type</th><th>Niveau</th><th>Obtention</th><th>Fin validité</th><th>Actif</th><th></th></tr>{% for c in certifications %}<tr><td>{{ c.type_certification }}</td><td>{{ c.niveau }}</td><td>{{ c.date_obtention|default:'—' }}</td><td>{{ c.date_fin_validite|default:'—' }}</td><td>{{ c.actif|yesno:'oui,non' }}</td><td><form method="post">{% csrf_token %}<input type="hidden" name="action" value="toggle_certification"><input type="hidden" name="certification_id" value="{{ c.pk }}"><button type="submit">Activer/désactiver</button></form></td></tr>{% empty %}<tr><td colspan="6">Aucune certification.</td></tr>{% endfor %}</table>
+  <form method="post" class="form-grid">{% csrf_token %}<input type="hidden" name="action" value="add_certification">
+    <label>Type<select name="type_certification">{% for code,label in certification_types %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+    <label>Niveau / mention<input name="niveau"></label>
+    <label>Date obtention<input name="date_obtention" type="date"></label>
+    <label>Date fin validité<input name="date_fin_validite" type="date"></label>
+    <label class="span-all">Commentaire<textarea name="commentaire" rows="2"></textarea></label>
+    <div class="span-all"><button type="submit">Ajouter certification</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Documents personnels</h2>
+  <table><tr><th>Type</th><th>Titre</th><th>Date</th><th>Fichier</th></tr>{% for doc in documents %}<tr><td>{{ doc.get_type_document_display }}</td><td>{{ doc.title }}</td><td>{{ doc.created_at|date:'d/m/Y' }}</td><td><a href="{{ doc.file.url }}" target="_blank">ouvrir</a></td></tr>{% empty %}<tr><td colspan="4">Aucun document.</td></tr>{% endfor %}</table>
+  <form method="post" enctype="multipart/form-data" class="form-grid">{% csrf_token %}<input type="hidden" name="action" value="add_document">
+    <label>Type<select name="type_document">{% for code,label in document_types %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+    <label>Titre<input name="document_title"></label>
+    <label>Fichier<input type="file" name="document_file"></label>
+    <label class="checkline"><input type="checkbox" name="visible_to_prof" value="1" checked> Visible par les professeurs autorisés</label>
+    <div class="span-all"><button type="submit">Ajouter document</button></div>
+  </form>
+</section>
+{% endblock %}

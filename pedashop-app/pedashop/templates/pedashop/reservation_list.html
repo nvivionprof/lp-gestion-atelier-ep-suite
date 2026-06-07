@@ -1,0 +1,2 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}<h1>Réservations classiques</h1><div class="card table-wrap"><table><thead><tr><th>Code</th><th>Titre</th><th>Demandeur</th><th>Période</th><th>Statut</th></tr></thead><tbody>{% for r in items %}<tr><td>{{ r.code }}</td><td>{{ r.titre }}</td><td>{{ r.demandeur }}</td><td>{{ r.date_debut }} → {{ r.date_fin }}</td><td>{{ r.statut }}</td></tr>{% empty %}<tr><td colspan="5">Aucune réservation.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

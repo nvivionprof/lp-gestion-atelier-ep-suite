@@ -1,0 +1,28 @@
+{% extends "tp_manager/base.html" %}
+{% block content %}
+<section class="hero-card">
+  <h1>{{ activity.code_eval }} — {{ activity.intitule }}</h1>
+  <p>{{ activity.eleve.full_name }} · {{ activity.date_activite|date:"d/m/Y" }} · {{ activity.classe }}</p>
+  {% if activity.absent %}<span class="badge danger">Absent — toutes les lignes sont traitées AB</span>{% endif %}
+  {% if activity.a_refaire %}<span class="badge warning">À refaire</span>{% endif %}
+</section>
+<section class="panel">
+  <table class="data-table">
+    <thead><tr><th>Compétence</th><th>Critère / sous-compétence</th><th>Autoéval.</th><th>Éval. prof</th><th>%</th><th>Points</th><th>À refaire</th></tr></thead>
+    <tbody>
+      {% for r in results %}
+      <tr>
+        <td><strong>{{ r.critere.competence.code }}</strong></td>
+        <td>{{ r.critere.libelle_officiel }}</td>
+        <td>{{ r.auto_niveau|default:"—" }}</td>
+        <td><span class="eval-badge level-{{ r.niveau_prof_effectif }}">{{ r.niveau_prof_effectif }}</span></td>
+        <td>{{ r.pourcentage|default:"—" }}</td>
+        <td>{% if activity.tp_note %}{{ r.points_professeur }}{% else %}—{% endif %}</td>
+        <td>{% if r.a_refaire %}Oui{% else %}Non{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if activity.tp_note %}<p><strong>Note calculée :</strong> {{ activity.note_calculee }}/{{ activity.bareme_total }}</p>{% endif %}
+</section>
+{% endblock %}

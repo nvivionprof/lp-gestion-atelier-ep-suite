@@ -1,0 +1,92 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="toolmag-inventory-mobile mobile-action-page">
+<h1>Inventaire utilisateur de {{ inventory_label }} — {{ equipment.code }}</h1>
+<div class="actions"><a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Retour à la fiche matériel</a></div>
+{% if current_borrower %}<div class="alert success">Utilisateur connecté : <strong>{{ current_borrower.first_name }} {{ current_borrower.last_name }}</strong> — code {{ current_borrower.code }}.</div>{% endif %}
+<section class="panel">
+  <h2>{{ equipment.name }}</h2>
+  <p><strong>Statut :</strong> {{ equipment.get_status_display }}</p>
+  <p><strong>État actuel :</strong> {{ equipment.get_current_condition_display }}</p>
+  {% if loan %}<p><strong>Sortie ouverte :</strong> {{ loan.checked_out_at }} — magasinier sortie : {{ loan.checkout_storekeeper }}</p>{% endif %}
+  <p class="hint">Cet inventaire utilisateur de {{ inventory_label }} ne valide pas administrativement le mouvement. Il prépare le contrôle : le magasinier relira, puis validera la sortie ou le retour.</p>
+  <div class="alert">Inventaire utilisateur vierge : aucune case n’est précochée. Coche chaque composant réellement présent, puis ajoute un commentaire si un élément manque ou paraît abîmé.</div>
+</section>
+{% if loan_inventory_status %}
+<section class="panel">
+  <h2>État des inventaires utilisateur</h2>
+  <p><strong>Inventaire utilisateur de sortie :</strong> {% if loan_inventory_status.out_done %}<span class="badge available">fait</span>{% else %}<span class="badge maintenance">à faire</span>{% endif %}</p>
+  <p><strong>Inventaire utilisateur de retour :</strong> {% if loan_inventory_status.return_done %}<span class="badge available">fait</span>{% else %}<span class="badge incomplete">non fait</span>{% endif %}</p>
+  {% if inventory_type == 'out' %}<p class="hint">Après validation de cet inventaire de sortie, ToolMag affichera directement le formulaire d’inventaire utilisateur de retour.</p>{% endif %}
+</section>
+{% endif %}
+
+{% if documents %}
+<section class="panel">
+  <h2>Documents du matériel</h2>
+  <p class="hint">Notices, fiches de prise en main, consignes de sécurité ou documents de maintenance associés à ce matériel.</p>
+  <table>
+    <thead><tr><th>Type</th><th>Titre</th><th>Description</th><th>Fichier</th></tr></thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr>
+        <td>{{ doc.get_document_type_display }}</td>
+        <td>{{ doc.title }}</td>
+        <td>{{ doc.description|default:'-' }}</td>
+        <td><a href="{{ doc.file.url }}" target="_blank" rel="noopener">Ouvrir / télécharger</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<form method="post" class="panel form toolmag-inventory-mobile">{% csrf_token %}
+  <div class="formgrid">
+    <label>État général observé
+      <select name="global_condition">{% for value,label in conditions %}<option value="{{ value }}" {% if value == equipment.current_condition %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </label>
+    <label>Commentaire utilisateur
+      <textarea name="comment" rows="3" placeholder="Exemple : cordon rouge absent, mallette abîmée, RAS..."></textarea>
+    </label>
+  </div>
+  <h2>Composants contrôlés par l'utilisateur</h2>
+  <div class="checklist">
+    {% for row in component_rows %}
+    {% with c=row.component item=row.item %}
+    <div class="checkrow checkrow-photo">
+      <div class="check-photo">{% if c.photo %}<img class="component-thumb" src="{{ c.photo.url }}" alt="{{ c.name }}">{% else %}-{% endif %}</div>
+      <label><input type="checkbox" class="component-present" name="component_{{ c.id }}_present"> {{ c.name }} {% if c.required %}<strong>*</strong>{% endif %}</label>
+      <select class="component-condition" name="component_{{ c.id }}_condition">{% for value,label in component_conditions %}<option value="{{ value }}" {% if value == c.default_condition %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <input name="component_{{ c.id }}_comment" value="" placeholder="Commentaire composant">
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  <div class="actions">
+    <button class="button" type="submit">Soumettre l'inventaire au magasinier</button>
+    <a class="button secondary" href="{% url 'equipment_control' equipment.code %}">Annuler</a>
+  </div>
+</form>
+
+<script>
+(function(){
+  document.querySelectorAll('.checkrow').forEach(row => {
+    const present = row.querySelector('.component-present');
+    const condition = row.querySelector('.component-condition');
+    if (!present || !condition) return;
+    function syncFromCondition(){
+      if (condition.value === 'absent') present.checked = false;
+    }
+    function syncFromPresent(){
+      if (!present.checked) condition.value = 'absent';
+      else if (condition.value === 'absent') condition.value = 'good';
+    }
+    condition.addEventListener('change', syncFromCondition);
+    present.addEventListener('change', syncFromPresent);
+  });
+})();
+</script>
+
+</div>
+{% endblock %}

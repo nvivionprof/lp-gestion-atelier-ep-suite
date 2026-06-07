@@ -1,0 +1,41 @@
+{% extends "tp_manager/base.html" %}
+{% block content %}
+<section class="hero-card">
+  <h1>Evaluation Manager</h1>
+  <p>Tableaux de bord compétences, autoévaluations élèves et évaluations professeur. Seule l’évaluation professeur alimente le bilan officiel.</p>
+</section>
+<div class="grid cards">
+  <article class="card"><strong>{{ activity_count }}</strong><span>activités évaluées</span></article>
+  <article class="card"><strong>{{ result_count }}</strong><span>critères / sous-compétences évalués</span></article>
+  <article class="card"><strong>{{ bilan_count }}</strong><span>bilans intermédiaires</span></article>
+</div>
+<section class="panel">
+  <h2>Élèves avec évaluations</h2>
+  <table class="data-table">
+    <thead><tr><th>Classe</th><th>Élève</th><th>Formation</th><th>Évaluations</th><th></th></tr></thead>
+    <tbody>
+    {% for eleve in students %}
+      <tr>
+        <td>{{ eleve.class_name|default:"—" }}</td>
+        <td>{{ eleve.full_name }}</td>
+        <td>{{ eleve.formation_code|default:"—" }}</td>
+        <td>{{ eleve.eval_count }}</td>
+        <td><a class="btn" href="{% url 'evaluation_manager:student_dashboard' eleve.pk %}">Voir le tableau</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Aucune évaluation. Lancer <code>python manage.py seed_evaluation_demo</code> pour charger la base exemple.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+<section class="panel">
+  <h2>Vues classe disponibles</h2>
+  <div class="button-row">
+  {% for row in classes %}
+    <a class="btn secondary" href="{% url 'evaluation_manager:class_dashboard' %}?formation={{ row.formation_code }}&classe={{ row.classe }}">{{ row.formation_code }} — {{ row.classe }}</a>
+  {% empty %}
+    <span class="muted">Aucune classe avec évaluation.</span>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

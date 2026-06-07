@@ -1,0 +1,118 @@
+:root{--bg:#f4f6f8;--panel:#fff;--text:#111827;--muted:#6b7280;--accent:#7c3aed;--accent2:#5b21b6;--accent-dark:#312e81;--danger:#dc2626;--warn:#d97706;--ok:#059669;--border:#e5e7eb;--shadow:0 8px 25px rgba(0,0,0,.06)}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}a{color:var(--accent);text-decoration:none}.topbar{background:var(--accent-dark);color:#fff;padding:14px 24px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;box-shadow:0 3px 10px rgba(0,0,0,.12)}.brand-logo{min-width:320px;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}.brand-img{height:62px;max-width:340px;object-fit:contain;background:#fff;border-radius:10px;padding:6px;border:1px solid rgba(255,255,255,.25)}.version-badge{display:inline-block;padding:.22rem .55rem;border-radius:999px;background:#f5f3ff;color:var(--accent2);font-size:.78rem;font-weight:800;white-space:nowrap}.topbar nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.topbar nav a,.topbar summary{color:#fff;font-weight:700;padding:.28rem .35rem;border-radius:.45rem;cursor:pointer}.topbar nav a:hover,.topbar summary:hover{background:rgba(255,255,255,.12)}.admin-dropdown{position:relative}.admin-dropdown-menu{position:absolute;background:#fff;color:#111827;border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--border);padding:10px;min-width:260px;z-index:10}.admin-dropdown-menu a,.admin-dropdown-menu button{display:block;color:#111827;width:100%;text-align:left;background:none;border:0;padding:8px;border-radius:8px;font-weight:700}.container{max-width:1280px;margin:0 auto;padding:24px}h1{margin-top:0}h2{margin:.2rem 0 1rem}.hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-end;background:#fff;border-radius:16px;padding:22px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:18px}.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;font-size:.78rem;letter-spacing:.08em;margin:0 0 .3rem}.lead{font-size:1.02rem;color:#4b5563;max-width:820px;line-height:1.5}.hero-actions,.actions,.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.button,button{display:inline-block;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;text-decoration:none}.button.secondary,.mini-button.secondary{background:#374151;color:#fff}.mini-button{display:inline-block;background:var(--accent);color:#fff;border-radius:9px;padding:7px 10px;font-weight:800;margin:.1rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:22px}.card,.panel,.form-card{background:var(--panel);border-radius:16px;padding:18px;box-shadow:var(--shadow);border:1px solid var(--border)}.card span{display:block;color:var(--muted);font-size:.95rem}.card strong{font-size:2.2rem}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top}th{background:#f9fafb;color:#4b5563}.badge{border-radius:999px;padding:5px 10px;font-size:.82rem;background:#e5e7eb;display:inline-block;margin:2px}.status-publie,.status-valide,.status-valide{background:#d1fae5;color:#065f46}.status-brouillon,.status-a_faire{background:#fef3c7;color:#92400e}.status-archive,.status-bloque{background:#fee2e2;color:#991b1b}.status-en_cours,.status-realise,.status-a_corriger{background:#dbeafe;color:#1e40af}.filters,.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:16px}input,select,textarea{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:10px;background:#fff}.form-card label{display:block;font-weight:700;color:#374151;margin:.3rem 0}.errorlist{color:var(--danger)}.alert{padding:12px 16px;border-radius:12px;margin-bottom:14px;background:#fff1f2;border:1px solid #fecdd3}.alert.success{background:#d1fae5;border-color:#bbf7d0}.alert.error{background:#fee2e2;border-color:#fecaca}.alert.warning{background:#fef3c7;border-color:#fde68a}.muted{color:var(--muted)}.app-footer{max-width:1280px;margin:0 auto 24px auto;padding:12px 24px;color:#6b7280;font-size:.9rem}.login-card{max-width:520px;margin:2rem auto}.tp-header{display:grid;grid-template-columns:1fr 260px;gap:20px}.doc-grid{display:grid;gap:12px}.doc-row{border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;justify-content:space-between;gap:12px}.trace{border-left:5px solid #a78bfa;background:#faf5ff;border-radius:12px;padding:12px;margin-bottom:10px}.trace img{max-width:280px;border-radius:12px;border:1px solid var(--border)}.competence-list{display:flex;gap:6px;flex-wrap:wrap}.small{font-size:.88rem}.danger{color:var(--danger)}
+@media(max-width:860px){.grid2,.grid3,.tp-header{grid-template-columns:1fr}.topbar{align-items:flex-start}.container{padding:14px}table{font-size:.9rem}.brand-logo{min-width:0}.brand-img{height:48px;max-width:240px}.hero{flex-direction:column;align-items:flex-start}.button{width:100%;text-align:center}}
+.ref-builder{margin-top:1rem}.ref-columns{display:grid;grid-template-columns:1.15fr 1fr .85fr;gap:14px;align-items:start}.ref-column{background:#f9fafb;border:1px solid var(--border);border-radius:14px;padding:12px;min-width:0}.ref-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px}.checkline{display:flex!important;gap:9px;align-items:flex-start;line-height:1.35;font-weight:600;color:#1f2937}.checkline input[type="checkbox"]{width:auto;margin-top:.2rem;flex:0 0 auto}.task-list,.criteria-list{margin-top:8px;padding-left:12px;border-left:3px solid #ede9fe}.task-row,.criterion-row{font-weight:500;margin:.35rem 0}.competence-row{border-left:4px solid #c4b5fd}.attitude-row{border-left:4px solid #ddd6fe}
+@media(max-width:1100px){.ref-columns{grid-template-columns:1fr}.ref-column{overflow:auto}}
+/* TP Manager V2.8.4 — formulaire de création compact façon fiche pédagogique */
+.tpv2-create-form h2{font-size:1.15rem;margin-top:.3rem;margin-bottom:.45rem}.tpv2-section-line{height:3px;background:#0f5b7a;margin:.2rem 0 1rem 0}.tpv2-form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px 18px;align-items:end}.tpv2-form-grid .field{grid-column:span 4}.tpv2-form-grid .title-field{grid-column:span 7}.tpv2-form-grid .auto-name-field{grid-column:span 5}.tpv2-form-grid .inline-field{grid-column:span 2;align-self:center}.tpv2-create-form .wide-field{margin:14px 0}.tpv2-create-form input,.tpv2-create-form select,.tpv2-create-form textarea{border:2px solid #111;border-radius:8px;background:#fff}.tpv2-create-form textarea{min-height:64px}.tpv2-create-form .wide-field textarea{min-height:104px}.tpv2-create-form label{font-size:1rem;color:#111}.inline-check{display:flex!important;gap:8px;align-items:center;margin-top:28px!important}.inline-check input{width:auto}.auto-name-field input[readonly]{background:#fafafa;color:#111}.advanced-box{border:1px solid var(--border);border-radius:12px;padding:10px;margin:14px 0;background:#fafafa}.advanced-box summary{font-weight:800;cursor:pointer}.errorlist{margin:.25rem 0 0 0;padding-left:1rem}
+@media(max-width:900px){.tpv2-form-grid{grid-template-columns:1fr}.tpv2-form-grid .field,.tpv2-form-grid .title-field,.tpv2-form-grid .auto-name-field,.tpv2-form-grid .inline-field{grid-column:1}.inline-check{margin-top:.3rem!important}}
+/* TP Manager V2.8.5 — liens TP, blocs OU ressources, barèmes référentiel */
+.ref-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:.45rem 0 .65rem .4rem;padding:.55rem;border-left:3px solid #ddd6fe;background:#faf5ff;border-radius:10px}.ref-meta label{font-size:.82rem;font-weight:800;color:#4b5563}.ref-meta input,.ref-meta select{padding:7px;border-width:1px;border-radius:8px}.criterion-meta{background:#f8fafc;border-left-color:#cbd5e1}.search-results{border:1px dashed var(--border);border-radius:12px;padding:10px;background:#fafafa;margin-bottom:16px;display:grid;gap:8px}.resource-result{display:block;width:100%;text-align:left;background:#fff;color:#111;border:1px solid var(--border);border-radius:10px;padding:10px;box-shadow:none}.resource-result:hover{border-color:var(--accent);background:#f5f3ff}.resource-result strong{color:var(--accent-dark)}
+/* TP Manager V2.8.6 — création TP alignée et affectations séparées */
+.tpv2-create-form .tpv2-row-1{grid-template-columns:2fr 1.35fr .8fr}.tpv2-create-form .tpv2-row-2{grid-template-columns:1.25fr .8fr .75fr .9fr}.tpv2-create-form .tpv2-row-name{grid-template-columns:1fr}.tpv2-create-form .tpv2-row-1 .field,.tpv2-create-form .tpv2-row-2 .field,.tpv2-create-form .tpv2-row-name .field{grid-column:auto}.label-with-check{display:flex!important;align-items:center;gap:10px}.label-with-check input{width:auto}.input-action{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.input-action .mini-button{margin:0;padding:10px 11px;border-radius:10px}.affect-table input,.affect-table select{padding:7px;border-width:1px;border-radius:8px}.affect-table textarea{min-height:42px;padding:7px;border-width:1px;border-radius:8px}.filter-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end}.resource-filter-row{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:10px}.select-large select{min-height:280px}.summary-metrics{display:flex;gap:10px;flex-wrap:wrap;margin:.5rem 0}.summary-metrics .metric{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:12px;padding:10px 12px;font-weight:800;color:var(--accent-dark)}
+@media(max-width:900px){.tpv2-create-form .tpv2-row-1,.tpv2-create-form .tpv2-row-2,.tpv2-create-form .tpv2-row-name,.resource-filter-row{grid-template-columns:1fr}.input-action{grid-template-columns:1fr}}
+
+/* TP Manager V2.8.7 — nom auto, alignement haut et niveaux filtrés */
+.tpv2-create-form .tpv2-form-grid{align-items:start}
+.tpv2-create-form .field{align-self:start;display:flex;flex-direction:column;justify-content:flex-start}
+.tpv2-create-form .field label{min-height:1.35rem}
+.tpv2-create-form .field .small{display:block;margin-top:.35rem;line-height:1.25}
+.tpv2-create-form .tpv2-row-name{grid-template-columns:1fr 1fr}
+.tpv2-create-form .auto-name-field,.tpv2-create-form .auto-name-preview-field{grid-column:auto!important}
+.tpv2-create-form input[readonly]{background:#f9fafb;color:#111827}
+@media(max-width:900px){.tpv2-create-form .tpv2-row-name{grid-template-columns:1fr}}
+
+/* Evaluation Manager ------------------------------------------------------- */
+.eval-scroll{overflow:auto; max-width:100%;}
+.eval-matrix{border-collapse:collapse; min-width:960px; width:100%; font-size:.9rem;}
+.eval-matrix th,.eval-matrix td{border:1px solid #d7dde7; padding:.35rem .45rem; vertical-align:middle;}
+.eval-matrix thead th{background:#e8f1f8; color:#1f3344; position:sticky; top:0; z-index:2;}
+.eval-matrix .sticky-col{position:sticky; left:0; background:#f8fafc; z-index:1; min-width:340px; text-align:left;}
+.eval-matrix thead .sticky-col{z-index:3; background:#dcecf6;}
+.eval-matrix .competence-row td{background:#dcecf6!important; font-weight:700; color:#132f46;}
+.eval-matrix .critere-cell{padding-left:1.5rem; font-size:.86rem; color:#222;}
+.eval-col{min-width:70px; text-align:center; writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap; height:120px;}
+.eval-cell{text-align:center; font-weight:700; min-width:36px; color:#fff;}
+.eval-note{text-align:center; font-size:.85rem; font-weight:700;}
+.bilan-col{box-shadow:inset 3px 0 0 rgba(0,82,130,.35);}
+.level-NE{background:#2f80ed!important;color:white!important;}
+.level-NA{background:#d90429!important;color:white!important;}
+.level-EC{background:#f59e0b!important;color:#1f2937!important;}
+.level-A{background:#9be37d!important;color:#123!important;}
+.level-PA{background:#3f8f29!important;color:white!important;}
+.level-AB{background:#9ca3af!important;color:white!important;}
+.level-empty{background:#f8fafc!important;color:#cbd5e1!important;}
+.eval-badge{display:inline-block; min-width:2.2rem; padding:.18rem .35rem; border-radius:.35rem; color:white; font-weight:800; text-align:center; margin:.1rem;}
+.legend-row{display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .65rem;}
+
+/* Sequence Manager V1 */
+.seq-header{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-bottom:1rem}.seq-actions,.seq-actions-inline{display:flex;gap:.5rem;flex-wrap:wrap}.cards-4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}.metric{font-size:2rem;font-weight:700;margin:.25rem 0}.filters{display:flex;gap:1rem;align-items:end;flex-wrap:wrap}.filters label{display:flex;flex-direction:column;gap:.25rem}.seq-calendar-card{display:grid;grid-template-columns:150px 1fr auto;gap:1rem;align-items:center;border-left:8px solid #2563eb;margin:.75rem 0;padding:1rem;background:#fff;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.08)}.seq-cal-date{font-size:.9rem;color:#334155}.seq-summary{display:grid;grid-template-columns:1.3fr 1fr 1fr 2fr;gap:1rem;align-items:start}.two-col{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}.seq-section-title{display:flex;justify-content:space-between;gap:1rem;align-items:center}.planning-scroll{overflow:auto}.planning-table{min-width:900px}.planning-table th:first-child{position:sticky;left:0;background:#f8fafc;z-index:1;min-width:220px}.planning-table td{vertical-align:top;min-width:130px}.assign{border-radius:10px;padding:.35rem .45rem;margin:.25rem 0;font-size:.85rem;border:1px solid #cbd5e1;background:#f8fafc}.assign.impose{background:#ffedd5;border-color:#fdba74}.assign.remediation{background:#fee2e2;border-color:#fca5a5}.assign.pfmp{background:#dbeafe;border-color:#93c5fd}.assign.libre{background:#dcfce7;border-color:#86efac}.assign.evaluation{background:#ede9fe;border-color:#c4b5fd}.add-cell{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;text-decoration:none;background:#e0f2fe;color:#0369a1;font-weight:700}.badge.success{background:#dcfce7;color:#166534}.danger{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+@media (max-width:900px){.seq-header,.seq-summary,.seq-calendar-card{display:block}.seq-actions,.seq-actions-inline{margin-top:.75rem}.filters{display:block}.filters label{margin:.5rem 0}}
+
+/* Evaluation Manager v2.9.4 — matrice dense trois années */
+.eval-scroll-dense{overflow:auto; max-width:100%;}
+.eval-matrix-dense{border-collapse:collapse; width:max-content; min-width:0; table-layout:fixed; font-size:.72rem; line-height:1.05;}
+.eval-matrix-dense th,.eval-matrix-dense td{border:1px solid #cfd8e3; padding:1px 2px; vertical-align:middle;}
+.eval-matrix-dense .sticky-col{position:sticky; left:0; background:#f8fafc; z-index:4; min-width:220px; max-width:260px; width:240px; text-align:left; white-space:normal;}
+.eval-matrix-dense thead .sticky-col{z-index:6; background:#dcecf6;}
+.eval-matrix-dense .eval-title-col{font-size:.78rem;}
+.eval-matrix-dense .eval-year-header{background:#cfe2f3; color:#123047; text-align:center; font-weight:800; font-size:.74rem; height:20px; padding:2px 4px;}
+.eval-matrix-dense .eval-col{min-width:26px!important; width:26px!important; max-width:26px!important; height:92px; text-align:center; writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:2px 0; font-size:.66rem;}
+.eval-matrix-dense .eval-col a{display:inline-block; max-height:84px; color:#123047; text-decoration:none;}
+.eval-matrix-dense .bilan-col{box-shadow: inset 3px 0 0 rgba(91,33,182,.35); background:#ede9fe!important;}
+.eval-matrix-dense .eval-cell{min-width:26px; width:26px; max-width:26px; text-align:center; font-size:.66rem; font-weight:800; padding:1px 0;}
+.eval-matrix-dense .eval-note{min-width:26px; width:26px; max-width:26px; text-align:center; font-size:.58rem; writing-mode:vertical-rl; transform:rotate(180deg); white-space:nowrap;}
+.eval-matrix-dense .competence-row .sticky-col{background:#dcecf6!important; font-weight:700; color:#132f46;}
+.eval-matrix-dense .competence-row td{height:22px;}
+.eval-matrix-dense .critere-cell{padding-left:.9rem!important; font-size:.68rem!important; color:#273444;}
+
+
+
+/* V2.9.5 — correctif transversal menus admin : libellés toujours visibles */
+.admin-dropdown{position:relative;display:inline-block;vertical-align:top;}
+.admin-dropdown summary{list-style:none;cursor:pointer;white-space:nowrap;}
+.admin-dropdown summary::-webkit-details-marker{display:none;}
+.admin-dropdown summary::after{content:' ▾';font-size:.85em;}
+.admin-dropdown[open] summary::after{content:' ▴';}
+.admin-dropdown-menu{display:grid !important;gap:4px;}
+.admin-dropdown-menu form{display:block !important;margin:0 !important;padding:0 !important;width:100% !important;}
+.admin-dropdown-menu a,
+.admin-dropdown-menu button,
+.admin-dropdown-menu .admin-menu-item{
+  display:block !important;
+  width:100% !important;
+  min-height:34px !important;
+  line-height:1.25 !important;
+  padding:8px 10px !important;
+  border-radius:8px !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#111827 !important;
+  font-size:.94rem !important;
+  font-weight:700 !important;
+  text-align:left !important;
+  text-decoration:none !important;
+  white-space:normal !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  cursor:pointer !important;
+}
+.admin-dropdown-menu a:hover,
+.admin-dropdown-menu button:hover,
+.admin-dropdown-menu .admin-menu-item:hover{background:#f3f4f6 !important;color:#111827 !important;}
+.admin-dropdown-menu button span{display:inline !important;color:inherit !important;visibility:visible !important;}
+.admin-dropdown-menu .admin-menu-separator{height:1px;background:#e5e7eb;margin:4px 0;}
+@media(max-width:780px){.admin-dropdown-menu{position:static !important;margin-top:6px !important;}}
+
+/* v0.0.4 aide / à propos */
+.help-page { max-width: 1100px; margin: 0 auto; }
+.help-page h1 { margin-top: 0; }
+.help-page ol { margin-bottom: 1.5rem; }
+.help-page li { margin: .35rem 0; }
+.help-page .muted { opacity: .75; font-size: .95rem; }
+
+
+/* Bêta V0.2.0 — logo horizontal officiel dans le bandeau */
+.brand-logo{min-width:360px!important;display:flex!important;align-items:center!important;gap:.55rem!important;flex-wrap:wrap!important}
+.brand-img{height:66px!important;max-width:430px!important;width:auto!important;object-fit:contain!important;object-position:center!important;background:#fff!important;border-radius:10px!important;padding:4px 8px!important;border:1px solid rgba(255,255,255,.25)!important}
+@media(max-width:860px){.brand-logo{min-width:0!important}.brand-img{height:50px!important;max-width:260px!important}}

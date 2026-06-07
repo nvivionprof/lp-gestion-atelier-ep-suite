@@ -1,0 +1,12 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">Base documentaire pédagogique</p><h1>TP Manager</h1><p class="lead">Bibliothèque de TP modèles, indexation par formation, niveau, thème, système et compétences. Les élèves disposent d’un parcours indépendant avec traces, photos, commentaires et export DOCX brut.</p></div>
+  <div class="hero-actions"><a class="button" href="{% url 'tp_list' %}">Voir les TP</a>{% if tp_current_user and tp_current_user.is_prof_like %}<a class="button secondary" href="{% url 'tp_create' %}">Créer un TP</a><a class="button secondary" href="{% url 'sequence_create' %}">Créer une séquence</a>{% endif %}</div>
+</section>
+<div class="cards"><div class="card"><strong>{{ tp_count }}</strong><span>TP modèles</span></div><div class="card"><strong>{{ published_count }}</strong><span>publiés</span></div><div class="card"><strong>{{ sequence_count }}</strong><span>séquences</span></div><div class="card"><strong>{{ parcours_count }}</strong><span>parcours élèves</span></div></div>
+<section class="grid2">
+  <div class="panel"><h2>Derniers TP</h2><table><tr><th>Code</th><th>Titre</th><th>Statut</th></tr>{% for tp in recent_tps %}<tr><td><a href="{% url 'tp_detail' tp.pk %}">{{ tp.code }}</a></td><td>{{ tp.titre }}</td><td><span class="badge status-{{ tp.statut }}">{{ tp.get_statut_display }}</span></td></tr>{% empty %}<tr><td colspan="3">Aucun TP.</td></tr>{% endfor %}</table></div>
+  <div class="panel"><h2>{% if my_parcours %}Mes TP{% else %}Derniers parcours{% endif %}</h2><table><tr><th>Élève</th><th>TP</th><th>Statut</th></tr>{% for p in my_parcours|default:recent_parcours %}<tr><td>{{ p.eleve.full_name|default:"Moi" }}</td><td><a href="{% url 'parcours_detail' p.pk %}">{{ p.tp.code }}</a></td><td><span class="badge status-{{ p.statut }}">{{ p.get_statut_display }}</span></td></tr>{% empty %}<tr><td colspan="3">Aucun parcours.</td></tr>{% endfor %}</table></div>
+</section>
+{% endblock %}

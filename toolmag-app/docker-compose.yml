@@ -1,0 +1,26 @@
+services:
+  web:
+    build: .
+    container_name: toolmag_web
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      DJANGO_DEBUG: "1"
+      DJANGO_ALLOWED_HOSTS: "*"
+
+
+  backup:
+    build: .
+    container_name: toolmag_backup
+    command: sh -c "python manage.py backup_toolmag --loop --interval 86400 --retain-days 7"
+    volumes:
+      - .:/app
+    environment:
+      DJANGO_DEBUG: "1"
+      DJANGO_ALLOWED_HOSTS: "*"
+    depends_on:
+      - web
+    restart: unless-stopped

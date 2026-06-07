@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="5">
+  <title>Matériel sorti</title>
+  <style>
+    body{margin:0;background:#10151f;color:#f8fafc;font-family:Arial,sans-serif}
+    .screen{padding:3vw}
+    h1{font-size:4vw;margin:0 0 1vw}
+    .subtitle{color:#94a3b8;font-size:1.4vw;margin-bottom:2vw}
+    .loan{display:grid;grid-template-columns:1.05fr 2.5fr 1.8fr 1.15fr 1.15fr 1.35fr 1.25fr;gap:1vw;align-items:center;background:#1f2937;margin:.8vw 0;padding:1.2vw;border-radius:1vw;font-size:1.8vw}
+    .head{background:transparent;color:#94a3b8;font-size:1.15vw;text-transform:uppercase}
+    .late{background:#7f1d1d}.inventory-missing{background:#7f1d1d}.soon{background:#78350f}.muted{color:#94a3b8}.borrower{font-weight:bold}.status{font-weight:bold}.small{font-size:1.2vw;color:#cbd5e1}
+    .clock{position:absolute;right:3vw;top:3vw;color:#f8fafc;font-size:2vw;font-weight:bold;text-align:right}
+    .clock-date{display:block;color:#94a3b8;font-size:1vw;font-weight:normal;margin-top:.2vw}
+    .mode{position:absolute;right:3vw;top:6.1vw;color:#64748b;font-size:1vw;text-align:right}
+    .version{position:fixed;right:1.2vw;bottom:1vw;color:#475569;font-size:.85vw}
+  </style>
+</head>
+<body>
+<main class="screen">
+  <div class="clock"><span id="live-clock">--:--:--</span><span class="clock-date" id="live-date">--/--/----</span></div>
+  <div class="mode">{% if public %}Mode public{% else %}Mode interne{% endif %}<br>Actualisation données : 5 s</div>
+  <h1>Matériel actuellement sorti</h1>
+  <div class="subtitle">
+    {% if public %}
+      Affichage sans nom d'emprunteur. Ajouter <strong>?mode=interne</strong> à l'URL pour afficher les noms.
+    {% else %}
+      Affichage interne avec emprunteur. Ajouter <strong>?mode=public</strong> à l'URL pour masquer les noms.
+    {% endif %}
+  </div>
+  <div class="loan head"><div>Code</div><div>Matériel</div><div>{% if public %}Statut{% else %}Emprunteur{% endif %}</div><div>Inv. sortie</div><div>Inv. retour</div><div>Sortie</div><div>Retour prévu</div></div>
+  {% for loan in loans %}
+  <div class="loan {% if not loan.user_inventory_status.not_applicable and not loan.user_inventory_status.out_done %}inventory-missing{% elif loan.is_late %}late{% endif %}">
+    <div>{{ loan.equipment.code }}</div>
+    <div>{{ loan.equipment.name }}<div class="small">{{ loan.equipment.category.name|default:'' }}</div></div>
+    <div>{% if public %}<span class="status">{% if loan.is_late %}EN RETARD{% else %}SORTI{% endif %}</span>{% else %}<span class="borrower">{{ loan.borrower.first_name }} {{ loan.borrower.last_name }}</span><div class="small">{{ loan.borrower.code }}</div>{% endif %}</div>
+    <div class="status">{% if loan.user_inventory_status.not_applicable %}S.O.{% elif loan.user_inventory_status.out_done %}FAIT{% else %}À FAIRE{% endif %}</div>
+    <div class="status">{% if loan.user_inventory_status.not_applicable %}S.O.{% elif loan.user_inventory_status.return_done %}FAIT{% else %}-{% endif %}</div>
+    <div>{{ loan.checked_out_at|date:'H:i' }}</div>
+    <div>{% if loan.due_at %}{{ loan.due_at|date:'H:i' }}{% if loan.is_late %}<div class="small">Retard</div>{% endif %}{% else %}-{% endif %}</div>
+  </div>
+  {% empty %}<p class="muted">Aucun matériel sorti.</p>{% endfor %}
+  <div class="version">ToolMag Bêta V1.2</div>
+</main>
+<script>
+(function(){
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function updateClock(){
+    const d = new Date();
+    document.getElementById('live-clock').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    document.getElementById('live-date').textContent = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+})();
+</script>
+</body>
+</html>

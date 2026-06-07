@@ -1,0 +1,25 @@
+{% extends 'safety_manager/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'safety_manager/public_safety.css' %}">
+<section class="hero safety-hero">
+  <div>
+    <p class="eyebrow">Tableau de bord public</p>
+    <h1>Safety Manager — suivi sécurité atelier</h1>
+    <p class="lead">Vue synthétique accessible sans connexion. Les informations nominatives et analyses détaillées restent réservées à l’interface connectée.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="button" href="{% url 'safety_public_display' %}">Affichage dynamique</a>
+    <a class="button secondary" href="{% url 'safety_public_event_create' %}">Déclarer rapidement</a>
+  </div>
+</section>
+<div class="cards kpis">
+  <div class="card"><strong>{{ days_without_accident }}</strong><span>jours sans accident</span></div>
+  <div class="card"><strong>{{ record_days_without_accident }}</strong><span>record de jours</span></div>
+  <div class="card danger"><strong>{{ accidents_year }}</strong><span>accidents depuis le 1er janvier</span></div>
+  <div class="card warn"><strong>{{ near_misses_year }}</strong><span>presqu’accidents déclarés</span></div>
+  <div class="card"><strong>{{ open_events }}</strong><span>événements à qualifier / suivre</span></div>
+</div>
+<section class="panel"><h2>Situations dangereuses par priorité</h2><div class="priority-public-list"><span class="p1">P1 : {{ p1_count }}</span><span class="p2">P2 : {{ p2_count }}</span><span class="p3">P3 : {{ p3_count }}</span></div></section>
+<section class="panel"><h2>Actions de prévention</h2><table><tr><th>En retard</th><th>En cours</th><th>Réalisées / vérifiées</th></tr><tr><td>{{ actions_late }}</td><td>{{ actions_current }}</td><td>{{ actions_done }}</td></tr></table></section>
+{% endblock %}

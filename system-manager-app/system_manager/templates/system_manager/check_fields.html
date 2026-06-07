@@ -1,0 +1,17 @@
+<div class="check-list">
+{% for item in items %}
+  <div class="check-item {% if item.bloquant_si_non %}blocking{% endif %}">
+    <div><strong>{{ item.libelle }}</strong>{% if item.obligatoire %} <span class="required">*</span>{% endif %}{% if item.bloquant_si_non %}<span class="badge danger">Bloquant</span>{% endif %}{% if item.expected_response %}<span class="badge">Attendu : {{ item.get_expected_response_display }}</span>{% endif %}{% if item.aide %}<p class="muted">{{ item.aide }}</p>{% endif %}</div>
+    <div>
+      {% if item.type_reponse == 'oui_non_nc' %}
+        <label class="radio"><input type="radio" name="item_{{ item.id }}_value" value="oui"> Oui</label>
+        <label class="radio"><input type="radio" name="item_{{ item.id }}_value" value="non"> Non</label>
+        <label class="radio"><input type="radio" name="item_{{ item.id }}_value" value="nc"> NC</label>
+      {% elif item.type_reponse == 'photo' %}<input type="file" name="item_{{ item.id }}_photo" accept="image/*" capture="environment">
+      {% elif item.type_reponse == 'nombre' %}<input type="number" step="any" name="item_{{ item.id }}_text">
+      {% else %}<textarea name="item_{{ item.id }}_text" rows="2"></textarea>{% endif %}
+      <textarea name="item_{{ item.id }}_text" rows="1" placeholder="Commentaire / précision facultative"></textarea>
+    </div>
+  </div>
+{% endfor %}
+</div>

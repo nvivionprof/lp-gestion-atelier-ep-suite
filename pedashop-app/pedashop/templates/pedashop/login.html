@@ -1,0 +1,8 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}
+<div class="card" style="max-width:560px;margin:auto">
+  <div class="logo-hero"><h1>Connexion PedaShop</h1></div>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn primary" type="submit">Se connecter</button></form>
+  <p class="muted">Un même élève peut choisir le mode utilisateur ou magasinier si ses droits LP Core l’autorisent.</p>
+</div>
+{% endblock %}

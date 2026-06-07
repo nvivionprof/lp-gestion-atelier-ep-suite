@@ -1,0 +1,19 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">TP liés</p><h1>{{ title }}</h1><p class="lead">Filtre la bibliothèque de TP puis sélectionne le TP à rattacher au bloc.</p></div></section>
+<section class="panel">
+  <form method="get" class="filter-row">
+    <p><label>Recherche</label><input name="q" value="{{ filters.q }}" placeholder="code, titre, thème..."></p>
+    <p><label>Diplôme</label><select name="diplome"><option value="">Tous</option>{% for d in diplomes %}<option value="{{ d.id }}" {% if filters.diplome == d.id|stringformat:'s' %}selected{% endif %}>{{ d.code }}</option>{% endfor %}</select></p>
+    <p><label>Niveau</label><input name="niveau" value="{{ filters.niveau }}" placeholder="1MELEC, BTS1..."></p>
+    <p><label>Thème</label><input name="theme" value="{{ filters.theme }}" placeholder="RES, Domotique, PAC..."></p>
+    <p><label>Usage</label><select name="usage"><option value="">Tous</option>{% for value,label in usages %}<option value="{{ value }}" {% if filters.usage == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></p>
+    <p><button type="submit">Filtrer la liste</button></p>
+  </form>
+</section>
+<form method="post" class="panel">{% csrf_token %}
+  <div class="formgrid">{{ form.as_p }}</div>
+  <button type="submit">Ajouter le TP lié</button>
+  <a class="button secondary" href="{% url 'tp_detail' block.tp.pk %}">Annuler</a>
+</form>
+{% endblock %}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="30">
+  <title>Affichage dynamique — System Manager</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'system_manager/system.css' %}">
+</head>
+<body class="dynamic-fullscreen-body">
+  <main class="dynamic-fullscreen">
+    <header class="dynamic-display-header">
+      <div>
+        <h1>Systèmes atelier</h1>
+        <p>Utilisations en cours par zone et anomalies actives</p>
+      </div>
+      <div class="dynamic-clockbox">
+        <strong id="dynamic-clock">--:--:--</strong>
+        <span>{% now "d/m/Y" %}</span>
+        <span>{% if public_mode %}Mode public{% else %}Mode interne{% endif %}</span>
+        <small>Actualisation : 30 s</small>
+      </div>
+    </header>
+
+    <form class="dynamic-filterbar" method="get">
+      {% if public_mode %}<input type="hidden" name="mode" value="public">{% endif %}
+      <label>Zone
+        <select name="zone" onchange="this.form.submit()">
+          <option value="">Toutes</option>
+          {% for z in zones_filter %}<option value="{{ z.id }}" {% if selected_zone == z.id|stringformat:'s' %}selected{% endif %}>{{ z.nom }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Sous-zone
+        <select name="sous_zone" onchange="this.form.submit()">
+          <option value="">Toutes</option>
+          {% for sz in subzones_filter %}<option value="{{ sz.id }}" {% if selected_subzone == sz.id|stringformat:'s' %}selected{% endif %}>{{ sz.zone.nom }} / {{ sz.nom }}</option>{% endfor %}
+        </select>
+      </label>
+      <a class="dynamic-filter-reset" href="{% url 'system_dynamic_display' %}{% if public_mode %}?mode=public{% endif %}">Réinitialiser</a>
+      {% if not public_mode %}<a class="dynamic-filter-reset" href="?mode=public{% if selected_zone %}&zone={{ selected_zone }}{% endif %}{% if selected_subzone %}&sous_zone={{ selected_subzone }}{% endif %}">Mode public</a>{% endif %}
+    </form>
+
+    <section class="dynamic-kpis">
+      <article><span>Systèmes utilisés</span><strong>{{ open_sessions|length }}</strong></article>
+      <article><span>Anomalies ouvertes</span><strong>{{ anomalies|length }}</strong></article>
+      <article class="critical"><span>Bloquantes</span><strong>{{ blocking_count }}</strong></article>
+    </section>
+
+    <section class="dynamic-layout">
+      <div class="dynamic-main-panel">
+        <h2>Utilisation par zone</h2>
+        <div class="dynamic-zone-grid">
+          {% for z in zones %}
+            <section class="dynamic-zone-card">
+              <h3>{{ z.nom }}</h3>
+              {% for s in open_sessions %}
+                {% if s.systeme.zone_id == z.id %}
+                  <article class="dynamic-system-card {% if s.systeme.open_anomalies_count %}warning{% endif %}">
+                    <div class="dynamic-system-title"><strong>{{ s.systeme.code }}</strong><span>{{ s.systeme.designation }}</span></div>
+                    <div class="dynamic-system-meta">
+                      <span>{{ s.systeme.sous_zone.nom|default:'Sans sous-zone' }}</span>
+                      {% if public_mode %}<span>Utilisateur masqué</span>{% else %}<span>{{ s.utilisateur.full_name|default:s.utilisateur.username|default:'Utilisateur inconnu' }}</span>{% endif %}
+                      <span>Depuis {{ s.date_prise|date:'H:i' }}</span>
+                    </div>
+                    {% if s.systeme.open_anomalies_count %}<div class="dynamic-badge warning">Anomalie ouverte</div>{% else %}<div class="dynamic-badge ok">Utilisation normale</div>{% endif %}
+                  </article>
+                {% endif %}
+              {% empty %}{% endfor %}
+            </section>
+          {% empty %}
+            <p class="dynamic-empty">Aucune zone active.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <aside class="dynamic-side-panel">
+        <h2>Anomalies</h2>
+        {% for a in anomalies %}
+          <article class="dynamic-anomaly-card {% if a.blocking or a.gravite == 'bloquante' %}critical{% else %}warning{% endif %}">
+            <strong>{{ a.systeme.code }}</strong>
+            <span>{{ a.systeme.designation }}</span>
+            <em>{{ a.titre }}</em>
+            <small>{{ a.get_gravite_display }} — {{ a.created_at|date:'d/m H:i' }}</small>
+          </article>
+        {% empty %}
+          <p class="dynamic-empty">Aucune anomalie active.</p>
+        {% endfor %}
+      </aside>
+    </section>
+  </main>
+  <script>
+    function updateDynamicClock(){
+      const el = document.getElementById('dynamic-clock');
+      if(!el) return;
+      el.textContent = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    }
+    updateDynamicClock();
+    setInterval(updateDynamicClock, 1000);
+  </script>
+</body>
+</html>

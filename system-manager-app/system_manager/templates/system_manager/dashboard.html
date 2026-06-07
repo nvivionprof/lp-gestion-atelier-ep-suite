@@ -1,0 +1,19 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">Gestion des systèmes pédagogiques</p><h1>Tableau de bord System Manager</h1><p class="lead">Base systèmes, classeur documentaire, réservations calendrier, prise de poste par QR code et restitution tracée.</p></div>
+  <div class="hero-actions"><a class="button" href="{% url 'system_create' %}">Créer un système</a><a class="button secondary" href="{% url 'reservation_calendar' %}">Voir le calendrier</a></div>
+</section>
+<div class="cards kpis">
+  <div class="card"><strong>{{ systems_count }}</strong><span>systèmes actifs</span></div>
+  <div class="card"><strong>{{ available_count }}</strong><span>disponibles</span></div>
+  <div class="card warn"><strong>{{ reservations_today_count }}</strong><span>réservés aujourd’hui</span></div>
+  <div class="card"><strong>{{ open_sessions_count }}</strong><span>prises de poste ouvertes</span></div>
+  <div class="card danger"><strong>{{ open_anomalies_count }}</strong><span>anomalies ouvertes</span></div>
+</div>
+<div class="grid2">
+<section class="panel"><h2>Réservations du jour</h2><table><tr><th>Horaire</th><th>Système</th><th>Classe / groupe</th><th>Professeur</th></tr>{% for r in reservations_today %}<tr><td>{{ r.date_debut|date:'H:i' }}-{{ r.date_fin|date:'H:i' }}</td><td><a href="{% url 'system_detail' r.systeme.pk %}">{{ r.systeme.code }}</a><br><small>{{ r.systeme.designation }}</small></td><td>{{ r.classe_ou_groupe }}<br><small>{{ r.formation.code }} {{ r.niveau.code }}</small></td><td>{{ r.professeur.full_name|default:'—' }}</td></tr>{% empty %}<tr><td colspan="4">Aucune réservation aujourd’hui.</td></tr>{% endfor %}</table></section>
+<section class="panel"><h2>Sessions ouvertes</h2><table><tr><th>Système</th><th>Utilisateur</th><th>Depuis</th><th>Action</th></tr>{% for s in open_sessions %}<tr><td>{{ s.systeme.code }}</td><td>{{ s.utilisateur.full_name|default:'—' }}</td><td>{{ s.date_prise|date:'d/m H:i' }}</td><td><a class="mini-button" href="{% url 'worksession_return' s.pk %}">Restituer</a></td></tr>{% empty %}<tr><td colspan="4">Aucune prise de poste ouverte.</td></tr>{% endfor %}</table></section>
+</div>
+<section class="panel"><h2>Anomalies ouvertes</h2><table><tr><th>Système</th><th>Gravité</th><th>Description</th><th>Signalement</th></tr>{% for a in recent_anomalies %}<tr><td><a href="{% url 'system_detail' a.systeme.pk %}">{{ a.systeme.code }}</a></td><td><span class="badge {{ a.gravite }}">{{ a.get_gravite_display }}</span></td><td><strong>{{ a.titre }}</strong><br><small>{{ a.description|truncatechars:120 }}</small></td><td>{{ a.created_at|date:'d/m/Y H:i' }}<br><small>{{ a.signalee_par.full_name|default:'—' }}</small></td></tr>{% empty %}<tr><td colspan="4">Aucune anomalie ouverte.</td></tr>{% endfor %}</table></section>
+{% endblock %}

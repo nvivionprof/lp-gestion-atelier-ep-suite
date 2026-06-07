@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ SAFETY_APP_NAME }} — LP Gestion Atelier EP Suite</title>
+  <link rel="stylesheet" href="{% static 'safety_manager/base.css' %}">
+  <link rel="stylesheet" href="{% static 'safety_manager/safety.css' %}">
+  <link rel="stylesheet" href="{% static 'safety_manager/camera_upload.css' %}">
+</head>
+<body>
+<header class="topbar safety-topbar">
+  <div class="brand brand-logo">
+    <a href="{% url 'safety_dashboard' %}" aria-label="Accueil Safety Manager"><img src="{% static 'safety_manager/img/logo_safety_manager.png' %}" alt="Safety Manager" class="brand-img"></a>
+    <span class="version-badge">{{ SAFETY_VERSION }}</span>
+  </div>
+  <nav>
+    <a href="{% url 'safety_public_home' %}">Tableau public</a>
+    <a href="{% url 'safety_dashboard' %}">Tableau connecté</a>
+    <a href="{% url 'safety_duerp' %}">DUERP</a>
+    <a href="{% url 'safety_workunit_list' %}">Unités de travail</a>
+    <a href="{% url 'safety_risk_list' %}">Risques</a>
+    <a href="{% url 'safety_action_list' %}">Actions</a>
+    <a href="{% url 'safety_situation_list' %}">Situations dangereuses</a>
+    <a href="{% url 'safety_event_list' %}">Événements</a>
+    <a href="{% url 'safety_public_dashboard' %}">Tableau public</a>
+    <a href="{% url 'safety_public_display' %}">Affichage dynamique</a>
+    <a href="{% url 'safety_export_duerp_pdf' %}">Exports</a>
+    <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
+    <a href="{{ TOOLMAG_PUBLIC_BASE_URL }}" target="_blank" rel="noopener">ToolMag</a>
+    {% if safety_current_user and safety_current_user.is_admin_like %}<a title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>{% endif %}
+    {% if safety_current_user %}<a href="{% url 'safety_logout' %}">Déconnexion {{ safety_current_user.username }}</a>{% else %}<a href="{% url 'safety_login' %}">Connexion</a>{% endif %}
+    <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide Safety Manager">
+      <a class="admin-menu-item" href="{% url 'safety_help' %}">Aide Safety</a>
+      <a class="admin-menu-item" href="{% url 'safety_about' %}">À propos</a>
+    </div></details>
+  </nav>
+</header>
+<main class="container">
+  {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script src="{% static 'safety_manager/camera_upload.js' %}"></script>
+</body>
+</html>

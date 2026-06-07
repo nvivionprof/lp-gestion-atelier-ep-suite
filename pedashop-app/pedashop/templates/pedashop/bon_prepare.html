@@ -1,0 +1,11 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}
+<h1>Préparation — {{ bon.code }}</h1>
+<div class="card"><p>Demandeur : <b>{{ bon.demandeur }}</b> — TP : <b>{{ bon.nom_tp }}</b> — Statut : <span class="badge blue">{{ bon.get_statut_display }}</span></p></div>
+<form method="post" class="card">{% csrf_token %}
+  <div class="table-wrap"><table><thead><tr><th>Préparé</th><th>Article</th><th>Demandé</th><th>Qté préparée</th><th>Commentaire</th></tr></thead><tbody>
+  {% for l in bon.lignes.all %}<tr><td><input type="checkbox" name="ligne_{{ l.id }}_preparee" {% if l.est_preparee %}checked{% endif %}></td><td>{{ l.article.reference_interne }}<br><span class="muted">{{ l.article.designation }}</span></td><td>{{ l.quantite_demandee }}</td><td><input type="number" step="0.01" name="ligne_{{ l.id }}_quantite_preparee" value="{{ l.quantite_preparee|default:l.quantite_demandee }}"></td><td><input name="ligne_{{ l.id }}_commentaire" value="{{ l.commentaire }}"></td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="actions"><button class="btn" name="action" value="save">Enregistrer la préparation</button><button class="btn primary" name="action" value="ready">Passer en commande prête</button><a class="btn" href="{% url 'pedashop_bon_detail' bon.pk %}">Retour</a></div>
+</form>
+{% endblock %}

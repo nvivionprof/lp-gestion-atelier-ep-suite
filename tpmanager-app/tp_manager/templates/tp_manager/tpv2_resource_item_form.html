@@ -1,0 +1,35 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Ressource TP Manager V2</p><h1>{{ title }}</h1><p class="lead">Choisis l’origine, filtre si besoin, puis recherche dans la base source. TP Manager référence seulement les items ; il ne modifie pas ToolMag, System Manager ou PedaShop.</p></div></section>
+<form method="post" class="panel">{% csrf_token %}
+  <div class="resource-filter-row">
+    <p>{{ form.source_module.label_tag }}{{ form.source_module }}</p>
+    <p>{{ form.resource_type.label_tag }}{{ form.resource_type }}</p>
+    <p><label for="resource-search">Recherche dans la base source</label><input id="resource-search" type="text" placeholder="ex. servante, multimètre, PAC, câble..."><span class="small muted">Laisse vide pour lister les premiers résultats disponibles selon l’origine.</span></p>
+  </div>
+  <div class="formgrid">
+    <p><label for="resource-status">Filtre statut</label><input id="resource-status" type="text" placeholder="available, disponible, maintenance..."></p>
+    <p><button type="button" id="resource-search-button" class="button secondary">Rechercher / actualiser</button></p>
+  </div>
+  <div id="resource-results" class="search-results muted">Choisir une origine puis cliquer sur rechercher.</div>
+  <hr>
+  <div class="formgrid">
+    <p>{{ form.external_id.label_tag }}{{ form.external_id }}</p>
+    <p>{{ form.external_code.label_tag }}{{ form.external_code }}</p>
+    <p>{{ form.libelle.label_tag }}{{ form.libelle }}</p>
+    <p>{{ form.quantite.label_tag }}{{ form.quantite }}</p>
+    <p>{{ form.unite.label_tag }}{{ form.unite }}</p>
+  </div>
+  <p>{{ form.commentaire.label_tag }}{{ form.commentaire }}</p>
+  <button type="submit">Enregistrer</button>
+  <a class="button secondary" href="{% url 'tp_detail' group.tp.pk %}">Annuler</a>
+</form>
+<script>
+(function(){
+  const source = document.querySelector('[name="source_module"]'); const q = document.getElementById('resource-search'); const statusEl = document.getElementById('resource-status'); const box = document.getElementById('resource-results'); const idEl = document.querySelector('[name="external_id"]'); const codeEl = document.querySelector('[name="external_code"]'); const labelEl = document.querySelector('[name="libelle"]'); const typeEl = document.querySelector('[name="resource_type"]'); const btn = document.getElementById('resource-search-button'); let timer = null;
+  function esc(s){return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function search(){ const term = (q.value || '').trim(); const src = source.value; const typ = typeEl ? typeEl.value : ''; const st = statusEl ? statusEl.value.trim() : ''; if(src === 'manual'){ box.innerHTML = '<span class="muted">Origine manuelle : remplir les champs directement.</span>'; return; } box.innerHTML = '<span class="muted">Recherche en cours...</span>'; fetch('{% url "tpv2_api_resource_search" %}?source=' + encodeURIComponent(src) + '&q=' + encodeURIComponent(term) + '&type=' + encodeURIComponent(typ) + '&status=' + encodeURIComponent(st)).then(r => r.json()).then(data => { const rows = data.results || []; if(!rows.length){ box.innerHTML = '<span class="muted">Aucun résultat. Vérifier que la base du module est montée en lecture seule et que le filtre n’est pas trop restrictif.</span>'; return; } box.innerHTML = rows.map((r, idx) => '<button type="button" class="resource-result" data-idx="'+idx+'"><strong>'+esc(r.code)+'</strong> — '+esc(r.label)+'<br><span class="small muted">'+esc(r.type)+' · '+esc(r.extra)+'</span></button>').join(''); box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const r = rows[Number(b.dataset.idx)]; idEl.value = r.id || ''; codeEl.value = r.code || ''; labelEl.value = r.label || ''; if(typeEl && r.type){ typeEl.value = r.type; } })); }).catch(() => { box.innerHTML = '<span class="muted">Recherche indisponible. Saisie manuelle possible.</span>'; }); }
+  q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(search, 350); }); source.addEventListener('change', search); if(typeEl){ typeEl.addEventListener('change', search); } if(statusEl){ statusEl.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(search, 350); }); } btn.addEventListener('click', search);
+})();
+</script>
+{% endblock %}

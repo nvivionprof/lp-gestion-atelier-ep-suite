@@ -1,0 +1,6 @@
+
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Réservations</p><h1>Dossiers de réservation</h1></div><div class="hero-actions"><a class="button" href="{% url 'reservation_create' %}?mode=ponctuelle">Ponctuelle</a><a class="button" href="{% url 'reservation_create' %}?mode=bloc_atelier">Bloc atelier</a><a class="button" href="{% url 'reservation_create' %}?mode=sequence_tp">Séquence TP</a></div></section>
+<section class="panel"><form method="get" class="filters"><input name="q" value="{{ q }}" placeholder="Recherche dossier, classe, TP, bloc..."><button>Filtrer</button></form><table><tr><th>Dossier</th><th>Type</th><th>Période</th><th>Classe/groupe</th><th>Systèmes</th><th>Statut</th></tr>{% for g in groups %}<tr><td><a href="{% url 'reservation_group_detail' g.pk %}">{{ g.titre|default:g }}</a><br><small>{{ g.professeur.full_name|default:'—' }}</small></td><td>{{ g.get_reservation_mode_display }}{% if g.block %}<br><small>{{ g.block.code }}</small>{% endif %}</td><td>{{ g.date_debut|date:'d/m/Y H:i' }}<br>→ {{ g.date_fin|date:'d/m/Y H:i' }}</td><td>{{ g.classe_ou_groupe|default:'—' }}</td><td>{{ g.reservations.count }}</td><td>{{ g.get_statut_display }}</td></tr>{% empty %}<tr><td colspan="6">Aucun dossier de réservation.</td></tr>{% endfor %}</table></section>
+{% endblock %}

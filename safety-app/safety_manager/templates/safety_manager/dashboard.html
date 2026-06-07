@@ -1,0 +1,31 @@
+{% extends 'safety_manager/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'safety_manager/safety.css' %}">
+{% include 'safety_manager/_nav.html' %}
+<section class="hero safety-hero">
+  <div>
+    <p class="eyebrow">Safety Manager</p>
+    <h1>Sécurité atelier, DUERP et prévention</h1>
+    <p class="lead">Module de déclaration, évaluation des risques, suivi d’actions et analyse causale. La démarche privilégie les faits, les causes profondes et le plan d’actions.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="button" href="{% url 'safety_event_create' %}">Déclarer un événement</a>
+    <a class="button secondary" href="{% url 'safety_risk_create' %}">Ajouter un risque DUERP</a>
+    <a class="button secondary" href="{% url 'safety_public_display' %}">Affichage dynamique public</a>
+    <a class="button secondary" href="{% url 'safety_public_event_create' %}">Déclaration rapide sans connexion</a>
+  </div>
+</section>
+<div class="cards kpis">
+  <div class="card priority1"><strong>{{ priority1_count }}</strong><span>risques priorité 1</span></div>
+  <div class="card"><strong>{{ risk_total }}</strong><span>risques DUERP</span></div>
+  <div class="card late"><strong>{{ actions_late }}</strong><span>actions en retard</span></div>
+  <div class="card"><strong>{{ actions_open }}</strong><span>actions ouvertes</span></div>
+  <div class="card"><strong>{{ events_month }}</strong><span>événements ce mois</span></div>
+</div>
+<section class="grid-2">
+  <div class="panel"><h2>Risques critiques</h2><table><tr><th>Code</th><th>UT</th><th>Famille</th><th>Niveau</th></tr>{% for r in critical_risks %}<tr><td><a href="{% url 'safety_risk_detail' r.pk %}">{{ r.code }}</a></td><td>{{ r.unite_travail }}</td><td>{{ r.famille_risque }}</td><td>{{ r.niveau_calcule }}</td></tr>{% empty %}<tr><td colspan="4">Aucun risque priorité 1.</td></tr>{% endfor %}</table></div>
+  <div class="panel"><h2>Actions à échéance proche</h2><table><tr><th>Code</th><th>Action</th><th>Échéance</th><th>Statut</th></tr>{% for a in due_actions %}<tr><td>{{ a.code }}</td><td>{{ a.titre }}</td><td>{{ a.echeance|default:'—' }}</td><td>{{ a.get_statut_display }}</td></tr>{% empty %}<tr><td colspan="4">Aucune action ouverte.</td></tr>{% endfor %}</table></div>
+</section>
+<section class="panel"><h2>Dernières déclarations</h2><table><tr><th>Date</th><th>Code</th><th>Type</th><th>Zone</th><th>Description</th></tr>{% for e in recent_events %}<tr><td>{{ e.date }}</td><td><a href="{% url 'safety_event_detail' e.pk %}">{{ e.code }}</a></td><td>{{ e.get_type_evenement_display }}</td><td>{{ e.zone|default:'—' }}</td><td>{{ e.description_courte }}</td></tr>{% empty %}<tr><td colspan="5">Aucun événement.</td></tr>{% endfor %}</table></section>
+{% endblock %}

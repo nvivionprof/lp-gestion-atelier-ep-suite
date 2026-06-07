@@ -1,0 +1,61 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+{% if current_storekeeper %}<div class="alert success">Magasinier connecté : <strong>{{ current_storekeeper.first_name }} {{ current_storekeeper.last_name }}</strong> — code {{ current_storekeeper.code }}. Lui seul valide le retour.</div>{% endif %}
+{% if current_borrower %}<div class="alert success">Utilisateur connecté : <strong>{{ current_borrower.first_name }} {{ current_borrower.last_name }}</strong> — code {{ current_borrower.code }}. L’inventaire retour sera tracé sur cet utilisateur.</div>{% endif %}
+{% if inventory_actor %}<div class="alert">Acteur de l’inventaire retour : <strong>{{ inventory_actor.first_name }} {{ inventory_actor.last_name }}</strong> — fonction : {{ inventory_actor_role }}</div>{% endif %}
+<h1>Retour de matériel</h1>
+{% if loan %}
+<section class="panel">
+  <h2>Sortie en cours</h2>
+  <p><strong>Matériel :</strong> {{ loan.equipment }}</p>
+  <p><strong>Utilisateur :</strong> {{ loan.borrower }}</p>
+  <p><strong>Sorti le :</strong> {{ loan.checked_out_at }}</p>
+  <p><strong>État au départ :</strong> {{ loan.get_condition_out_display }}</p>
+</section>
+{% endif %}
+{% if equipment %}{% include 'inventory/_locker_button.html' with equipment=equipment locker_info=locker_info locker_context='return' %}{% endif %}
+{% if selected_user_inventory %}<section class="panel alert success"><strong>Inventaire utilisateur de retour reçu.</strong><br>Utilisateur : {{ selected_user_inventory.borrower }} — soumis le {{ selected_user_inventory.submitted_at }}.<br>Commentaire : {{ selected_user_inventory.comment|default:'-' }}<br>Le formulaire ci-dessous est prérempli ; le magasinier relit puis valide le retour.</section>{% endif %}
+<form method="post" class="panel form">{% csrf_token %}
+  {{ form.non_field_errors }}
+  {% if selected_user_inventory %}<input type="hidden" name="user_inventory_id" value="{{ selected_user_inventory.id }}">{% endif %}
+  <div class="formgrid">
+    {% for field in form %}<label>{{ field.label }}{{ field }}{% if field.help_text %}<small class="hint">{{ field.help_text }}</small>{% endif %}{% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}</label>{% endfor %}
+  </div>
+  {% if components %}
+  <h2>Inventaire de retour</h2>
+  <div class="checklist">
+    {% for row in component_rows %}
+    {% with c=row.component item=row.item %}
+    <div class="checkrow checkrow-photo {% if item %}from-user-inventory{% endif %}">
+      <div class="check-photo">{% if c.photo %}<img class="component-thumb" src="{{ c.photo.url }}" alt="{{ c.name }}">{% else %}-{% endif %}</div>
+      <label><input type="checkbox" class="component-present" name="component_{{ c.id }}_present" {% if item %}{% if item.present %}checked{% endif %}{% else %}checked{% endif %}> {{ c.name }} {% if c.required %}<strong>*</strong>{% endif %}</label>
+      <select class="component-condition" name="component_{{ c.id }}_condition">{% for value,label in component_conditions %}<option value="{{ value }}" {% if item and item.condition == value %}selected{% elif not item and value == c.default_condition %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+      <input name="component_{{ c.id }}_comment" value="{% if item %}{{ item.comment }}{% endif %}" placeholder="Commentaire composant">
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}<p class="hint">Pour afficher une checklist, ouvre cette page depuis la fiche du matériel actuellement sorti.</p>{% endif %}
+  <button class="button" type="submit">Valider le retour</button>
+</form>
+
+<script>
+(function(){
+  document.querySelectorAll('.checkrow').forEach(row => {
+    const present = row.querySelector('.component-present');
+    const condition = row.querySelector('.component-condition');
+    if (!present || !condition) return;
+    function syncFromCondition(){
+      if (condition.value === 'absent') present.checked = false;
+    }
+    function syncFromPresent(){
+      if (!present.checked) condition.value = 'absent';
+      else if (condition.value === 'absent') condition.value = 'good';
+    }
+    condition.addEventListener('change', syncFromCondition);
+    present.addEventListener('change', syncFromPresent);
+  });
+})();
+</script>
+
+{% endblock %}

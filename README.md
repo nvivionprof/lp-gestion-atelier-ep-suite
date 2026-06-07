@@ -1,130 +1,137 @@
-# LP Gestion Atelier EP Suite
+# LP Gestion Atelier EP Suite — V0.0.1-RC1
 
-Suite web modulaire destinée à la gestion pédagogique et technique d’un atelier de lycée professionnel.
+> Release candidate d’exploitation encadrée. Périmètre prioritaire : **ToolMag**, **System Manager minimal** et **PedaShop**.
+> Mobile ciblé uniquement : prise de poste System Manager, inventaire ToolMag et prise de photo.
 
-Le projet regroupe plusieurs outils complémentaires : gestion de stock, magasin d’outillage, sécurité atelier, ressources pédagogiques, systèmes techniques, TP, PFMP et suivi des actions élèves afin de produire des bilans d’évolution des compétences professionnelles.
+Voir :
 
-> Nom court recommandé du dépôt : `lp-gestion-atelier-ep-suite`  
-> Compte GitHub prévu : `nvivionprof`
-
----
-
-## Principe d’accès retenu
-
-L’architecture publique retenue est **un seul point d’entrée web** :
-
-```text
-http://serveur:9000/
-```
-
-Les modules ne sont pas exposés par des ports dédiés. Ils sont accessibles par chemins :
-
-| Module | Rôle principal | URL publique |
-|---|---|---|
-| LP Core | Authentification, rôles, menu global, référentiels communs, sauvegarde/restauration | `/` |
-| ToolMag | Magasin d’outillage, sorties/retours, QR codes, maintenance, inventaire | `/toolmag/` |
-| Safety Manager | DUERP, risques, actions de prévention, événements sécurité | `/safety/` |
-| System Manager | Systèmes techniques, zones atelier, documents, réservations | `/systemes/` |
-| TP Manager | Création de TP, référentiels, compétences, documents élèves/profs | `/tp/` |
-| PedaShop | Ressources pédagogiques, consommables, documents et médias | `/pedashop/` |
-| PFMP Manager | Stages, suivi, bilans, compétences et documents PFMP | `/pfmp/` |
-
-> Les anciens accès du type `:900x` par module sont abandonnés.
+- `docs/ROADMAP_RC_V0_0_1.md`
+- `docs/ERGONOMIE_TERRAIN_RC_V0_0_1.md`
+- `CHECKLIST_RECETTE_RC_V0_0_1.md`
 
 ---
 
-## Objectifs principaux
 
-- Centraliser les outils de gestion d’atelier dans une suite cohérente.
-- Permettre l’utilisation par les élèves avec traçabilité pédagogique.
-- Faciliter l’évaluation des compétences à partir des actions réalisées.
-- Fournir une architecture modulaire maintenable.
-- Prévoir l’installation, la mise à jour par archive ZIP et la restauration après crash serveur.
+## Exploitation sécurisée V0.0.1
 
----
+Cette version pose la base officielle **V0.0.1**.
 
-## Architecture cible
-
-Le projet est prévu comme une suite Django conteneurisée avec Docker Compose.
-
-```text
-Internet / réseau local
-        │
-        ▼
-Port public unique :9000
-        │
-        ▼
-Reverse proxy / routeur applicatif
-        │
-        ├── /              → LP Core
-        ├── /toolmag/      → ToolMag
-        ├── /safety/       → Safety Manager
-        ├── /systemes/     → System Manager
-        ├── /tp/           → TP Manager
-        ├── /pedashop/     → PedaShop
-        └── /pfmp/         → PFMP Manager
-```
-
-Voir : [`docs/architecture.md`](docs/architecture.md)
-
----
-
-## Démarrage rapide du dépôt
-
-Après création du dépôt GitHub vide :
+- Application et mises à jour applicatives : SSH / Git / wget GitHub uniquement.
+- Interface web LP Core : supervision, sauvegarde et restauration des bases.
+- Commande d’urgence après échec de mise à jour :
 
 ```bash
-git init
-git add .
-git commit -m "Initialisation du dépôt LP Gestion Atelier EP Suite"
-git branch -M main
-git remote add origin https://github.com/nvivionprof/lp-gestion-atelier-ep-suite.git
-git push -u origin main
+./scripts/restore_last_backup.sh --yes
 ```
 
-Voir : [`docs/github-creation-web.md`](docs/github-creation-web.md)
+- Installation / mise à jour depuis GitHub : voir `BOOTSTRAP-WGET.md`.
+- Politique de version : voir `versions/version-registry.json`.
 
----
 
-## Installation locale prévue
+# LP Gestion Atelier EP Suite — Bêta 2 V0.0.2
 
-```bash
-cp .env.example .env
-docker compose up -d --build
-```
+Suite Django/Docker pour la gestion d’atelier pédagogique : LP Core, ToolMag, Safety Manager, PedaShop, System Manager, TP Manager et PFMP Manager.
 
-Accès local prévu :
+Cette version est une **rebase propre préparatoire à la migration Git**. Elle repart de la consolidation V0.4.0c et ajoute les fichiers de pilotage technique nécessaires pour éviter les régressions lors des futures évolutions.
+
+## Accès par défaut
+
+Mode local WSL/PC :
 
 ```text
 http://localhost:9000/
-http://localhost:9000/toolmag/
-http://localhost:9000/safety/
-http://localhost:9000/systemes/
-http://localhost:9000/tp/
-http://localhost:9000/pedashop/
-http://localhost:9000/pfmp/
 ```
 
-Ce dépôt est actuellement un **squelette de dépôt**. Il pose l’organisation, la documentation, les conventions et les emplacements des modules. Le code applicatif Django réel doit ensuite être ajouté dans chaque dossier `services/*`.
+Compte initial LP Core :
 
----
+```text
+admin / admin
+```
 
-## Principes techniques retenus
+Le changement du mot de passe est demandé côté LP Core à la première connexion.
 
-- Django / Python pour les applications métiers.
-- Docker Compose pour l’orchestration locale ou serveur.
-- Reverse proxy frontal exposant uniquement `:9000`.
-- Routage par chemins applicatifs.
-- Données persistantes séparées du code.
-- Sauvegarde complète : bases, médias, certificats, `.env`, métadonnées de version.
-- Rôles utilisateurs centralisés par LP Core.
-- Imports élèves/classes/formations via fichiers structurés.
-- Traçabilité des actions élèves pour exploitation pédagogique.
+## Architecture Bêta 2
 
----
+La suite passe par une passerelle unique `lp-gateway` basée sur Nginx :
 
-## Statut
+```text
+/              -> LP Core
+/toolmag/      -> ToolMag
+/safety/       -> Safety Manager
+/pedashop/     -> PedaShop
+/system/       -> System Manager
+/tpmanager/    -> TP Manager
+/pfmp/         -> PFMP Manager
+```
 
-Projet en cadrage initial.
+Les modules **ne sont plus pensés comme des services exposés par ports publics séparés**. Les URLs publiques sont générées par domaine + chemin, par exemple :
 
-Prochaine étape recommandée : importer cette structure dans GitHub, puis ajouter progressivement le code réel de chaque module.
+```text
+https://stjoseph-lpsuite.duckdns.org/system/
+https://stjoseph-lpsuite.duckdns.org/toolmag/
+```
+
+## Installation complète
+
+```bash
+unzip lp-gestion-atelier-ep-suite-beta2-v0.0.2-git-ready.zip
+cd lp-gestion-atelier-ep-suite-beta2-v0.0.2
+chmod +x install.sh start.sh stop.sh upgrade.sh scripts/*.sh
+./install.sh
+```
+
+## Paramètres publics / DuckDNS / HTTPS
+
+Depuis LP Core :
+
+```text
+Administration > URLs / HTTPS
+```
+
+La page permet de régler :
+
+- domaine public ;
+- protocole HTTP/HTTPS ;
+- token DuckDNS ;
+- e-mail Let’s Encrypt ;
+- génération/renouvellement du certificat ;
+- application des URLs publiques dans `.env`.
+
+La saisie de ports par module a été retirée de l’interface : la suite utilise une passerelle unique et des chemins `/toolmag`, `/system`, etc.
+
+## Documents techniques obligatoires
+
+Avant toute nouvelle évolution, lire :
+
+```text
+SUIVI_TECHNIQUE_SUITE.md
+MIGRATIONS_ETAT.md
+CHECKLIST_TESTS.md
+GIT_MIGRATION.md
+CONTRIBUTING.md
+```
+
+## Règle de développement
+
+Toute modification future doit :
+
+1. partir d’une base Git propre ;
+2. modifier les sources, pas un ZIP historique ;
+3. mettre à jour `SUIVI_TECHNIQUE_SUITE.md` ;
+4. vérifier la syntaxe Python/YAML/shell ;
+5. documenter les migrations ;
+6. fournir une procédure de test reproductible.
+
+## Type de livraison
+
+Cette version est une **archive complète d’installation/reprise SSH**, pas un patch web.
+
+
+## Bêta 2 V0.0.4
+
+Cette version ajoute la vérification d’intégrité SHA256, le chargement optionnel de bases de démonstration et la supervision des bases PostgreSQL depuis LP Core. Voir `docs/RELEASE_BETA2_V0_0_4.md`.
+
+
+## Décision sécurité — mises à jour et sauvegardes web
+
+Les mises à jour applicatives se font exclusivement par SSH/Git. LP Core peut en revanche piloter les sauvegardes/restaurations de bases PostgreSQL par module ou totales, avec manifest, checksums et confirmation administrateur.

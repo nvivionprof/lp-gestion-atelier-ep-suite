@@ -1,0 +1,15 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<div class="seq-header">
+  <div>
+    <h1>{% block seq_title %}Sequence Manager{% endblock %}</h1>
+    <p class="muted">Planification par zones, demi-journées, groupes, TP, systèmes et parcours élèves.</p>
+  </div>
+  <div class="seq-actions">
+    <a class="btn secondary" href="{% url 'sequence_manager:calendar' %}">Calendrier</a>
+    <a class="btn secondary" href="{% url 'sequence_manager:sequence_list' %}">Séquences</a>
+    <a class="btn" href="{% url 'sequence_manager:sequence_create' %}">Créer une séquence</a>
+  </div>
+</div>
+{% block seq_content %}{% endblock %}
+{% endblock %}

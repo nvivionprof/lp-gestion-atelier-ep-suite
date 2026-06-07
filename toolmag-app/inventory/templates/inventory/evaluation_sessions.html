@@ -1,0 +1,33 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h1>Séances pédagogiques</h1>
+<section class="card">
+  <h2>Créer une séance</h2>
+  <form method="post" class="grid-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Créer la séance</button>
+  </form>
+  <p class="muted">Les affectations détaillées des élèves aux rôles peuvent être complétées dans l’administration Django pour cette première intégration.</p>
+</section>
+<section class="card">
+  <h2>Séances existantes</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Titre</th><th>Formation</th><th>Classe</th><th>Compétences ciblées</th><th>Active</th></tr></thead>
+    <tbody>
+    {% for s in sessions %}
+      <tr>
+        <td>{{ s.date }}</td>
+        <td>{{ s.title }}</td>
+        <td>{% if s.formation %}{{ s.formation.code }}{% else %}-{% endif %}</td>
+        <td>{{ s.class_name }} {{ s.group_name }}</td>
+        <td>{% for c in s.targeted_competences.all %}<span class="competence-chip"><strong>{{ c.code }}</strong></span>{% empty %}-{% endfor %}</td>
+        <td>{{ s.active|yesno:"oui,non" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Aucune séance.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

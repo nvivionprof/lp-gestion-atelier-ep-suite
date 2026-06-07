@@ -1,0 +1,17 @@
+{% extends 'sequence_manager/base.html' %}
+{% block seq_title %}Séquences{% endblock %}
+{% block seq_content %}
+<form class="card filters" method="get">
+  <label>Zone<select name="zone"><option value="">Toutes</option>{% for z in zones %}<option value="{{ z.id }}" {% if filters.zone == z.id|stringformat:'s' %}selected{% endif %}>{{ z.code }} — {{ z.nom }}</option>{% endfor %}</select></label>
+  <label>Formation<select name="formation"><option value="">Toutes</option>{% for f in formations %}<option value="{{ f }}" {% if filters.formation == f %}selected{% endif %}>{{ f }}</option>{% endfor %}</select></label>
+  <label>Coloration<select name="coloration"><option value="">Toutes</option>{% for c in colorations %}<option value="{{ c.id }}" {% if filters.coloration == c.id|stringformat:'s' %}selected{% endif %}>{{ c.nom }}</option>{% endfor %}</select></label>
+  <button class="btn" type="submit">Filtrer</button>
+</form>
+<section class="card">
+<table class="table"><thead><tr><th>Séquence</th><th>Zone</th><th>Coloration</th><th>Formations</th><th>Durée</th><th>Statut</th><th></th></tr></thead><tbody>
+{% for seq in sequences %}
+<tr><td><strong>{{ seq.code }}</strong><br>{{ seq.titre }}</td><td>{{ seq.zone_principale|default:'—' }}</td><td>{{ seq.coloration|default:'—' }}</td><td>{% for f in seq.formations.all %}<span class="badge">{{ f.formation_code }} {{ f.effectif }}</span> {% empty %}—{% endfor %}</td><td>{{ seq.nb_semaines }} sem.</td><td>{{ seq.get_statut_display }}</td><td><a class="btn small" href="{% url 'sequence_manager:sequence_detail' seq.pk %}">Ouvrir</a></td></tr>
+{% empty %}<tr><td colspan="7">Aucune séquence.</td></tr>{% endfor %}
+</tbody></table>
+</section>
+{% endblock %}

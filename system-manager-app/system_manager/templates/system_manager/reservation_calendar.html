@@ -1,0 +1,30 @@
+
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Planning systèmes</p><h1>Calendrier semaine du {{ week_start|date:'d/m/Y' }} au {{ week_end|date:'d/m/Y' }}</h1><p class="lead">Depuis le calendrier, créer une réservation ponctuelle, par bloc atelier ou liée à une séquence.</p></div><div class="hero-actions"><a class="button secondary" href="?date={{ prev_date }}{{ filter_suffix }}">Semaine précédente</a><a class="button secondary" href="?date={{ today|date:'Y-m-d' }}{{ filter_suffix }}">Aujourd’hui</a><a class="button secondary" href="?date={{ next_date }}{{ filter_suffix }}">Semaine suivante</a><a class="button" href="{% url 'reservation_create' %}?mode=ponctuelle">Ponctuelle</a><a class="button" href="{% url 'reservation_create' %}?mode=bloc_atelier">Bloc atelier</a><a class="button" href="{% url 'reservation_create' %}?mode=sequence_tp">Séquence TP</a></div></section>
+<section class="panel compact-filter">
+<form method="get" class="filter-row">
+  <input type="hidden" name="date" value="{{ week_start|date:'Y-m-d' }}">
+  <label>Zone atelier<select name="zone" id="calendar-zone-filter"><option value="">Toutes</option>{% for z in zones %}<option value="{{ z.pk }}" {% if selected_zone == z.pk|stringformat:'s' %}selected{% endif %}>{{ z.code }} — {{ z.nom }}</option>{% endfor %}</select></label>
+  <label>Sous-zone<select name="sous_zone" id="calendar-subzone-filter"><option value="">Toutes</option>{% for sz in subzones %}<option value="{{ sz.pk }}" data-zone="{{ sz.zone_id }}" {% if selected_subzone == sz.pk|stringformat:'s' %}selected{% endif %}>{{ sz.zone.code }} / {{ sz.code }} — {{ sz.nom }}</option>{% endfor %}</select></label>
+  <button class="button secondary" type="submit">Filtrer</button><a class="button ghost" href="{% url 'reservation_calendar' %}?date={{ week_start|date:'Y-m-d' }}">Réinitialiser</a>
+</form>
+</section>
+
+<section class="panel calendar-panel">
+<table class="calendar-table"><tr><th>Heure</th>{% for d in days %}<th>{{ d|date:'l d/m' }}</th>{% endfor %}</tr>{% for hour,row in calendar %}<tr><th>{{ hour }}:00</th>{% for events in row %}<td class="calendar-cell">{% for r in events %}<a class="calendar-event status-{{ r.statut }}" href="{% if r.group_id %}{% url 'reservation_group_detail' r.group_id %}{% else %}{% url 'reservation_update' r.pk %}{% endif %}"><strong>{{ r.systeme.code }}</strong><br>{{ r.date_debut|date:'H:i' }}-{{ r.date_fin|date:'H:i' }}<br>{{ r.classe_ou_groupe|default:'—' }}<br><small>{% if r.group %}{{ r.group.get_reservation_mode_display }}{% else %}{{ r.professeur.full_name|default:'—' }}{% endif %}</small></a>{% endfor %}</td>{% endfor %}</tr>{% endfor %}</table>
+</section>
+
+<script>
+function cascadeCalendarSubzones(){
+  const zone=document.getElementById('calendar-zone-filter');
+  const sub=document.getElementById('calendar-subzone-filter');
+  if(!zone||!sub) return;
+  const z=zone.value;
+  Array.from(sub.options).forEach(function(opt){ if(!opt.value){opt.hidden=false; return;} opt.hidden = !!z && opt.dataset.zone !== z; });
+  if(sub.selectedOptions.length && sub.selectedOptions[0].hidden){sub.value='';}
+}
+document.getElementById('calendar-zone-filter')?.addEventListener('change', cascadeCalendarSubzones);
+cascadeCalendarSubzones();
+</script>
+{% endblock %}

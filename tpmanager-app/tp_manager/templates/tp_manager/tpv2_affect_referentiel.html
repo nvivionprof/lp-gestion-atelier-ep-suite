@@ -1,0 +1,58 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="hero"><div><p class="eyebrow">Affecter / barème</p><h1>{{ tp.code }} — {{ tp.titre }}</h1><p class="lead">Les compétences et critères officiels sont sélectionnés lors de la création/modification. Ici, le statut est porté par les compétences ; le barème et les pourcentages sont portés uniquement par les sous-compétences / critères officiels.</p></div></section>
+<form method="post" class="panel tpv2-affect-form">{% csrf_token %}
+  <div class="formgrid">
+    <p><label for="bareme_total">Nombre total de points</label><input id="bareme_total" name="bareme_total" type="number" step="0.25" min="0" value="{{ tp.bareme_total|default:'' }}"><span class="small muted">Exemple : 20, 40 ou 100. Les points des critères sont calculés automatiquement à partir du pourcentage.</span></p>
+    <p><label for="mots_cles">Mots-clés parcours / recherche élève</label><input id="mots_cles" name="mots_cles" value="{{ tp.mots_cles }}" placeholder="diagnostic, domotique, PAC, réseau..."></p>
+  </div>
+
+  <h2>Compétences officielles</h2>
+  <p class="muted">Aucun point ni pourcentage au niveau compétence. La compétence sert à qualifier le rôle dans le TP.</p>
+  <table class="affect-table"><thead><tr><th>Compétence</th><th>Type</th><th>Niveau / usage</th><th>Commentaire</th></tr></thead><tbody>
+    {% for c in tp.competences_officielles.all %}
+    <tr>
+      <td><strong>{{ c.competence.code }}</strong><br>{{ c.competence.libelle_officiel }}</td>
+      <td><select name="comp_type_{{ c.id }}"><option value="mobilisee" {% if c.type_lien == 'mobilisee' %}selected{% endif %}>Mobilisée</option><option value="travaillee" {% if c.type_lien == 'travaillee' %}selected{% endif %}>Travaillée</option><option value="evaluee" {% if c.type_lien == 'evaluee' %}selected{% endif %}>Évaluée</option><option value="certification" {% if c.type_lien == 'certification' %}selected{% endif %}>Certification</option></select></td>
+      <td><input name="comp_niveau_{{ c.id }}" value="{{ c.niveau_evaluation }}" placeholder="Découverte, entraînement, évaluation formative..."></td>
+      <td><textarea name="comp_commentaire_{{ c.id }}">{{ c.commentaire }}</textarea></td>
+    </tr>
+    {% empty %}<tr><td colspan="4" class="muted">Aucune compétence sélectionnée.</td></tr>{% endfor %}
+  </tbody></table>
+
+  <h2>Sous-compétences / critères officiels</h2>
+  <p class="muted">Saisir uniquement le pourcentage. Les points sont calculés automatiquement : total × pourcentage ÷ 100.</p>
+  <table class="affect-table criterion-points-table"><thead><tr><th>Compétence</th><th>Critère / sous-compétence</th><th>Type</th><th>%</th><th>Points calculés</th></tr></thead><tbody>
+    {% for c in tp.criteres_officiels_selectionnes.all %}
+    <tr>
+      <td><strong>{{ c.critere.competence.code }}</strong></td>
+      <td>{{ c.critere.libelle_officiel }}</td>
+      <td><select name="crit_type_{{ c.id }}"><option value="mobilisee" {% if c.type_lien == 'mobilisee' %}selected{% endif %}>Mobilisé</option><option value="travaillee" {% if c.type_lien == 'travaillee' %}selected{% endif %}>Travaillé</option><option value="evaluee" {% if c.type_lien == 'evaluee' %}selected{% endif %}>Évalué</option><option value="certification" {% if c.type_lien == 'certification' %}selected{% endif %}>Certification</option></select></td>
+      <td><input class="crit-percent" type="number" step="0.25" min="0" max="100" name="crit_pourcentage_{{ c.id }}" value="{{ c.pourcentage|default:'' }}"></td>
+      <td><input class="crit-points" type="number" step="0.01" min="0" value="{{ c.bareme|default:'' }}" readonly></td>
+    </tr>
+    {% empty %}<tr><td colspan="5" class="muted">Aucun critère officiel sélectionné.</td></tr>{% endfor %}
+  </tbody></table>
+  <button type="submit">Enregistrer affectations et barèmes</button>
+  <a class="button secondary" href="{% url 'tp_detail' tp.pk %}">Retour</a>
+</form>
+<script>
+(function(){
+  const totalInput = document.getElementById('bareme_total');
+  function n(v){ return parseFloat(String(v || '').replace(',', '.')) || 0; }
+  function refreshPoints(){
+    const total = n(totalInput && totalInput.value);
+    document.querySelectorAll('.criterion-points-table tbody tr').forEach(row => {
+      const percent = row.querySelector('.crit-percent');
+      const points = row.querySelector('.crit-points');
+      if(!percent || !points) return;
+      const p = n(percent.value);
+      points.value = (total && p) ? (total * p / 100).toFixed(2) : '';
+    });
+  }
+  if(totalInput){ totalInput.addEventListener('input', refreshPoints); }
+  document.querySelectorAll('.crit-percent').forEach(el => el.addEventListener('input', refreshPoints));
+  refreshPoints();
+})();
+</script>
+{% endblock %}

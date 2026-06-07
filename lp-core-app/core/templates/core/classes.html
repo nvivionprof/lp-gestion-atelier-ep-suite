@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">LP Core</p>
+    <h1>Classes</h1>
+    <p class="lead">Référentiel central des classes. Les blocs atelier et les modules utilisent ces classes synchronisées depuis LP Core.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="button secondary" href="{% url 'core_atelier_blocks' %}">Blocs atelier</a>
+    <a class="button secondary" href="{% url 'core_workshop_zones' %}">Zones atelier</a>
+  </div>
+</section>
+<div class="grid2">
+<section class="panel">
+  <h2>{% if edit_class %}Modifier la classe{% else %}Créer une classe{% endif %}</h2>
+  <form method="post" class="form-card">{% csrf_token %}
+    <input type="hidden" name="form_action" value="class">
+    {% if edit_class %}<input type="hidden" name="class_id" value="{{ edit_class.pk }}">{% endif %}
+    <label>Nom de la classe</label>
+    <input name="name" required value="{{ edit_class.name|default:'' }}" placeholder="1MELEC, TCIEL, BTS FED1...">
+    <label>Formation associée, facultative</label>
+    <select name="formation_id">
+      <option value="">Aucune / non classée</option>
+      {% for f in formations %}<option value="{{ f.pk }}" {% if edit_class and edit_class.formation_id == f.pk %}selected{% endif %}>{{ f.code }} — {{ f.name }}</option>{% endfor %}
+    </select>
+    <label>Année scolaire, facultative</label>
+    <input name="school_year" value="{{ edit_class.school_year|default:'' }}" placeholder="2025-2026">
+    <label><input type="checkbox" name="active" value="1" {% if not edit_class or edit_class.active %}checked{% endif %}> Active</label>
+    <button type="submit">Enregistrer</button>
+    {% if edit_class %}<a class="button secondary" href="{% url 'core_classes' %}">Annuler modification</a>{% endif %}
+  </form>
+</section>
+<section class="panel">
+  <h2>Aide</h2>
+  <p>Les classes affichées ici alimentent les listes de System Manager, les réservations par bloc et les futurs liens avec Sequence Manager.</p>
+  <p class="muted">Le nom de classe est l’information principale. La formation est conservée seulement comme méta-donnée de compatibilité.</p>
+</section>
+</div>
+<section class="panel">
+  <h2>Classes existantes</h2>
+  <form method="post">{% csrf_token %}
+    <input type="hidden" name="form_action" value="delete_classes">
+    <input class="filter-input" type="search" data-filter-table="classes-table" placeholder="Filtrer les classes...">
+    <table id="classes-table">
+      <tr><th></th><th>Classe</th><th>Formation</th><th>Année</th><th>Active</th><th>Action</th></tr>
+      {% for c in classes %}
+      <tr>
+        <td><input type="checkbox" name="selected_classes" value="{{ c.pk }}"></td>
+        <td><strong>{{ c.name }}</strong></td>
+        <td>{{ c.formation.code|default:'—' }}</td>
+        <td>{{ c.school_year|default:'—' }}</td>
+        <td>{{ c.active|yesno:'Oui,Non' }}</td>
+        <td><a class="mini-button secondary" href="?edit={{ c.pk }}">Modifier</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="6">Aucune classe.</td></tr>{% endfor %}
+    </table>
+    <button class="button danger" type="submit">Supprimer les classes cochées</button>
+  </form>
+</section>
+<script>
+document.querySelectorAll('[data-filter-table]').forEach(function(input){input.addEventListener('input',function(){var table=document.getElementById(input.dataset.filterTable);var q=input.value.toLowerCase();Array.from(table.querySelectorAll('tr')).slice(1).forEach(function(tr){tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none';});});});
+</script>
+{% endblock %}

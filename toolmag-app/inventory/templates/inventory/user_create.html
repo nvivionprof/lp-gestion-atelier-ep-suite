@@ -1,0 +1,12 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Créer un utilisateur</h1>
+  <p class="hint">Le mot de passe provisoire est chiffré en base. Il ne sera pas affiché ensuite.</p>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Créer l’utilisateur</button>
+    <a class="button secondary" href="{% url 'users_management' %}">Annuler</a>
+  </form>
+</section>
+{% endblock %}
