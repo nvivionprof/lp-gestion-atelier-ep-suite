@@ -1502,14 +1502,44 @@ def backup_restore_view(request):
 
 # --- Supervision PostgreSQL LP Suite ---
 
+@require_http_methods(['GET', 'POST'])
 def database_supervision_view(request):
     from django.contrib import messages
     from django.shortcuts import redirect
-    if not _core_sql_admin_user(request):
+    actor = _core_sql_admin_user(request)
+    if not actor:
         messages.error(request, 'Accès réservé administrateur LP Core.')
         return redirect('core_login')
+    if request.method == 'POST':
+        form_action = request.POST.get('form_action') or ''
+        module = request.POST.get('module') or 'all'
+        allowed_modules = {'all','lp-core','toolmag','safety','pedashop','system-manager','tpmanager','pfmp'}
+        action_map = {
+            'migrate_module': 'migrate_module',
+            'collectstatic_module': 'collectstatic_module',
+            'sync_module': 'sync_module',
+            'sync_all_modules': 'sync_all_modules',
+            'restart_module': 'restart_module',
+            'logs_module': 'logs_module',
+            'restart_services': 'restart_services',
+        }
+        if module not in allowed_modules:
+            messages.error(request, 'Module non autorisé.')
+            return redirect('core_database_supervision')
+        agent_action = action_map.get(form_action)
+        if not agent_action:
+            messages.error(request, 'Action supervision inconnue.')
+            return redirect('core_database_supervision')
+        payload = {'module': module}
+        job, data = _record_agent_job(agent_action, actor, payload=payload, success_message=f'Action {agent_action} demandée pour {module}.')
+        if data.get('ok'):
+            messages.success(request, f'Action lancée : {agent_action} / {module} — job {job.agent_job_id}.')
+        else:
+            messages.error(request, job.result_message or 'Action refusée par l’agent serveur.')
+        return redirect('core_database_supervision')
     from .db_supervision import collect_database_supervision
     context = collect_database_supervision()
+    context['supervision_modules'] = DATABASE_BACKUP_MODULES
     return render(request, 'core/database_supervision.html', context)
 
 # --- Administration SQL base module ---

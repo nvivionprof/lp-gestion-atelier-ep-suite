@@ -3,10 +3,27 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 SUITE_ROOT="$(pwd)"
 MODE="${1:-manual}"
-# La politique peut être générée par LP Core dans lp-core-db/data/backup-policy.env.
-[ -f .env ] && set -a && . ./.env && set +a || true
-[ -f lp-core-db/data/backup-policy.env ] && set -a && . ./lp-core-db/data/backup-policy.env && set +a || true
-RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-7}"
+
+need(){ command -v "$1" >/dev/null 2>&1 || { echo "ERREUR : commande absente : $1" >&2; exit 1; }; }
+need docker
+need zip
+need sha256sum
+if ! docker compose version >/dev/null 2>&1; then echo "ERREUR : Docker Compose v2 indisponible." >&2; exit 1; fi
+
+env_get(){
+  local key="$1" default="${2:-}"
+  local value=""
+  if [ -f .env ]; then
+    value="$(awk -F= -v k="$key" '$1==k{print substr($0,index($0,"=")+1)}' .env | tail -n 1)"
+  fi
+  printf '%s' "${value:-$default}"
+}
+
+RETENTION_DAYS="$(env_get BACKUP_RETENTION_DAYS 7)"
+if [ -f lp-core-db/data/backup-policy.env ]; then
+  p="$(awk -F= '$1=="BACKUP_RETENTION_DAYS"{print $2}' lp-core-db/data/backup-policy.env | tail -n1)"
+  RETENTION_DAYS="${p:-$RETENTION_DAYS}"
+fi
 STAMP="$(date +%Y%m%d-%H%M%S)"
 case "$MODE" in
   daily) BACKUP_DIR="$SUITE_ROOT/backups/daily" ;;
@@ -17,6 +34,8 @@ esac
 mkdir -p "$BACKUP_DIR" "$SUITE_ROOT/backups/tmp"
 TMP="$(mktemp -d "$SUITE_ROOT/backups/tmp/full-backup-$STAMP-XXXX")"
 ARCHIVE="$BACKUP_DIR/lp-suite-full-$STAMP.zip"
+trap 'rm -rf "$TMP"' EXIT
+
 copy_if_exists(){
   local src="$1"
   if [[ -e "$SUITE_ROOT/$src" ]]; then
@@ -32,7 +51,6 @@ for d in lp-core-db toolmag-db safety-db pedashop-db system-manager-db tpmanager
   copy_if_exists "$d"
 done
 
-# Exports logiques PostgreSQL : plus fiables que la copie brute du volume postgres-db à chaud.
 if [[ -x "$SUITE_ROOT/scripts/postgres/export_database_dumps.sh" ]]; then
   "$SUITE_ROOT/scripts/postgres/export_database_dumps.sh" "$TMP" all || echo "Avertissement : export PostgreSQL impossible." >&2
 fi
@@ -56,6 +74,7 @@ BACKUP_MANIFEST_EOF
   zip -qr "$ARCHIVE" .
 )
 rm -rf "$TMP"
+trap - EXIT
 if [[ "$MODE" == "daily" ]]; then
   find "$BACKUP_DIR" -type f -name 'lp-suite-full-*.zip' -mtime +"$RETENTION_DAYS" -delete 2>/dev/null || true
 fi

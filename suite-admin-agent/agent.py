@@ -145,12 +145,29 @@ def start_job(action, payload):
         'issue_cert': ['bash', str(SUITE_ROOT / 'scripts/cert_manager.sh'), 'issue'],
         'renew_cert': ['bash', str(SUITE_ROOT / 'scripts/cert_manager.sh'), 'renew'],
         'cert_status': ['bash', str(SUITE_ROOT / 'scripts/cert_manager.sh'), 'status'],
-        'restart_services': ['docker', 'compose', 'up', '-d', '--build'],
+        'restart_services': ['docker', 'compose', '--env-file', '.env', 'up', '-d', '--build'],
         'migrate_all': ['bash', str(SUITE_ROOT / 'scripts/migrate_all.sh')],
+        'sync_all_modules': ['bash', str(SUITE_ROOT / 'scripts/sync_module_users.sh'), 'all'],
+        'collectstatic_all': ['bash', str(SUITE_ROOT / 'scripts/collectstatic_module.sh'), 'all'],
         'backup_all': ['bash', str(SUITE_ROOT / 'scripts/backup_all.sh')],
         'full_backup': ['bash', str(SUITE_ROOT / 'scripts/full_backup.sh'), 'manual'],
     }
-    if action == 'backup_database':
+    if action in {'migrate_module', 'collectstatic_module', 'sync_module', 'restart_module', 'logs_module'}:
+        module = str(payload.get('module') or 'all')
+        allowed_modules = {'all','lp-core','toolmag','safety','pedashop','system-manager','tpmanager','pfmp'}
+        if module not in allowed_modules:
+            raise ValueError('Module non autorisé.')
+        if action == 'migrate_module':
+            command = ['bash', str(SUITE_ROOT / 'scripts/migrate_all.sh'), '--module', module, '--skip-seed']
+        elif action == 'collectstatic_module':
+            command = ['bash', str(SUITE_ROOT / 'scripts/collectstatic_module.sh'), module]
+        elif action == 'sync_module':
+            command = ['bash', str(SUITE_ROOT / 'scripts/sync_module_users.sh'), module]
+        elif action == 'restart_module':
+            command = ['bash', str(SUITE_ROOT / 'scripts/restart_module.sh'), module]
+        else:
+            command = ['bash', str(SUITE_ROOT / 'scripts/logs_module.sh'), module, '180']
+    elif action == 'backup_database':
         module = str(payload.get('module') or 'all')
         allowed_modules = {'all','lp-core','toolmag','safety','pedashop','system-manager','tpmanager','pfmp'}
         if module not in allowed_modules:

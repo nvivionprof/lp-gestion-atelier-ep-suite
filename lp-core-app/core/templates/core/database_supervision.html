@@ -3,7 +3,7 @@
 {% block content %}
 <section class="card">
   <h1>Supervision des bases PostgreSQL</h1>
-  <p class="muted">Vue de contrôle rapide depuis LP Core : état des bases de chaque module, taille, nombre de tables et dernière migration Django connue.</p>
+  <p class="muted">Vue de contrôle rapide depuis LP Core : état des bases de chaque module, taille, nombre de tables, dernière migration Django connue et actions de maintenance contrôlées par l’agent serveur.</p>
 
   <div class="cards compact">
     <article><strong>Moteur</strong><br><code>{{ engine }}</code></article>
@@ -12,20 +12,21 @@
     <article><strong>État</strong><br>{{ ok_count }} / {{ total_count }} base(s) accessibles</article>
   </div>
 
+  <div class="panel">
+    <h2>Actions globales</h2>
+    <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="form_action" value="migrate_module"><input type="hidden" name="module" value="all"><button type="submit">Relancer toutes les migrations</button></form>
+    <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="form_action" value="collectstatic_module"><input type="hidden" name="module" value="all"><button type="submit">Relancer tous les collectstatic</button></form>
+    <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="form_action" value="sync_all_modules"><input type="hidden" name="module" value="all"><button type="submit">Synchroniser LP Core vers tous les modules</button></form>
+    <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="form_action" value="restart_services"><input type="hidden" name="module" value="all"><button type="submit">Redémarrer la suite</button></form>
+  </div>
+
   {% if not postgres_mode %}
     <p class="alert warning">Installation actuellement en SQLite : la supervision multi-bases complète sera disponible après bascule PostgreSQL.</p>
   {% endif %}
 
   <table>
     <tr>
-      <th>Module</th>
-      <th>Base</th>
-      <th>État</th>
-      <th>Taille</th>
-      <th>Tables</th>
-      <th>Migrations</th>
-      <th>Dernière migration</th>
-      <th>Détail</th>
+      <th>Module</th><th>Base</th><th>État</th><th>Taille</th><th>Tables</th><th>Migrations</th><th>Dernière migration</th><th>Actions</th><th>Détail</th>
     </tr>
     {% for db in items %}
     <tr>
@@ -36,6 +37,13 @@
       <td>{{ db.table_count|default:'—' }}</td>
       <td>{{ db.migration_count|default:'—' }}</td>
       <td><code>{{ db.last_migration }}</code></td>
+      <td>
+        <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="module" value="{{ db.code }}"><input type="hidden" name="form_action" value="migrate_module"><button type="submit">Migrations</button></form>
+        <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="module" value="{{ db.code }}"><input type="hidden" name="form_action" value="collectstatic_module"><button type="submit">Static</button></form>
+        {% if db.code != 'lp-core' %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="module" value="{{ db.code }}"><input type="hidden" name="form_action" value="sync_module"><button type="submit">Sync</button></form>{% endif %}
+        <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="module" value="{{ db.code }}"><input type="hidden" name="form_action" value="restart_module"><button type="submit">Restart</button></form>
+        <form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="module" value="{{ db.code }}"><input type="hidden" name="form_action" value="logs_module"><button type="submit">Logs</button></form>
+      </td>
       <td>{% if db.error %}<pre class="mini-pre">{{ db.error }}</pre>{% else %}<span class="muted">—</span>{% endif %}</td>
     </tr>
     {% endfor %}
@@ -43,9 +51,9 @@
 
   <div class="panel">
     <h2>Commandes utiles côté serveur</h2>
-    <pre class="mini-pre">docker compose ps
+    <pre class="mini-pre">docker compose --env-file .env ps
 docker exec -it lp-suite-postgres pg_isready -U lp_suite_user -d lp_core
-docker compose logs --tail=150 postgres</pre>
+docker compose --env-file .env logs --tail=150 postgres</pre>
   </div>
 </section>
 {% endblock %}
