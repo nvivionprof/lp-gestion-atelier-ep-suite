@@ -649,7 +649,6 @@ d859c31dec968e4bc8856c09988a0d4eb1a7ab6ec691df45e50220ee921943bd  ./tpmanager-ap
 9255f61b8245e0704baf6f8c6c587ddec6318b371b1fbfa730164f7010e0f9ff  ./tpmanager-app/sequence_manager/urls.py
 83c140e18f3f434ce3f2e2266bf51b92eab53c0de0008e6a5d1ebe63a1b5cf8e  ./tpmanager-app/sequence_manager/views.py
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tpmanager-app/tp_manager/__init__.py
-e127a26a358be9701a8f4cc4e92fbae73708181e8dc25f6576142798752f3594  ./tpmanager-app/tp_manager/__pycache__/sync.cpython-312.pyc
 6425c7329752bfd97273aa91970345accbf757142b81e5cdbd2ab84b965e6e73  ./tpmanager-app/tp_manager/admin.py
 24a2682fb9d3d6b826e91f30f4d9923049818d145d51525408fa65a7ce6b4f69  ./tpmanager-app/tp_manager/apps.py
 5a8350c876c5f8a4a0ba7e2bb509c9d5768b8a832a5b373aa3d895a6224ac5e6  ./tpmanager-app/tp_manager/context_processors.py
@@ -660,7 +659,6 @@ e127a26a358be9701a8f4cc4e92fbae73708181e8dc25f6576142798752f3594  ./tpmanager-ap
 c1e1f1baf758ecd6cf0f8ca313607eb8a29e0cf4a13c6b465875ff7359f37404  ./tpmanager-app/tp_manager/forms_v2.py
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tpmanager-app/tp_manager/management/__init__.py
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tpmanager-app/tp_manager/management/commands/__init__.py
-3161341b120827eeb845737cca13837a5b5e9c8562b6f2b208c20d4f293d8e54  ./tpmanager-app/tp_manager/management/commands/__pycache__/sync_system_manager.cpython-312.pyc
 b160349dd20c29afefd6d24fc5541d9cceedde7a9e2a00537e08b84ff62c3609  ./tpmanager-app/tp_manager/management/commands/seed_tp_manager.py
 fcdd9245a2b8177ac91579a200f8fac3c404e939ac63f765a86a7c19defeedf7  ./tpmanager-app/tp_manager/management/commands/seed_tpmanager_v2.py
 ece81a5f54ca10928e3ada69b75cdd53d7cc2102aaae9dd6e19e59f65959a5d5  ./tpmanager-app/tp_manager/management/commands/sync_lp_core_users.py
