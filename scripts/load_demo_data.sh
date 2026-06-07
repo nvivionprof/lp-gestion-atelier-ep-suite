@@ -20,8 +20,13 @@ log "Usage normal : appelé automatiquement uniquement par ./install.sh --mode i
 log "Les commandes sont tolérantes : un module absent ou une seed absente ne bloque pas l'ensemble."
 
 if [ -f imports/base_demo_lp_core.xlsx ]; then
-  log "LP Core : import imports/base_demo_lp_core.xlsx"
-  run_manage lp-core-app import_users_xlsx /imports/base_demo_lp_core.xlsx || true
+  CORE_DEMO_PRESENT="$(run_manage lp-core-app shell -c "from core.models import CoreUser; print(CoreUser.objects.filter(username='PROF-0001').exists())" 2>/dev/null | tail -n 1 || true)"
+  if [ "$CORE_DEMO_PRESENT" = "True" ]; then
+    log "LP Core : utilisateurs démo déjà présents, import XLSX ignoré pour éviter les doublons."
+  else
+    log "LP Core : import imports/base_demo_lp_core.xlsx"
+    run_manage lp-core-app import_users_xlsx /imports/base_demo_lp_core.xlsx || true
+  fi
 fi
 
 log "LP Core : seed_core de consolidation"

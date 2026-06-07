@@ -1,8 +1,8 @@
 {
   "suite_name": "LP Gestion Atelier EP Suite",
-  "version": "V0.0.1-RC3",
-  "name": "LP Gestion Atelier EP Suite — V0.0.1-RC3 corrections techniques post-RC2",
-  "description": "Release candidate centrée sur ToolMag, System Manager minimal et PedaShop, avec ergonomie mobile limitée aux actions terrain : prise de poste, inventaire et photos.",
+  "version": "V0.0.1-RC4",
+  "name": "LP Gestion Atelier EP Suite — V0.0.1-RC4 exploitation encadrée",
+  "description": "Release candidate technique de propreté : synchronisations post-installation sans erreur, API System Manager corrigée et dépendances requests stabilisées.",
   "type": "release-candidate-exploitation-ssh-github-wget-postgresql",
   "requires_ssh": true,
   "requires_rebuild": true,
@@ -21,6 +21,7 @@
     "suite-admin-agent"
   ],
   "changes": [
+    "RC4 : suppression des alertes post-installation résiduelles avant tag V0.0.1.",
     "RC3 : synchronisation System Manager vers TP Manager non bloquante et sans traceback pendant l’installation.",
     "RC3 : synchronisation TP Manager idempotente sur les utilisateurs déjà créés par seed.",
     "RC3 : suppression de la synchronisation post-démo trop précoce pendant install.sh.",
@@ -55,7 +56,7 @@
     "url": "/supervision-bases/",
     "scope": "postgresql module databases"
   },
-  "suite_version": "V0.0.1-RC3",
+  "suite_version": "V0.0.1-RC4",
   "web_update_allowed": false,
   "web_database_backup_restore_allowed": true,
   "features": [
@@ -74,12 +75,12 @@
   "github_wget": {
     "enabled": true,
     "bootstrap_raw_url": "https://raw.githubusercontent.com/nvivionprof/lp-gestion-atelier-ep-suite/main/scripts/github_bootstrap.sh",
-    "release_asset": "lp-gestion-atelier-ep-suite-V0.0.1-RC1.zip",
-    "checksum_asset": "lp-gestion-atelier-ep-suite-V0.0.1-RC1.zip.sha256"
+    "release_asset": "lp-gestion-atelier-ep-suite-V0.0.1-RC4.zip",
+    "checksum_asset": "lp-gestion-atelier-ep-suite-V0.0.1-RC4.zip.sha256"
   },
   "demo_data_policy": "install-only",
   "rc_status": "release_candidate",
-  "release_stage": "RC3",
+  "release_stage": "RC4",
   "production_scope": {
     "priority_modules": [
       "toolmag",
