@@ -28,10 +28,29 @@ def sync_users_from_lp_core(timeout=90, force_password=False, core_user_id=None)
                 formation.active = True
                 formation.save()
                 report['formations_created' if f_created else 'formations_updated'] += 1
+
             core_id = item.get('id')
             code = item.get('code') or item.get('username')
             username = item.get('username') or code
-            obj, created = TpUser.objects.get_or_create(core_user_id=core_id, defaults={'code': code, 'username': username})
+
+            # Idempotence renforcée : les versions précédentes pouvaient créer un
+            # utilisateur par seed locale, puis essayer d'en créer un second par
+            # core_user_id avec le même code. On rapproche maintenant l'existant.
+            obj = None
+            if core_id is not None:
+                obj = TpUser.objects.filter(core_user_id=core_id).first()
+            if obj is None and code:
+                obj = TpUser.objects.filter(code=code).first()
+            if obj is None and username:
+                obj = TpUser.objects.filter(username=username).first()
+
+            created = False
+            if obj is None:
+                obj = TpUser(core_user_id=core_id, code=code, username=username)
+                created = True
+            elif core_id is not None and not obj.core_user_id:
+                obj.core_user_id = core_id
+
             obj.code = code
             obj.username = username
             obj.first_name = item.get('first_name') or ''
@@ -54,7 +73,6 @@ def sync_users_from_lp_core(timeout=90, force_password=False, core_user_id=None)
         except Exception as exc:
             report['errors'].append(f"{item.get('username') or item.get('code')}: {exc}")
     return report
-
 
 def sync_formations_from_lp_core(timeout=90):
     url = settings.LP_CORE_API_URL.rstrip('/') + '/api/formations/'
@@ -96,16 +114,44 @@ def sync_formations_from_lp_core(timeout=90):
 
 
 def sync_systems_from_system_manager(timeout=30):
-    url = settings.SYSTEM_MANAGER_API_URL.rstrip('/') + '/api/systems/'
-    response = requests.get(url, headers=_headers(), timeout=timeout)
-    response.raise_for_status()
+    base = settings.SYSTEM_MANAGER_API_URL.rstrip('/')
+    candidates = [f'{base}/api/systems/']
+    if not base.endswith('/system'):
+        candidates.append(f'{base}/system/api/systems/')
+
+    response = None
+    last_error = None
+    for url in candidates:
+        try:
+            response = requests.get(url, headers=_headers(), timeout=timeout, allow_redirects=False)
+            if response.status_code in {301, 302, 303, 307, 308}:
+                last_error = f'{url} redirige vers {response.headers.get("Location", "destination inconnue")}'
+                continue
+            response.raise_for_status()
+            break
+        except requests.RequestException as exc:
+            last_error = str(exc)
+            response = None
+    else:
+        return {'created': 0, 'updated': 0, 'errors': [f'API System Manager indisponible : {last_error or "aucune réponse"}']}
+
     data = response.json().get('results', [])
     report = {'created': 0, 'updated': 0, 'errors': []}
     now = timezone.now()
     for item in data:
         try:
             code = item.get('code') or str(item.get('id'))
-            obj, created = SystemePedagogiqueRef.objects.get_or_create(system_manager_id=item.get('id'), defaults={'code': code, 'designation': item.get('designation') or code})
+            obj = None
+            if item.get('id') is not None:
+                obj = SystemePedagogiqueRef.objects.filter(system_manager_id=item.get('id')).first()
+            if obj is None:
+                obj = SystemePedagogiqueRef.objects.filter(code=code).first()
+            created = False
+            if obj is None:
+                obj = SystemePedagogiqueRef(system_manager_id=item.get('id'), code=code, designation=item.get('designation') or code)
+                created = True
+            elif item.get('id') is not None and not obj.system_manager_id:
+                obj.system_manager_id = item.get('id')
             obj.code = code
             obj.designation = item.get('designation') or code
             obj.zone_code = item.get('zone_code') or ''

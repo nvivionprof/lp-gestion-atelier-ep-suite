@@ -1,7 +1,7 @@
 {
   "suite_name": "LP Gestion Atelier EP Suite",
-  "version": "V0.0.1-RC1",
-  "name": "LP Gestion Atelier EP Suite — V0.0.1-RC1 exploitation encadrée",
+  "version": "V0.0.1-RC3",
+  "name": "LP Gestion Atelier EP Suite — V0.0.1-RC3 corrections techniques post-RC2",
   "description": "Release candidate centrée sur ToolMag, System Manager minimal et PedaShop, avec ergonomie mobile limitée aux actions terrain : prise de poste, inventaire et photos.",
   "type": "release-candidate-exploitation-ssh-github-wget-postgresql",
   "requires_ssh": true,
@@ -21,6 +21,9 @@
     "suite-admin-agent"
   ],
   "changes": [
+    "RC3 : synchronisation System Manager vers TP Manager non bloquante et sans traceback pendant l’installation.",
+    "RC3 : synchronisation TP Manager idempotente sur les utilisateurs déjà créés par seed.",
+    "RC3 : suppression de la synchronisation post-démo trop précoce pendant install.sh.",
     "Archive : intégration de CHECKSUMS.sha256 et scripts de vérification rapide des fichiers extraits.",
     "Installation : option interactive ou non interactive pour charger une base de démonstration après migrations.",
     "LP Core : ajout d’une page de supervision des bases PostgreSQL des modules.",
@@ -52,7 +55,7 @@
     "url": "/supervision-bases/",
     "scope": "postgresql module databases"
   },
-  "suite_version": "V0.0.1-RC1",
+  "suite_version": "V0.0.1-RC3",
   "web_update_allowed": false,
   "web_database_backup_restore_allowed": true,
   "features": [
@@ -76,7 +79,7 @@
   },
   "demo_data_policy": "install-only",
   "rc_status": "release_candidate",
-  "release_stage": "RC1",
+  "release_stage": "RC3",
   "production_scope": {
     "priority_modules": [
       "toolmag",

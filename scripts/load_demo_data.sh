@@ -50,8 +50,12 @@ run_manage tpmanager-app seed_evaluation_demo || true
 log "PFMP Manager : démo / référentiels"
 run_manage pfmp-app seed_pfmp_manager || true
 
-log "Synchronisation post-démo vers les modules"
-for svc in toolmag-app safety-app pedashop-app system-manager-app tpmanager-app pfmp-app; do
-  exec_manage "$svc" sync_lp_core_users || true
-done
+if [ "$FROM_INSTALL" = "1" ]; then
+  log "Synchronisation post-démo différée : elle sera exécutée après le démarrage final des services par install.sh."
+else
+  log "Synchronisation post-démo vers les modules"
+  for svc in toolmag-app safety-app pedashop-app system-manager-app tpmanager-app pfmp-app; do
+    exec_manage "$svc" sync_lp_core_users || true
+  done
+fi
 log "Chargement démo terminé."
