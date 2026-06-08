@@ -1,4 +1,5 @@
 FROM python:3.12-slim
+ENV PIP_ROOT_USER_ACTION=ignore
 
 # Les paquets système sont volontairement limités : l’application doit rester légère,
 # portable et facile à auditer sur un serveur d’établissement.
