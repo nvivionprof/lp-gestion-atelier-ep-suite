@@ -167,7 +167,7 @@ a1423c5a8fec1ecf7f30578fe13991baef8e84a911323fb23f9047b455bf158b  ./lp-core-app/
 8126ded18aa504f4a7a5efcaededb0796922b5ce4d9fd5a2676069708dc8d119  ./lp-core-app/core/templates/core/about.html
 df557416cdfff59190f7bede4bba45ab7fc7f764190b913364d49663b223c0ea  ./lp-core-app/core/templates/core/atelier_blocks.html
 ab420e7ea203dece52c400479b2ffb8e253bbfd4fd5a8ed020a9e41a90ef04e2  ./lp-core-app/core/templates/core/backup_restore.html
-8a10c539152ccdefc3f88f150adc220fa715a588634aa2e66df2b07a1ce47488  ./lp-core-app/core/templates/core/base.html
+7b273cfb04952837fb8e7e03e5f14274d862ecb4ff746c0103dd2eed6d669db2  ./lp-core-app/core/templates/core/base.html
 0ea143f65ca6817dbd93664eda6b151a443c790245221dc223234ce0b8312fb5  ./lp-core-app/core/templates/core/bulk_permissions.html
 7867159cc13ebde6855cc8a09c0db9fedfca2fb8d31bbb5f1248eb94a17d41db  ./lp-core-app/core/templates/core/classes.html
 1829538f9febbc5b12618979ee412a69e1e29ff6e9d33ca623dc76077b1ab4d7  ./lp-core-app/core/templates/core/dashboard.html

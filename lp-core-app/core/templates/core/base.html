@@ -17,7 +17,10 @@
       <a href="{% url 'core_my_account' %}">Ma fiche</a>
       <details class="nav-dropdown"><summary>Applications</summary><div>
         <a href="{% url 'core_dashboard' %}">LP Core</a>
+        <details class="nav-dropdown"><summary>Applications</summary><div>
+        <a href="{% url 'core_dashboard' %}">LP Core</a>
         {% for module in suite_modules %}<a href="{{ module.url }}">{{ module.name }}</a>{% endfor %}
+      </div></details>
       </div></details>
       {% if core_current_user.is_admin_like %}
         <details class="nav-dropdown"><summary>Administration</summary><div>
