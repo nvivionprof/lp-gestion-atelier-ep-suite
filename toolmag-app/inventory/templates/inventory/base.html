@@ -19,12 +19,19 @@
     <a href="{% url 'dashboard' %}">Tableau de bord</a>
     <a href="{% url 'equipment_list' %}">Inventaire</a>
     <a href="{% url 'display_current_loans' %}">Affichage dynamique</a>
+    <details class="admin-dropdown">
+      <summary>Applications</summary>
+      <div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier">
+        {% for app in SUITE_APP_LINKS %}
+          <a class="admin-menu-item" href="{{ app.url }}">{{ app.name }}</a>
+        {% endfor %}
+      </div>
+    </details>
     <a href="{% url 'dnl_glossary' %}">Glossaire DNL</a>
     {% if tm_is_prof %}
       <details class="admin-dropdown">
         <summary>Fonctions admin</summary>
         <div class="admin-dropdown-menu" aria-label="Fonctions administrateur ToolMag">
-          <a class="admin-menu-item" title="Retour LP Core" href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core élèves</a>
           <a class="admin-menu-item" title="Utilisateurs synchronisés" href="{% url 'users_management' %}">Utilisateurs synchronisés</a>
           <span class="admin-menu-separator"></span>
           <a class="admin-menu-item" title="Évaluation" href="{% url 'evaluation_dashboard' %}">Évaluation</a>
@@ -32,16 +39,14 @@
           <a class="admin-menu-item" title="Terminaux" href="{% url 'terminals_management' %}">Terminaux</a>
           <a class="admin-menu-item" title="Forçage casier" href="{% url 'locker_force' %}">Forçage casier</a>
           <a class="admin-menu-item" title="Synchroniser LP Core" href="{% url 'sync_core_users' %}">Synchroniser LP Core</a>
-          <a class="admin-menu-item" title="Sauvegardes" href="{% url 'backups_management' %}">Sauvegardes</a>
-          <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
           <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
         </div>
       </details>
     {% endif %}
     {% if request.session.borrower_code or request.session.storekeeper_code %}
       <span class="role-indicators" aria-label="Rôles actifs ToolMag">
-        {% if request.session.borrower_code %}<a class="role-pill" href="{% url 'user_logout' %}" title="Déconnexion utilisateur">Utilisateur : {{ request.session.borrower_code }}</a>{% endif %}
-        {% if request.session.storekeeper_code %}<a class="role-pill role-storekeeper" href="{% url 'storekeeper_logout' %}" title="Déconnexion magasinier">Magasinier : {{ request.session.storekeeper_code }}</a>{% endif %}
+        {% if request.session.borrower_code %}<a class="role-pill" href="{% url 'user_logout' %}" title="Déconnexion utilisateur">Utilisateur : {{ tm_current_borrower_label|default:request.session.borrower_code }}</a>{% endif %}
+        {% if request.session.storekeeper_code %}<a class="role-pill role-storekeeper" href="{% url 'storekeeper_logout' %}" title="Déconnexion magasinier">Magasinier : {{ tm_current_storekeeper_label|default:request.session.storekeeper_code }}</a>{% endif %}
       </span>
     {% else %}
       <a href="{% url 'user_login' %}">Connexion utilisateur</a>

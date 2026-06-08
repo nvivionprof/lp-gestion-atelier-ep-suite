@@ -3,7 +3,7 @@ from django.core import signing
 from urllib.parse import quote
 from .models import CoreUser, CoreModuleAccessRule, PublicSuiteSettings
 
-SUITE_VERSION_LABEL = 'Bêta 2 V0.0.2'
+SUITE_VERSION_LABEL = 'RC V0.0.1'
 
 MODULE_DEFINITIONS = [
     {'code': 'toolmag', 'name': 'ToolMag', 'subtitle': 'Magasin outillage', 'version': SUITE_VERSION_LABEL, 'url_attr': 'TOOLMAG_PUBLIC_BASE_URL', 'icon': 'core/img/logo-toolmag-launcher.png', 'default_roles': {'eleve', 'utilisateur', 'magasinier', 'professeur', 'responsable', 'admin'}},

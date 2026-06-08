@@ -15,7 +15,10 @@
     {% if core_current_user %}
       <a href="{% url 'core_dashboard' %}">Portail</a>
       <a href="{% url 'core_my_account' %}">Ma fiche</a>
-      {% for module in suite_modules %}<a href="{{ module.url }}">{{ module.name }}</a>{% endfor %}
+      <details class="nav-dropdown"><summary>Applications</summary><div>
+        <a href="{% url 'core_dashboard' %}">LP Core</a>
+        {% for module in suite_modules %}<a href="{{ module.url }}">{{ module.name }}</a>{% endfor %}
+      </div></details>
       {% if core_current_user.is_admin_like %}
         <details class="nav-dropdown"><summary>Administration</summary><div>
           <a href="{% url 'core_users_list' %}">Utilisateurs</a>
@@ -28,10 +31,8 @@
           <a href="{% url 'core_bulk_permissions' %}">Actions par lot</a>
           <a href="{% url 'core_rgpd' %}">RGPD</a>
           <a href="{% url 'core_public_settings' %}">URLs / HTTPS</a>
-          <a href="{% url 'core_suite_updates' %}">Mises à jour</a>
           <a href="{% url 'core_backup_restore' %}">Sauvegardes</a>
           <a href="{% url 'core_database_supervision' %}">Supervision bases</a>
-          <a href="{% url 'sql_database_admin' %}">Base SQL</a>
         </div></details>
       {% endif %}
       <a href="{% url 'core_logout' %}">Déconnexion {{ core_current_user.username }}</a>

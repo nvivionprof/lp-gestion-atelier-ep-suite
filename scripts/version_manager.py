@@ -9,7 +9,7 @@ Règle projet :
 - noop    : version cible <= version installée.
 
 Le suffixe -RCn est inférieur à la version finale correspondante :
-V0.0.1-RC1 < V0.0.1.
+V0.0.1-RC6 < V0.0.1.
 """
 from __future__ import annotations
 import json

@@ -1,7 +1,7 @@
-e70a1101d592d2c63e62d96eebc25a2217f00af66cfb0c2229443427439017ae  ./.env.example
+20a9947fa0116d1f4daa5e430bcb343324d65d3c04e3f6984078f6acc6b5da1c  ./.env.example
 36333fc87ca41d6544553c2e038751c6d36ebde728e92d5a4f3e41c0323f7f91  ./.gitattributes
 6bd5cc399cf26339422dec3485e7c2b65e9765342d210b5c4459b362b5aac0a1  ./.gitignore
-053920c936da5ea23c4d03b3395af9e51490a1b33a50a614e8e1b209616299db  ./.suite-target-version
+77021547e979a83b11ab4eb1eb19d8e510a5ee38a529e2f9f15d051bc47d07f4  ./.suite-target-version
 e77f785f6d4f620d12527bff165f4a72fcc240ba29b33ac2ffd3ba79bd3296d4  ./BOOTSTRAP-WGET.md
 7b13f34451b14bf1cd9255b4776357587ed6af2c9da404e47c0654aac27e4216  ./CHANGELOG_BETA2.md
 8822202a4e93ddb889e3416fd17bc0e6b3589ead139dab7475ef4e19209b8d48  ./CHECKLIST_RECETTE_RC_V0_0_1.md
@@ -16,12 +16,13 @@ f1efd651c051edc5843beab7a670419485b2c0ec81bebdee084c4e4784abf6a8  ./README.md
 b9e2218ef0ad4ddb3fb933a5f850aed51b4de99154d0217d18dd0d0a669ce0ef  ./README_V0_0_1_RC4_PATCH.md
 7bb6eec2d06c6a47e72627ef52079a620c57b09bc0a5d275cf7790a58a99a18d  ./README_V0_0_1_RC5_PATCH.md
 becb9531a1133ea113925d413fe95752ee917f14daab894d85ce0969648df22c  ./SUIVI_TECHNIQUE_SUITE.md
-053920c936da5ea23c4d03b3395af9e51490a1b33a50a614e8e1b209616299db  ./VERSION
-053920c936da5ea23c4d03b3395af9e51490a1b33a50a614e8e1b209616299db  ./VERSION.txt
+77021547e979a83b11ab4eb1eb19d8e510a5ee38a529e2f9f15d051bc47d07f4  ./VERSION
+77021547e979a83b11ab4eb1eb19d8e510a5ee38a529e2f9f15d051bc47d07f4  ./VERSION.txt
 2f2eb5bb17aef3400de6a26664d0ab37dfba0443a9eaf68c150bda35ba021523  ./apply_rc2_fixes.sh
 5e89f72ca5a303d49275247456b5918eec00acbf551a41ec721f048b20414fe6  ./apply_v0_0_1_rc3_fixes.sh
 6eaf8beeda8d14471795ba09ed61c5366a27829419aec92d5b0f6ee8b2dd4fb3  ./apply_v0_0_1_rc4_clean_fixes.sh
 2f2421dd92e067881495929f72fefb47d9c6188e449452550d524cf245dd6fba  ./apply_v0_0_1_rc5_final_clean.sh
+6e400e6ffea11d491eb7c3132ce11778496ff511bbcf42fe64a47dfed85c2a16  ./apply_v0_0_1_rc6_fix2.sh
 0de32be9fdec7dd3ba8c2257aa1d75c6010838b82c8ed12b323571369724659a  ./consumables-app/index.html
 1529d5258ec8460c8a98085dd45455aecb615b24a0b319203f887edfbedc50bc  ./demo/toolmag-demo-db.sqlite3
 3fea0909ae6439c64fde5e9c8039aab585f4eb102c0d1218f5e2a72a96a793b6  ./docker-compose.yml
@@ -116,7 +117,7 @@ cea3ebc63e5c0d544a50eed217bc3a683c14c986d1195b62c622a3ca9e311805  ./docs/upgrade
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./lp-core-app/core/__init__.py
 49d07e8f248ff60868d23a9c8ada1d6013fa4a10b66fe430d75ce8a8570a0df6  ./lp-core-app/core/admin.py
 36c393541861f618251fd73c5f4904b1ff0a00bb21b79ad6c0e28f6d91ca2567  ./lp-core-app/core/apps.py
-2b0e4bfdc4941f868de66f35e545f98068621ada2335d19d79c04b62169da8fa  ./lp-core-app/core/context_processors.py
+483a8d73362e99f6614a622aba4d7d18e60e200863554af11e763ac0a06dd5da  ./lp-core-app/core/context_processors.py
 18b3e5299d562eee408e8967a5ba182f03e19497243c6a7d8e6b58914d8cc57a  ./lp-core-app/core/db_sql_admin.py
 17c1aeb387f1e447ae083e3bd54f8ffd3e58342cf45c0738c3aa584ee585ab32  ./lp-core-app/core/db_supervision.py
 ce73c9de8c42c6df2cc1ad64ac05d528b3dccba72a5fbe56af650468b265753d  ./lp-core-app/core/importers.py
@@ -166,7 +167,7 @@ a1423c5a8fec1ecf7f30578fe13991baef8e84a911323fb23f9047b455bf158b  ./lp-core-app/
 8126ded18aa504f4a7a5efcaededb0796922b5ce4d9fd5a2676069708dc8d119  ./lp-core-app/core/templates/core/about.html
 df557416cdfff59190f7bede4bba45ab7fc7f764190b913364d49663b223c0ea  ./lp-core-app/core/templates/core/atelier_blocks.html
 ab420e7ea203dece52c400479b2ffb8e253bbfd4fd5a8ed020a9e41a90ef04e2  ./lp-core-app/core/templates/core/backup_restore.html
-151a7a63d3d20c5fd96d7e870d940776666b1d2a6e98b4f9a34d4e1353bd51c2  ./lp-core-app/core/templates/core/base.html
+8a10c539152ccdefc3f88f150adc220fa715a588634aa2e66df2b07a1ce47488  ./lp-core-app/core/templates/core/base.html
 0ea143f65ca6817dbd93664eda6b151a443c790245221dc223234ce0b8312fb5  ./lp-core-app/core/templates/core/bulk_permissions.html
 7867159cc13ebde6855cc8a09c0db9fedfca2fb8d31bbb5f1248eb94a17d41db  ./lp-core-app/core/templates/core/classes.html
 1829538f9febbc5b12618979ee412a69e1e29ff6e9d33ca623dc76077b1ab4d7  ./lp-core-app/core/templates/core/dashboard.html
@@ -187,12 +188,12 @@ ccfcd6fa6bd0105a0193363ea72b461b13f3bd334eee9211683254484f893abd  ./lp-core-app/
 e7c82eaadd7ba37700802ebf723bcf747389d07b45e8a5129a5f0da3fde2288a  ./lp-core-app/core/views.py
 e4d42cbda8639499a40a49bbe45245b2357de059aa86abb0193f92f913b062f3  ./lp-core-app/docker-entrypoint.sh
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./lp-core-app/lp_core_project/__init__.py
-184caaff9098ab6b38d0939e734d1273f4ca07121904201c26c00666c4f58ea1  ./lp-core-app/lp_core_project/settings.py
-f640adf773a5549c11c246ff7887df028a6d0f329bf07471ca90cb69e886bb63  ./lp-core-app/lp_core_project/urls.py
+3a5b3741e7c69f917c156bfb4466bf53315c55f06d6169380fb5d0303c92874a  ./lp-core-app/lp_core_project/settings.py
+37b9d9205200a1746b2870b30b24b1be7ec2dee4767da3bbf8618c868e1e6a73  ./lp-core-app/lp_core_project/urls.py
 33e81a9962bc65ddd74da2d93afa368f9701a51e5f0bff06a0ef110c0d53b809  ./lp-core-app/lp_core_project/wsgi.py
 4356ec02a6741ec1b96f7f1a5a87deee6048a0e2c5abcbf609fdd9f8f1c600c1  ./lp-core-app/manage.py
 0b992196940521798b403e0e6a143c2a814bd650d8b67d5c92ddf894b07eeae8  ./lp-core-app/requirements.txt
-c2ddc1f8abc4862bd062fed3c9e7f0506c8a7c9caf7c425d3d6bb89fd3adae07  ./manifest.json
+25730bf7d5128cf3b69a6a3ca3a27196a2c38e3eff6bb111937a693027566d70  ./manifest.json
 30d188267f977e4b1d80157568ad8a2a284ed849ce6845a85eaa425649c037b5  ./nginx/Dockerfile
 9bf39e70175286184a614441435b4e14717088a602e651b2557f00c9c22dc4d6  ./nginx/entrypoint.sh
 7d7624154bf399f90a3fa361830149e321b6c9a2eada0cb077187cbd3727b7e4  ./pedashop-app/Dockerfile
@@ -421,7 +422,7 @@ c778bc476b93582972f3c63442b262949074621277ae6f6b9ed030db0f77fc68  ./scripts/upda
 e442b4c5bf35323b9377a1e2cd558fc20d7418e945c45f114b9cea682cc01631  ./scripts/update_module_safe.sh
 3e3ead71a85a8a2f018acf10b4989f6277ef7a7544ee94516652e3aaf7ca2e1e  ./scripts/verify_checksums.sh
 7b09211c503ff3026922446e7722b1dd6f5fce2d6472ea66d85a1ae1a6513ee5  ./scripts/verify_portal_routes.sh
-ecf5da64596c8bb531e3a7214ce18463b63c8b02cfb1057d1c9838dad7c1ecce  ./scripts/version_manager.py
+cab3d40b143dc408fe45bc58384cd0bcf6577cce904632b70ae604438102e94b  ./scripts/version_manager.py
 2551adbaa652432ed9d89ddee04f4e5dc46fa72d4c820da64b04f0e2c948c56d  ./scripts/web_upgrade_from_zip.sh
 7358db9ced676182c4fc17614036e3c0e36b22fc1db0ce480b24aa99633390fc  ./shared-camera/README.md
 b9e8ecc3db6271ff06af5453185e9baaaca80b3eaa7c417712d575a00317ef6b  ./shared-camera/camera_upload.js
@@ -523,7 +524,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./toolmag-app/
 48237a07d1d8b56584e1df4e1da0efd5d0a62ae049d2b5f34aedf39d6f38ef8b  ./toolmag-app/inventory/admin.py
 1d6193cbac8540c787b964b1688d90eb70fea48886dca9cc6221c641c0bac7b8  ./toolmag-app/inventory/apps.py
 6998f56e5a5a88c88ef92a55f0fb23c4fab25729ce6cf9251d60605d56eec991  ./toolmag-app/inventory/backup_utils.py
-8ac7393fbd93ea0482cfc1fe4cdcd70b451b05c82e2357f6eaedca94c63238a1  ./toolmag-app/inventory/context_processors.py
+4b21f225a984c403ecb6a638f33369d560d7b9d8e8704f0cd13db6f76fc059a7  ./toolmag-app/inventory/context_processors.py
 17430b37bab1daf8543bd0aa3a31f5a5a0f9f2ec88efed7c1be328d3b08c607d  ./toolmag-app/inventory/core_sync.py
 18b3e5299d562eee408e8967a5ba182f03e19497243c6a7d8e6b58914d8cc57a  ./toolmag-app/inventory/db_sql_admin.py
 43fe7fc9f233a27cd8c9f9a173dc54e336fd5625bada9c869aff835bebd521e8  ./toolmag-app/inventory/forms.py
@@ -564,7 +565,7 @@ d8629bb63f5bac271696b1ce3cff4ae3f3aace9b1b7593e99aac2015616aebe5  ./toolmag-app/
 4520accb0c43d7befc82f740146522c179840de29743894866862ff8b8b6e2e8  ./toolmag-app/inventory/templates/inventory/_locker_button.html
 a3120c626a2877b26c7a7d24ac2fdc7da2de4be7d6fdf8305fc0b1b3a119c92d  ./toolmag-app/inventory/templates/inventory/about.html
 e2964e70d400966eddfde58f8330eed8d7ad80bed6ff2f4bcc20540b58408f39  ./toolmag-app/inventory/templates/inventory/backups_management.html
-e26ad4e987cb0f26610688501cec147790c2efd54a7ef2ab90123055024d1455  ./toolmag-app/inventory/templates/inventory/base.html
+c71d17754faa671d12e428f97333ad65ab9c72bbde6e69a673ee7d07512a6041  ./toolmag-app/inventory/templates/inventory/base.html
 ec059a0019924f9602fc9565f9854e5b66d4f09c06e78dfce29727dcb7278d35  ./toolmag-app/inventory/templates/inventory/change_password.html
 65de6f4f0cae7460433694bcfe787b3fe00a4aa99e2ec2de9e9ba48f0cb9bb6d  ./toolmag-app/inventory/templates/inventory/checkout.html
 f7e4b8247381f2f6d27631456ac13c8fb6dfd9289a6d7050602b4caab9c52d6f  ./toolmag-app/inventory/templates/inventory/dashboard.html
@@ -598,7 +599,7 @@ d33dc7cbd16a06bbae28e1081daf1e28ec770149ed1e5eb2a32bcc5e9436e7b3  ./toolmag-app/
 ae56e8711d6ddb9a23795d9ff34fc068043527f898d7f3296095e53428d3410c  ./toolmag-app/inventory/templates/inventory/user_login.html
 8561b4f629e8189bd765bc4a31689ad08a64d03bf5e4d5e52a6957ab01befb24  ./toolmag-app/inventory/templates/inventory/users_import.html
 a876c54a9081576000e78599dc0147bd070d53e5720e539774b350bd75e87cfb  ./toolmag-app/inventory/templates/inventory/users_management.html
-2fd9c6831bf38f7db5fa1868cc5e35d90079093132c2c0605721e40055735308  ./toolmag-app/inventory/urls.py
+2880567b8338c45f3a020f28b17e0f0c1c29f3c69b7c370b4423cbeecba3b8dd  ./toolmag-app/inventory/urls.py
 d7445fefcf2bdb8182fffcaad90d1c5a6830c5629b8a6e443a9e3d3930195cce  ./toolmag-app/inventory/views.py
 d0ab4ce88090c8a59d53e4ff1a21cec8c341ff9d7ec9525a5ab91bc99a27eb9f  ./toolmag-app/manage.py
 c7302fa937b54c5e7436e4225eb28ba0ef823ee423f3cf5ef3d3e5d80b104584  ./toolmag-app/nginx/default.conf

@@ -70,7 +70,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LP_CORE_API_TOKEN = os.getenv('LP_CORE_API_TOKEN', 'dev-token-change-me')
 LP_CORE_PUBLIC_NAME = os.getenv('LP_CORE_PUBLIC_NAME', 'LP Gestion Atelier EP Suite')
-LP_CORE_VERSION = os.getenv('LP_CORE_VERSION', 'LP Core — Bêta 2 V0.0.2')
+LP_CORE_VERSION = os.getenv('LP_CORE_VERSION', 'LP Core — RC V0.0.1')
 LP_CORE_EXPOSE_INITIAL_PASSWORD_FOR_SYNC = os.getenv('LP_CORE_EXPOSE_INITIAL_PASSWORD_FOR_SYNC', '1') == '1'
 MODULE_SYNC_TIMEOUT_SECONDS = int(os.getenv('MODULE_SYNC_TIMEOUT_SECONDS', '90'))
 
