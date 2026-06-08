@@ -70,5 +70,6 @@ urlpatterns = [
     path('api/tps/', views.api_tps, name='system_api_tps'),
     path('api/sous-zones/', views.api_subzones, name='system_api_subzones'),
     path('api/systems/', views.api_systems, name='system_api_systems'),
+    path('system/api/systems/', views.api_systems, name='system_api_systems_prefixed'),
     path('api/calendar/events/', views.api_calendar_events, name='system_api_calendar_events'),
 ]

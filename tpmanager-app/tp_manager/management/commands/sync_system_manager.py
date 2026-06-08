@@ -9,6 +9,6 @@ class Command(BaseCommand):
         report = sync_systems_from_system_manager()
         errors = report.get('errors') or []
         if errors:
-            self.stdout.write(self.style.WARNING(f'Synchronisation System Manager partielle/non bloquante : {report}'))
+            self.stdout.write(self.style.WARNING('Synchronisation System Manager partielle/non bloquante : API indisponible ou aucune donnée synchronisable.'))
         else:
             self.stdout.write(self.style.SUCCESS(f'Systèmes synchronisés : {report}'))

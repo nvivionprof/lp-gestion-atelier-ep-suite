@@ -115,9 +115,11 @@ def sync_formations_from_lp_core(timeout=90):
 
 def sync_systems_from_system_manager(timeout=30):
     base = settings.SYSTEM_MANAGER_API_URL.rstrip('/')
-    candidates = [f'{base}/api/systems/']
-    if not base.endswith('/system'):
-        candidates.append(f'{base}/system/api/systems/')
+    # En interne Docker, l'application doit normalement être appelée sans le préfixe
+    # public /system. On sécurise toutefois les deux cas pour éviter les 404 en
+    # installation neuve lorsque APP_URL_PREFIX est actif.
+    internal_base = base[:-len('/system')] if base.endswith('/system') else base
+    candidates = [f'{internal_base}/api/systems/', f'{internal_base}/system/api/systems/']
 
     response = None
     last_error = None

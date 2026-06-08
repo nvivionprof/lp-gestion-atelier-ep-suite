@@ -1,7 +1,7 @@
 e70a1101d592d2c63e62d96eebc25a2217f00af66cfb0c2229443427439017ae  ./.env.example
 36333fc87ca41d6544553c2e038751c6d36ebde728e92d5a4f3e41c0323f7f91  ./.gitattributes
 6bd5cc399cf26339422dec3485e7c2b65e9765342d210b5c4459b362b5aac0a1  ./.gitignore
-49836dd744729fd49bdd90c551f7fced7f6b6b7eb17d35379b3449172dec6ec8  ./.suite-target-version
+053920c936da5ea23c4d03b3395af9e51490a1b33a50a614e8e1b209616299db  ./.suite-target-version
 e77f785f6d4f620d12527bff165f4a72fcc240ba29b33ac2ffd3ba79bd3296d4  ./BOOTSTRAP-WGET.md
 7b13f34451b14bf1cd9255b4776357587ed6af2c9da404e47c0654aac27e4216  ./CHANGELOG_BETA2.md
 8822202a4e93ddb889e3416fd17bc0e6b3589ead139dab7475ef4e19209b8d48  ./CHECKLIST_RECETTE_RC_V0_0_1.md
@@ -14,12 +14,14 @@ f1efd651c051edc5843beab7a670419485b2c0ec81bebdee084c4e4784abf6a8  ./README.md
 1cdb4ae271d5160ca1fa21a8e6355aeb5bedf70369dc7b48a0ff524bff67c5ab  ./README_RC2_PATCH.md
 384cfdeb4f2a9a90cd5ac7f6b7a62e0efe3071b36d9386142ef4579aafe30361  ./README_V0_0_1_RC3_PATCH.md
 b9e2218ef0ad4ddb3fb933a5f850aed51b4de99154d0217d18dd0d0a669ce0ef  ./README_V0_0_1_RC4_PATCH.md
+7bb6eec2d06c6a47e72627ef52079a620c57b09bc0a5d275cf7790a58a99a18d  ./README_V0_0_1_RC5_PATCH.md
 becb9531a1133ea113925d413fe95752ee917f14daab894d85ce0969648df22c  ./SUIVI_TECHNIQUE_SUITE.md
-49836dd744729fd49bdd90c551f7fced7f6b6b7eb17d35379b3449172dec6ec8  ./VERSION
-49836dd744729fd49bdd90c551f7fced7f6b6b7eb17d35379b3449172dec6ec8  ./VERSION.txt
+053920c936da5ea23c4d03b3395af9e51490a1b33a50a614e8e1b209616299db  ./VERSION
+053920c936da5ea23c4d03b3395af9e51490a1b33a50a614e8e1b209616299db  ./VERSION.txt
 2f2eb5bb17aef3400de6a26664d0ab37dfba0443a9eaf68c150bda35ba021523  ./apply_rc2_fixes.sh
 5e89f72ca5a303d49275247456b5918eec00acbf551a41ec721f048b20414fe6  ./apply_v0_0_1_rc3_fixes.sh
 6eaf8beeda8d14471795ba09ed61c5366a27829419aec92d5b0f6ee8b2dd4fb3  ./apply_v0_0_1_rc4_clean_fixes.sh
+2f2421dd92e067881495929f72fefb47d9c6188e449452550d524cf245dd6fba  ./apply_v0_0_1_rc5_final_clean.sh
 0de32be9fdec7dd3ba8c2257aa1d75c6010838b82c8ed12b323571369724659a  ./consumables-app/index.html
 1529d5258ec8460c8a98085dd45455aecb615b24a0b319203f887edfbedc50bc  ./demo/toolmag-demo-db.sqlite3
 3fea0909ae6439c64fde5e9c8039aab585f4eb102c0d1218f5e2a72a96a793b6  ./docker-compose.yml
@@ -189,8 +191,8 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./lp-core-app/
 f640adf773a5549c11c246ff7887df028a6d0f329bf07471ca90cb69e886bb63  ./lp-core-app/lp_core_project/urls.py
 33e81a9962bc65ddd74da2d93afa368f9701a51e5f0bff06a0ef110c0d53b809  ./lp-core-app/lp_core_project/wsgi.py
 4356ec02a6741ec1b96f7f1a5a87deee6048a0e2c5abcbf609fdd9f8f1c600c1  ./lp-core-app/manage.py
-b05f45af081195f54bb3c3e0f1a5aa6f456aaf645eedd2dee8bbf24046c79b3c  ./lp-core-app/requirements.txt
-e44b4b6c3029c813b99d58f8ffeef1052d22be5edd4ab104add50b4d57d85cf5  ./manifest.json
+0b992196940521798b403e0e6a143c2a814bd650d8b67d5c92ddf894b07eeae8  ./lp-core-app/requirements.txt
+c2ddc1f8abc4862bd062fed3c9e7f0506c8a7c9caf7c425d3d6bb89fd3adae07  ./manifest.json
 246b61d3ad9835858b5f772c0cd134d0ca5c3c8e0d03c0194a3f8d7ea7d72318  ./nginx/Dockerfile
 9bf39e70175286184a614441435b4e14717088a602e651b2557f00c9c22dc4d6  ./nginx/entrypoint.sh
 d65029e966c532f7ba4fc0c2f9f388ab28e741297d10207362e175dd1b99913d  ./pedashop-app/Dockerfile
@@ -264,7 +266,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./pedashop-app
 35ce03cb812cf8dbe2fbfba82cbd94ec011df58728f0a69547e4f35d4f01d346  ./pedashop-app/pedashop_project/settings.py
 8831757c0a516c1cec771be7e211a06a803d014fc20592d1806be4da17ab237b  ./pedashop-app/pedashop_project/urls.py
 d597a1551aa5bd09183f108011f537e70270ac250325a330210e75317c20f8e5  ./pedashop-app/pedashop_project/wsgi.py
-c4f0cff7b7e41bd23204717e42e0c2499afc5a229ecb8bc62f72e36c55a6965b  ./pedashop-app/requirements.txt
+cbec3f5738243856c3b4491d8e4509605031365e45273efb7e507529096709d1  ./pedashop-app/requirements.txt
 175d2c58aeb05853023cd661153a7c59f68bd43c3373932149350c2441ff1dc0  ./pfmp-app/Dockerfile
 0acbfb1af3176698c60e24956f544da3af26cad6fa5920dc43cd2235d7072ddc  ./pfmp-app/docker-entrypoint.sh
 325ede932f44bf0c3f0be1f88064690664a3b1e658d5c839e0d4d49e1b066115  ./pfmp-app/manage.py
@@ -302,11 +304,11 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./pfmp-app/pfm
 ae2441eef10dab9b66e9c4229e157d23ad24d60ba5360eea341c00ee951f9d35  ./pfmp-app/pfmp_project/settings.py
 d6d6a8b5b1488d5622fa3ee5ac118faa7bcf834b6d0b9adfa420eb7e2e57e5ca  ./pfmp-app/pfmp_project/urls.py
 3205e3e243d2fb63059e9922b2651627e0b305bd34a7e1ca73a06c37dbf6210e  ./pfmp-app/pfmp_project/wsgi.py
-e512d13f786d305d4cf38280c68063d90952db5216bafaa94385145a0d216306  ./pfmp-app/requirements.txt
+edfb63c321c55f3ab28c8018c2e669f87c0124f51c4e27710f94771351c2bafa  ./pfmp-app/requirements.txt
 32758ee64436c6a673a15d1a2422da808c346cd86c64ef7d48b6b581c9779f46  ./safety-app/Dockerfile
 e4d42cbda8639499a40a49bbe45245b2357de059aa86abb0193f92f913b062f3  ./safety-app/docker-entrypoint.sh
 685876d16ed6e4dbad6fa3d028670bb1e8c6302a390ec025dadb5ac2f11ce351  ./safety-app/manage.py
-e42c9c38beb42804f01a8a5cc5f7a949026c4e0aaccd64e1f545976980cf8831  ./safety-app/requirements.txt
+65b75b8e846e4f425a1cb59924b98b3be8b96494c628d8ef13f72d2614865525  ./safety-app/requirements.txt
 cbcb69604e9a88fc713ce8c6f152f43985516132eede3af0eeeacbe66d4b109d  ./safety-app/safety_manager/__init__.py
 8d2871d702a716adfe89516da2ec0fe041720c6df07a15e73344ff434ea6fbf7  ./safety-app/safety_manager/admin.py
 3e690107a1607fa0d5e568bbef29ccdeeba571a40eacf00251df473c40d9bca1  ./safety-app/safety_manager/apps.py
@@ -432,7 +434,7 @@ cd12c0861d7348e9f0823a49e70629ce3690d579516c900fa5e175ae9eacaf84  ./system-manag
 0a3e128e2c49b8dfed01b67094fb3019642d1c03f9827a1e02b3daceb803c1d7  ./system-manager-app/README.md
 e4d42cbda8639499a40a49bbe45245b2357de059aa86abb0193f92f913b062f3  ./system-manager-app/docker-entrypoint.sh
 09fc403d507887ece2559881f404cc6edb2822ef533ee5350284d179bb9de0c8  ./system-manager-app/manage.py
-94e7c3dbd2cb05f8aadc3c5793098c2ed0aa1695a6913a83d81c0ecfaa482b5f  ./system-manager-app/requirements.txt
+3814b07dad618e714711381748077b07244697d9ded7334e272831ceec65c527  ./system-manager-app/requirements.txt
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./system-manager-app/system_manager/__init__.py
 e07bc75d2786bf2c0a104e619517f34018dcd570bfadf49780db1a0c0aed38ae  ./system-manager-app/system_manager/admin.py
 c4826e06daa03c921906710bd10d6ffed35298918e0d5346840007f77253e9a9  ./system-manager-app/system_manager/apps.py
@@ -487,7 +489,7 @@ a47a70fdcef3bf40caa203cfcad870a4adf2a40d1d084147d0cfa8ddb84c2fe6  ./system-manag
 316fa0d5d30fe33a57aa347a2e7d7f3734d2226cf224b12469c9dcfe31647a9a  ./system-manager-app/system_manager/templates/system_manager/temporary_permissions.html
 fda1b23339067109c1541158001c9a90d6ab5c0f3eb2551d27ad6ca1224829e6  ./system-manager-app/system_manager/templates/system_manager/worksession_return.html
 a1b30f3c4f8d60c842129eeda3b017f7697f3b62c70e259b5ce54847be0fd969  ./system-manager-app/system_manager/templates/system_manager/worksession_start.html
-6f7e06d2dda292ac11393e464e2e71a8eef9d7ddc57b7869ed6f5eae3c92498e  ./system-manager-app/system_manager/urls.py
+73d7c1ed8fd6bee0af6cdbae463fe0e472edeee18eb9e91926d163da24aa8509  ./system-manager-app/system_manager/urls.py
 8412e041ba42013f8ba710820ac08860380a5097b4025c3f2a6f9f9a286c1a6f  ./system-manager-app/system_manager/views.py
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./system-manager-app/system_project/__init__.py
 6a2e3d4d5e4bd7238e9a8146ef7fa296e16102d5e23d77a15e5dfd102ec440d6  ./system-manager-app/system_project/asgi.py
@@ -600,7 +602,7 @@ a876c54a9081576000e78599dc0147bd070d53e5720e539774b350bd75e87cfb  ./toolmag-app/
 d7445fefcf2bdb8182fffcaad90d1c5a6830c5629b8a6e443a9e3d3930195cce  ./toolmag-app/inventory/views.py
 d0ab4ce88090c8a59d53e4ff1a21cec8c341ff9d7ec9525a5ab91bc99a27eb9f  ./toolmag-app/manage.py
 c7302fa937b54c5e7436e4225eb28ba0ef823ee423f3cf5ef3d3e5d80b104584  ./toolmag-app/nginx/default.conf
-8be7aaa9490248ffd7c950d6c40a0d58b14817e2d983b7d22c467ba675d2423b  ./toolmag-app/requirements.txt
+e522e5cba729a121d152c8af88e4e48636743606d83ad6780c3f0821bf85342d  ./toolmag-app/requirements.txt
 b7e2e57754887b04b848b3ef06b5181ed7c68629bd10023aa5383e5d168d50cc  ./toolmag-app/scripts/generate_self_signed_cert.sh
 2965730364575b2146166c7d771a0395a3a3954f492632573a14d34bcc370ea4  ./toolmag-app/scripts/generate_self_signed_cert_windows.ps1
 3634c972e64d91a87dc2d3084e3fff2528519b837eba8cf7413cfca4cb012548  ./toolmag-app/scripts/locker_post_example.py
@@ -628,7 +630,7 @@ cd15580a6e0eed52d104b6879870f45fdb3fc2cf27eede82b774bfababd43219  ./tpmanager-ap
 688cc9a007778bd24fe88b1235a3798782cc7d0251c2c144577ddaadb0da899c  ./tpmanager-app/evaluation_manager/urls.py
 c0152d9edbba273c9b1dcd4cc599f7617e3f870fc44a1b3e4420078cb224ecd4  ./tpmanager-app/evaluation_manager/views.py
 897fd8a674222480bb9b45cdd7c451a5ca6000760cddb46f26f90d0b797f157b  ./tpmanager-app/manage.py
-b0f276e501fb3c95a05dff917d92b7ba89c76649a456f42de6d0673b2b0db92b  ./tpmanager-app/requirements.txt
+6a3096cc7e8434aabf1a71998e1a6af4c45895916f7f2d6b61107de58ccdcb64  ./tpmanager-app/requirements.txt
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tpmanager-app/sequence_manager/__init__.py
 28d739be895a6429fb66df76098616df71d55954b0cc5364976086620af8d3cd  ./tpmanager-app/sequence_manager/admin.py
 ce8511523b7b195da5486413036daa883a5777f78b14b1341ff3840ba792e933  ./tpmanager-app/sequence_manager/apps.py
@@ -664,7 +666,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./tpmanager-ap
 b160349dd20c29afefd6d24fc5541d9cceedde7a9e2a00537e08b84ff62c3609  ./tpmanager-app/tp_manager/management/commands/seed_tp_manager.py
 fcdd9245a2b8177ac91579a200f8fac3c404e939ac63f765a86a7c19defeedf7  ./tpmanager-app/tp_manager/management/commands/seed_tpmanager_v2.py
 ece81a5f54ca10928e3ada69b75cdd53d7cc2102aaae9dd6e19e59f65959a5d5  ./tpmanager-app/tp_manager/management/commands/sync_lp_core_users.py
-8c59c7d1a1373fdc8a425505ed0eadd9fee8debc286db4809582330c1e99c65f  ./tpmanager-app/tp_manager/management/commands/sync_system_manager.py
+17ce996c4dfaf4d642d38d6b061ebb0a59f25439fd94690c9846d2cc7e51a9fe  ./tpmanager-app/tp_manager/management/commands/sync_system_manager.py
 46fadf122a48f22d11471a0b3e74cb8c219dc74bd66d9e0ebab7874b4e0d3ed0  ./tpmanager-app/tp_manager/migrations/0001_initial.py
 53ce0a3551b2f6fea35f5b700326f961810dca04da9d5b57a0a4582f88d73ef2  ./tpmanager-app/tp_manager/migrations/0002_tpmanager_v2.py
 028807ff96af54cb748076b2f9b0c7a9d0b7ce23b4f7835213e0f3832f260956  ./tpmanager-app/tp_manager/migrations/0003_tpv2_referentiel_mecanique_melec.py
@@ -681,7 +683,7 @@ b9e8ecc3db6271ff06af5453185e9baaaca80b3eaa7c417712d575a00317ef6b  ./tpmanager-ap
 fdeeb0e539dc93bd9154a680a419aae4c518cf04dec55282d856a1cd32dfda8b  ./tpmanager-app/tp_manager/static/tp_manager/img/logo_tpmanager.png
 a1423c5a8fec1ecf7f30578fe13991baef8e84a911323fb23f9047b455bf158b  ./tpmanager-app/tp_manager/static/tp_manager/img/logo_tpmanager.svg
 1cb90445c51e8b10fd744c77fffe1a62877e4b47052f81d5f14a57a9e804138d  ./tpmanager-app/tp_manager/static/tp_manager/tp.css
-bfb2401439b99de06cf8b0e8c43b00934d0116a2724681e78033405acaad1652  ./tpmanager-app/tp_manager/sync.py
+5148db5010518fca021ab136996fdabc7d3e045c8ab96b6f71c7e4bb086c6061  ./tpmanager-app/tp_manager/sync.py
 f7486e02cf168213e72fe5a394115d169173d0cedf2a389d1502f85ebf03d0e7  ./tpmanager-app/tp_manager/templates/tp_manager/about.html
 66f09a7a7a04d99e8b6c1dfa747cedda45f9491542e6451816e6fee4ccac595a  ./tpmanager-app/tp_manager/templates/tp_manager/base.html
 14bde5b07a9285e64627db1b2eda2aea7668db1c7ec7914f952aad38f1612cb3  ./tpmanager-app/tp_manager/templates/tp_manager/dashboard.html
