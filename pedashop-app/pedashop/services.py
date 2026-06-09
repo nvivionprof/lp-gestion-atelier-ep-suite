@@ -337,3 +337,125 @@ def affect_line_to_projection(line):
         except StockArticleMagasin.DoesNotExist:
             pass
     return taken
+
+
+
+@transaction.atomic
+def commit_import_advanced(rows: List[dict], magasin, actor=None, check_stock_consistency: bool = False,
+                           mode: str = 'append_only', key_field: str = 'reference_interne',
+                           ignore_blank: bool = True) -> dict:
+    """Import PedaShop multi-mode.
+
+    Modes :
+    - append_only : ajoute uniquement les absents, ne modifie pas l'existant.
+    - upsert : met à jour selon une clé et ajoute les absents.
+    - replace_all : remplace la base articles/stocks PedaShop, à utiliser avec confirmation côté vue.
+    - simulation : calcule le rapport sans écrire.
+    """
+    from .models import Article, Emplacement, StockArticleMagasin, MouvementStock
+    allowed_keys = {'reference_interne', 'reference_fabricant', 'code_ean', 'designation'}
+    if key_field not in allowed_keys:
+        key_field = 'reference_interne'
+    dry_run = mode == 'simulation'
+    report = {
+        'mode': mode,
+        'key_field': key_field,
+        'created_articles': 0,
+        'updated_articles': 0,
+        'skipped_articles': 0,
+        'created_stocks': 0,
+        'updated_stocks': 0,
+        'deleted_articles': 0,
+        'errors': [],
+        'warnings': [],
+    }
+    if mode == 'replace_all' and not dry_run:
+        report['deleted_articles'] = Article.objects.count()
+        StockArticleMagasin.objects.all().delete()
+        Article.objects.all().delete()
+
+    article_fields = [
+        'reference_fabricant', 'fabricant', 'designation', 'description', 'code_ean', 'unite',
+        'categorie', 'sous_categorie', 'prix_coutant', 'prix_vente', 'tva', 'substituable',
+        'fournisseur', 'marche', 'archive'
+    ]
+    for row in rows:
+        ref = row.get('reference_interne')
+        if not ref:
+            report['errors'].append(f"Ligne {row.get('line')}: code produit manquant")
+            continue
+        key_value = row.get(key_field) or ref
+        qs = Article.objects.filter(**{key_field: key_value})
+        if qs.count() > 1:
+            report['warnings'].append(f"Ligne {row.get('line')}: clé {key_field}={key_value} non unique ; premier article utilisé.")
+        article = qs.first()
+        exists = article is not None
+
+        if exists and mode == 'append_only':
+            report['skipped_articles'] += 1
+            continue
+
+        if check_stock_consistency:
+            detail = row.get('qte_ok', 0) + row.get('qte_use', 0) + row.get('stock_hs', 0)
+            if detail and detail != row.get('stock_reel'):
+                report['warnings'].append(f"Ligne {row.get('line')}: incohérence stock. Stock={row.get('stock_reel')} ; OK+Usé+HS={detail}.")
+
+        if not exists:
+            if dry_run:
+                report['created_articles'] += 1
+                continue
+            article = Article(reference_interne=ref)
+            for f in article_fields:
+                setattr(article, f, row.get(f, getattr(article, f, '')))
+            article.designation = article.designation or ref
+            article.save()
+            report['created_articles'] += 1
+        else:
+            if dry_run:
+                report['updated_articles'] += 1
+            else:
+                changed = []
+                for f in article_fields:
+                    value = row.get(f)
+                    if ignore_blank and value in ['', None]:
+                        continue
+                    if value is not None and getattr(article, f) != value:
+                        setattr(article, f, value)
+                        changed.append(f)
+                if changed:
+                    article.save()
+                report['updated_articles'] += 1
+
+        if dry_run:
+            continue
+        location_code = row.get('emplacement') or 'A_DEFINIR'
+        emplacement, _ = Emplacement.objects.get_or_create(
+            magasin=magasin,
+            code=location_code,
+            defaults={'nom': location_code, 'description': 'Créé automatiquement lors de l’import Excel.'}
+        )
+        stock, created_stock = StockArticleMagasin.objects.get_or_create(article=article, magasin=magasin)
+        before = stock.stock_reel
+        stock.emplacement = emplacement
+        stock.stock_reel = row.get('stock_reel') or 0
+        stock.stock_minimum = row.get('stock_minimum') or 0
+        stock.stock_reserve_demande = row.get('stock_reserve_demande') or 0
+        stock.stock_temporairement_sorti = row.get('stock_temporairement_sorti') or 0
+        stock.qte_ok = row.get('qte_ok') or 0
+        stock.qte_use = row.get('qte_use') or 0
+        stock.stock_hs = row.get('stock_hs') or 0
+        stock.save()
+        report['created_stocks' if created_stock else 'updated_stocks'] += 1
+        if before != stock.stock_reel:
+            MouvementStock.objects.create(
+                article=article,
+                magasin_destination=magasin,
+                emplacement_destination=emplacement,
+                type_mouvement='import_excel',
+                quantite=stock.stock_reel - before,
+                stock_avant=before,
+                stock_apres=stock.stock_reel,
+                utilisateur=actor,
+                commentaire=f'Import Excel mode={mode} clé={key_field}',
+            )
+    return report

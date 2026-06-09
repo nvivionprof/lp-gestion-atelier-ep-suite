@@ -24,6 +24,7 @@ urlpatterns = [
     path('sauvegarde-restauration/', views.backup_restore_view, name='core_backup_restore'),
     path('supervision-bases/', views.database_supervision_view, name='core_database_supervision'),
     path('utilisateurs/import/', views.users_import, name='core_users_import'),
+    path('utilisateurs/import/modele.xlsx', views.users_import_template_xlsx, name='core_users_import_template'),
     path('utilisateurs/export.csv', views.users_export_csv, name='core_users_export_csv'),
     path('modules/sync-toolmag/', views.sync_toolmag_from_core, name='core_sync_toolmag'),
     path('modules/sync-pedashop/', views.sync_pedashop_from_core, name='core_sync_pedashop'),

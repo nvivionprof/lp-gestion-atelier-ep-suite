@@ -1,3 +1,4 @@
+
 {% load static %}
 <!doctype html>
 <html lang="fr">
@@ -20,17 +21,36 @@
     {% if pedashop_current_user %}
       <a href="{% url 'pedashop_article_list' %}">Articles</a>
       <a href="{% url 'pedashop_bon_list' %}">Bons</a>
-      <a href="{% url 'pedashop_inventory_adjustment' %}">Inventaire</a>
-      <a href="{% url 'pedashop_stock_entry' %}">Entrées stock</a>
-      <a href="{% url 'pedashop_user_list' %}">Utilisateurs</a>
-      <a href="{% url 'pedashop_projection_list' %}">Pré-réservations TP</a>
-      <a href="{% url 'pedashop_alert_list' %}">Alertes</a>
-      <a href="{% url 'pedashop_consultation_list' %}">Consultations</a>
-      <a href="{% url 'pedashop_reclamation_list' %}">Réclamations</a>
-      {% if pedashop_current_user and pedashop_current_user.is_admin_like %}<a title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>{% endif %}
+      <details class="admin-dropdown"><summary>Actions magasinier</summary><div class="admin-dropdown-menu">
+        <a class="admin-menu-item" href="{% url 'pedashop_inventory_adjustment' %}">Inventaire</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_stock_entry' %}">Entrée / réassort</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_movement_list' %}">Mouvements</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_alert_list' %}">Alertes</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_reclamation_list' %}">Réclamations</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_affichage' %}">Affichage dynamique</a>
+      </div></details>
+      {% if pedashop_current_user.is_teacher_like or pedashop_current_user.is_admin_like %}
+      <details class="admin-dropdown"><summary>Administration</summary><div class="admin-dropdown-menu">
+        <a class="admin-menu-item" href="{% url 'pedashop_import_excel' %}">Import articles</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_articles_template_xlsx' %}">Modèle import articles</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_articles_export_xlsx' %}">Export articles</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_magasin_list' %}">Magasins</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_emplacement_list' %}">Emplacements</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_user_list' %}">Utilisateurs</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_projection_list' %}">Pré-réservations TP</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_consultation_list' %}">Consultations</a>
+      </div></details>
+      {% endif %}
+      <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu">
+        <a class="admin-menu-item" href="{{ LP_CORE_PUBLIC_URL }}">LP Core</a>
+        <a class="admin-menu-item" href="/toolmag/">ToolMag</a>
+        <a class="admin-menu-item" href="/safety/">Safety Manager</a>
+        <a class="admin-menu-item" href="/pedashop/">PedaShop</a>
+        <a class="admin-menu-item" href="/system/">System Manager</a>
+        <a class="admin-menu-item" href="/tpmanager/">TP Manager</a>
+        <a class="admin-menu-item" href="/pfmp/">PFMP Manager</a>
+      </div></details>
     {% endif %}
-    <a href="{% url 'pedashop_affichage' %}">Affichage dynamique</a>
-    <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
     {% if pedashop_current_user %}<a href="{% url 'pedashop_logout' %}">Déconnexion {{ pedashop_current_user.username }}</a>{% else %}<a href="{% url 'pedashop_login' %}">Connexion</a>{% endif %}
     <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide PedaShop">
       <a class="admin-menu-item" href="{% url 'pedashop_help' %}">Aide PedaShop</a>

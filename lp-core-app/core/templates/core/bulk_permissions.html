@@ -1,8 +1,19 @@
+
 {% extends 'core/base.html' %}
 {% block content %}
 <h1>Gestion par lot — droits, magasins, habilitations et RGPD</h1>
+<section class="panel">
+  <h2>Fonctionnement</h2>
+  <p>Cette page applique une action à tous les utilisateurs cochés, ou à tous les utilisateurs filtrés si aucun utilisateur n'est coché.</p>
+  <ul>
+    <li><strong>Droits</strong> : ajout ou retrait des codes de droits consommés par les modules.</li>
+    <li><strong>Magasins</strong> : affecte les magasins LP Core aux utilisateurs. Les magasins <code>global</code> sont transversaux, les magasins <code>pedashop</code> ou <code>toolmag</code> ciblent un module.</li>
+    <li><strong>Certifications</strong> : ajoute une habilitation/certification à tout le lot.</li>
+    <li><strong>RGPD</strong> : règle en masse le droit à l'image et les blocages photo/document.</li>
+  </ul>
+</section>
 <form method="get" class="toolbar">
-  <input name="q" value="{{ q }}" placeholder="Recherche">
+  <input name="q" value="{{ q }}" placeholder="Recherche utilisateur">
   <select name="class_name"><option value="">Toutes classes</option>{% for c in classes %}<option {% if c == class_name %}selected{% endif %}>{{ c }}</option>{% endfor %}</select>
   <select name="formation"><option value="">Toutes formations</option>{% for f in formations %}<option value="{{ f.code }}" {% if f.code == formation %}selected{% endif %}>{{ f.code }}</option>{% endfor %}</select>
   <select name="role"><option value="">Tous rôles</option>{% for code,label in roles %}<option value="{{ code }}" {% if code == role %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
@@ -15,12 +26,14 @@
 
     <div class="bulk-block" data-actions="add_right remove_right">
       <h3>Droits</h3>
-      <div class="rights-grid">{% for right in rights_defs %}<label><input type="checkbox" name="rights_codes" value="{{ right.code }}"> <span>{{ right.code }}</span><small>{{ right.module }} — {{ right.label }}</small></label>{% empty %}<p>Aucun droit paramétré.</p>{% endfor %}</div>
+      <input class="choice-filter" data-target="rights-grid" placeholder="Rechercher droit par code, module ou désignation">
+      <div class="rights-grid" id="rights-grid">{% for right in rights_defs %}<label data-filter="{{ right.code }} {{ right.module }} {{ right.label }}"><input type="checkbox" name="rights_codes" value="{{ right.code }}"> <span>{{ right.code }}</span><small>{{ right.module }} — {{ right.label }}</small></label>{% empty %}<p>Aucun droit paramétré.</p>{% endfor %}</div>
     </div>
 
     <div class="bulk-block" data-actions="add_store remove_store">
       <h3>Magasins</h3>
-      <div class="rights-grid">{% for s in stores %}<label><input type="checkbox" name="stores" value="{{ s.pk }}"> <span>{{ s.code }}</span><small>{{ s.nom }} — {{ s.module }}</small></label>{% empty %}<p>Aucun magasin.</p>{% endfor %}</div>
+      <input class="choice-filter" data-target="stores-grid" placeholder="Rechercher magasin par code, module ou désignation">
+      <div class="rights-grid" id="stores-grid">{% for s in stores %}<label data-filter="{{ s.code }} {{ s.nom }} {{ s.module }}"><input type="checkbox" name="stores" value="{{ s.pk }}"> <span>{{ s.code }}</span><small>{{ s.nom }} — {{ s.module }}</small></label>{% empty %}<p>Aucun magasin.</p>{% endfor %}</div>
     </div>
 
     <div class="bulk-block" data-actions="add_certification">
@@ -56,5 +69,13 @@ function updateBulkBlocks(){
   });
 }
 updateBulkBlocks();
+document.querySelectorAll('.choice-filter').forEach(input=>{
+  input.addEventListener('input', ()=>{
+    const q=input.value.trim().toLowerCase();
+    document.querySelectorAll('#'+input.dataset.target+' label').forEach(label=>{
+      label.style.display=(label.dataset.filter||label.textContent).toLowerCase().includes(q)?'':'none';
+    });
+  });
+});
 </script>
 {% endblock %}

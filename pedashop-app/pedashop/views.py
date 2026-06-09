@@ -25,7 +25,7 @@ from .models import (
     StockAlert, StockArticleMagasin, SupplierConsultation, SupplierConsultationLine,
 )
 from .permissions import current_user, require_admin, require_login, require_storekeeper
-from .services import affect_line_to_projection, commit_import, load_import_rows, recalculate_stock_alerts
+from .services import affect_line_to_projection, commit_import, commit_import_advanced, load_import_rows, recalculate_stock_alerts
 from .sync import sync_users_from_lp_core
 
 
@@ -974,7 +974,8 @@ def stock_entry(request):
     user = require_storekeeper(request)
     if not user or not _can_act_as_storekeeper(request, user):
         return redirect('pedashop_login')
-    form = StockEntryForm(request.POST or None, allowed_magasins=_visible_magasins(user))
+    initial_article = request.GET.get('article')
+    form = StockEntryForm(request.POST or None, allowed_magasins=_visible_magasins(user), initial_article=initial_article)
     if request.method == 'POST' and form.is_valid():
         article = form.cleaned_data['article']; magasin = form.cleaned_data['magasin']; q = form.cleaned_data['quantite']
         stock, _ = StockArticleMagasin.objects.get_or_create(article=article, magasin=magasin)
@@ -987,17 +988,12 @@ def stock_entry(request):
         MouvementStock.objects.create(article=article, magasin_destination=magasin, emplacement_destination=stock.emplacement, type_mouvement=type_mv, quantite=q, stock_avant=before, stock_apres=stock.stock_reel, utilisateur=user, commentaire=form.cleaned_data.get('commentaire', ''))
         recalculate_stock_alerts(); messages.success(request, 'Entrée stock enregistrée.')
         return redirect('pedashop_stock_list')
-    return render(request, 'pedashop/form.html', {'form': form, 'title': 'Entrée en magasin / réassort'})
+    return render(request, 'pedashop/stock_entry.html', {'form': form, 'title': 'Entrée en magasin / réassort'})
 
 @require_http_methods(['GET', 'POST'])
 @transaction.atomic
 def inventory_adjustment(request):
-    """Inventaire ou réassort depuis une page unique.
-
-    En mode inventaire, seul ``stock_reel`` est remplacé : les réservations,
-    préparations et sorties temporaires restent intactes. En mode réassort, la
-    quantité saisie s'ajoute au stock réel.
-    """
+    """Inventaire ou réassort depuis une page unique."""
     user = require_storekeeper(request)
     if not user or not _can_act_as_storekeeper(request, user):
         return redirect('pedashop_login')
@@ -1020,6 +1016,14 @@ def inventory_adjustment(request):
             stock.stock_reel = qty
             mv_type = 'correction_inventaire'
             mv_qty = qty - before
+        if form.cleaned_data.get('qte_ok') is not None:
+            stock.qte_ok = form.cleaned_data['qte_ok']
+        if form.cleaned_data.get('qte_use') is not None:
+            stock.qte_use = form.cleaned_data['qte_use']
+        if form.cleaned_data.get('stock_hs') is not None:
+            stock.stock_hs = form.cleaned_data['stock_hs']
+        if form.cleaned_data.get('stock_perdu') is not None:
+            stock.stock_perdu = form.cleaned_data['stock_perdu']
         if form.cleaned_data.get('stock_mini') is not None:
             stock.stock_minimum = form.cleaned_data['stock_mini']
         if form.cleaned_data.get('emplacement'):
@@ -1029,6 +1033,43 @@ def inventory_adjustment(request):
         recalculate_stock_alerts(); messages.success(request, 'Opération stock enregistrée.')
         return redirect('pedashop_inventory_adjustment')
     return render(request, 'pedashop/inventory_adjustment.html', {'form': form, 'recent': recent})
+
+
+
+
+def api_article_search(request):
+    user = current_user(request)
+    q = (request.GET.get('q') or '').strip()
+    qs = Article.objects.filter(archive=False)
+    if q:
+        qs = qs.filter(Q(reference_interne__icontains=q) | Q(reference_fabricant__icontains=q) | Q(designation__icontains=q) | Q(code_ean__icontains=q) | Q(code_barres_interne__icontains=q))
+    rows = []
+    for a in qs.order_by('reference_interne')[:20]:
+        rows.append({'id': a.id, 'reference_interne': a.reference_interne, 'reference_fabricant': a.reference_fabricant, 'designation': a.designation, 'code_ean': a.code_ean, 'label': f'{a.reference_interne} — {a.designation}'})
+    return JsonResponse({'results': rows})
+
+
+def api_magasin_search(request):
+    user = current_user(request)
+    q = (request.GET.get('q') or '').strip()
+    qs = _visible_magasins(user)
+    if q:
+        qs = qs.filter(Q(code__icontains=q) | Q(nom__icontains=q))
+    return JsonResponse({'results': [{'id': m.id, 'code': m.code, 'nom': m.nom, 'label': f'{m.code} — {m.nom}'} for m in qs[:20]]})
+
+
+def api_emplacement_search(request):
+    user = current_user(request)
+    q = (request.GET.get('q') or '').strip()
+    magasin_id = request.GET.get('magasin_id')
+    qs = Emplacement.objects.filter(actif=True)
+    if magasin_id:
+        qs = qs.filter(magasin_id=magasin_id)
+    else:
+        qs = qs.filter(magasin__in=_visible_magasins(user))
+    if q:
+        qs = qs.filter(Q(code__icontains=q) | Q(nom__icontains=q) | Q(magasin__code__icontains=q))
+    return JsonResponse({'results': [{'id': e.id, 'code': e.code, 'nom': e.nom, 'magasin_id': e.magasin_id, 'label': f'{e.magasin.code}/{e.code} — {e.nom}'} for e in qs.select_related('magasin')[:20]]})
 
 
 def user_list(request):
@@ -1104,9 +1145,10 @@ def transfer_create(request):
 
 @require_http_methods(['GET', 'POST'])
 def import_excel(request):
-    user = require_admin(request)
-    if not user:
-        return redirect('pedashop_login')
+    user = require_login(request)
+    if not user or not (user.is_admin_like or user.is_teacher_like):
+        messages.error(request, 'Import articles réservé aux professeurs ou administrateurs PedaShop.')
+        return redirect('pedashop_login' if not user else 'pedashop_dashboard')
     preview = None
     report = None
     if request.method == 'POST':
@@ -1116,29 +1158,38 @@ def import_excel(request):
             magasin_id = request.session.get('pedashop_import_magasin')
             sheet = request.session.get('pedashop_import_sheet')
             check = request.session.get('pedashop_import_check_stock', False)
+            mode = request.session.get('pedashop_import_mode', 'append_only')
+            key = request.session.get('pedashop_import_key', 'reference_interne')
+            ignore_blank = request.session.get('pedashop_import_ignore_blank', True)
             if staged and magasin_id:
                 rows, info = load_import_rows(staged, sheet)
-                report = commit_import(rows, get_object_or_404(Magasin, pk=magasin_id), actor=user, check_stock_consistency=check)
-                messages.success(request, f"Import traité : {report['created_articles']} articles créés, {len(report['errors'])} erreurs.")
+                report = commit_import_advanced(rows, get_object_or_404(Magasin, pk=magasin_id), actor=user, check_stock_consistency=check, mode=mode, key_field=key, ignore_blank=ignore_blank)
+                messages.success(request, f"Import traité : {report['created_articles']} créés, {report['updated_articles']} modifiés, {report['skipped_articles']} ignorés, {len(report['errors'])} erreurs.")
             else:
                 messages.error(request, 'Aucun aperçu d’import à valider.')
         else:
             form = ExcelImportForm(request.POST, request.FILES, allowed_magasins=_visible_magasins(user))
             if form.is_valid():
-                upload = form.cleaned_data['fichier']
-                suffix = Path(upload.name).suffix or '.xlsx'
-                target_dir = Path(settings.MEDIA_ROOT) / 'pedashop_imports'
-                target_dir.mkdir(parents=True, exist_ok=True)
-                target = target_dir / f'import_{timezone.now():%Y%m%d_%H%M%S}{suffix}'
-                with target.open('wb') as f:
-                    for chunk in upload.chunks():
-                        f.write(chunk)
-                rows, info = load_import_rows(str(target), form.cleaned_data.get('feuille'))
-                preview = {'rows': rows[:20], 'info': info, 'count': len(rows)}
-                request.session['pedashop_import_file'] = str(target)
-                request.session['pedashop_import_magasin'] = form.cleaned_data['magasin'].id
-                request.session['pedashop_import_sheet'] = form.cleaned_data.get('feuille') or ''
-                request.session['pedashop_import_check_stock'] = bool(form.cleaned_data.get('verifier_coherence_stock'))
+                if form.cleaned_data['mode_import'] == 'replace_all' and form.cleaned_data.get('confirmation_remplacement') != 'REMPLACER':
+                    messages.error(request, 'Pour un remplacement total, saisir exactement REMPLACER dans le champ de confirmation.')
+                else:
+                    upload = form.cleaned_data['fichier']
+                    suffix = Path(upload.name).suffix or '.xlsx'
+                    target_dir = Path(settings.MEDIA_ROOT) / 'pedashop_imports'
+                    target_dir.mkdir(parents=True, exist_ok=True)
+                    target = target_dir / f'import_{timezone.now():%Y%m%d_%H%M%S}{suffix}'
+                    with target.open('wb') as f:
+                        for chunk in upload.chunks():
+                            f.write(chunk)
+                    rows, info = load_import_rows(str(target), form.cleaned_data.get('feuille'))
+                    preview = {'rows': rows[:20], 'info': info, 'count': len(rows), 'mode': form.cleaned_data['mode_import'], 'key': form.cleaned_data['cle_import']}
+                    request.session['pedashop_import_file'] = str(target)
+                    request.session['pedashop_import_magasin'] = form.cleaned_data['magasin'].id
+                    request.session['pedashop_import_sheet'] = form.cleaned_data.get('feuille') or ''
+                    request.session['pedashop_import_check_stock'] = bool(form.cleaned_data.get('verifier_coherence_stock'))
+                    request.session['pedashop_import_mode'] = form.cleaned_data['mode_import']
+                    request.session['pedashop_import_key'] = form.cleaned_data['cle_import']
+                    request.session['pedashop_import_ignore_blank'] = bool(form.cleaned_data.get('ignorer_cellules_vides'))
             else:
                 messages.error(request, 'Formulaire import invalide.')
     else:

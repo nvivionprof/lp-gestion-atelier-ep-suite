@@ -143,6 +143,44 @@ def users_import(request):
 
 
 
+
+
+
+def users_import_template_xlsx(request):
+    """Modèle Excel officiel pour éviter les erreurs d'import élèves/utilisateurs."""
+    if not require_core_admin(request):
+        return redirect('core_login')
+    from openpyxl import Workbook
+    from io import BytesIO
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Utilisateurs LP Core'
+    headers = [
+        'code', 'identifiant', 'mot_de_passe_initial', 'nom', 'prenom', 'email',
+        'classe', 'formation', 'groupe', 'role', 'droits', 'actif', 'annee_scolaire'
+    ]
+    ws.append(headers)
+    ws.append([
+        'PROF-0001', 'prof-0001', 'prof1234', 'DUPONT', 'Alice',
+        'alice.dupont@example.fr', '1MELEC', 'MELEC', 'Groupe A',
+        'professeur', 'PEDASHOP_PROF;TOOLMAG_PROF', '1', '2026-2027'
+    ])
+    ws.append([
+        'ELE-0001', 'ele-0001', 'ele1234', 'MARTIN', 'Noa',
+        '', '2MTNE1', 'MTNE', 'Groupe B',
+        'eleve', '', '1', '2026-2027'
+    ])
+    for col in ws.columns:
+        max_len = max(len(str(c.value or '')) for c in col)
+        ws.column_dimensions[col[0].column_letter].width = min(max(max_len + 4, 14), 34)
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="modele_import_eleves_lp_core.xlsx"'
+    return response
+
+
 def _module_sync_timeout():
     try:
         return int(getattr(settings, 'MODULE_SYNC_TIMEOUT_SECONDS', 90) or 90)
@@ -317,7 +355,7 @@ def user_payload(u):
         'identity_photo_placeholder': u.image_placeholder_text(),
         'pedashop_magasins': [
             {'code': a.store.code, 'nom': a.store.nom}
-            for a in u.store_accesses.select_related('store').filter(active=True, store__active=True, store__module='pedashop')
+            for a in u.store_accesses.select_related('store').filter(active=True, store__active=True, store__module__in=['global', 'pedashop'])
         ],
         'certifications': [
             {

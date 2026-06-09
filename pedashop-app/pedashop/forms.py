@@ -148,9 +148,25 @@ class ReclamationForm(forms.ModelForm):
 
 
 class ExcelImportForm(forms.Form):
+    MODE_CHOICES = [
+        ('append_only', 'Ajout uniquement : ajoute les articles absents et ne modifie pas les existants'),
+        ('upsert', 'Mise à jour par clé : modifie si la clé existe, ajoute sinon'),
+        ('replace_all', 'Remplacement total : remplace la base articles PedaShop'),
+        ('simulation', 'Simulation : analyse sans écrire'),
+    ]
+    KEY_CHOICES = [
+        ('reference_interne', 'Code produit / code interne'),
+        ('reference_fabricant', 'Référence fabricant'),
+        ('code_ean', 'Code-barres / EAN'),
+        ('designation', 'Désignation'),
+    ]
     fichier = forms.FileField(label='Fichier Excel .xlsx')
     magasin = forms.ModelChoiceField(queryset=Magasin.objects.filter(actif=True), label='Magasin de destination')
     feuille = forms.CharField(label='Feuille Excel', required=False, help_text='Laisser vide pour prendre la première feuille.')
+    mode_import = forms.ChoiceField(choices=MODE_CHOICES, initial='append_only', label='Mode d’import')
+    cle_import = forms.ChoiceField(choices=KEY_CHOICES, initial='reference_interne', label='Clé de comparaison')
+    ignorer_cellules_vides = forms.BooleanField(required=False, initial=True, label='Ne pas écraser un champ existant par une cellule vide')
+    confirmation_remplacement = forms.CharField(required=False, label='Confirmation remplacement total', help_text='Pour le remplacement total, saisir exactement REMPLACER.')
     verifier_coherence_stock = forms.BooleanField(required=False, label='Vérifier la cohérence Qté stock / Qté OK + Usé + HS')
 
     def __init__(self, *args, allowed_magasins=None, **kwargs):
@@ -209,20 +225,16 @@ class StockEntryForm(forms.Form):
     type_entree = forms.ChoiceField(choices=TYPE_CHOICES, label='Type d’entrée')
     commentaire = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
-    def __init__(self, *args, allowed_magasins=None, **kwargs):
+    def __init__(self, *args, allowed_magasins=None, initial_article=None, **kwargs):
         super().__init__(*args, **kwargs)
         if allowed_magasins is not None:
             self.fields['magasin'].queryset = allowed_magasins
             self.fields['emplacement'].queryset = Emplacement.objects.filter(magasin__in=allowed_magasins, actif=True)
-
+        if initial_article:
+            self.initial['article'] = initial_article
 
 class InventoryAdjustmentForm(forms.Form):
-    """Mise à niveau ponctuelle du stock réel après inventaire physique.
-
-    Le stock réel compté remplace uniquement la quantité présente physiquement
-    en magasin. Les réservations et les sorties temporaires avec retour prévu
-    ne sont pas modifiées par cette opération.
-    """
+    """Mise à niveau ponctuelle du stock réel après inventaire physique."""
     TYPE_CHOICES = [('inventaire', 'Inventaire / comptage physique'), ('reassort', 'Réassort / entrée magasin')]
     operation_type = forms.ChoiceField(choices=TYPE_CHOICES, label='Type d’opération')
     ean = forms.CharField(required=False, label='EAN / code-barres tablette')
@@ -230,6 +242,10 @@ class InventoryAdjustmentForm(forms.Form):
     magasin = forms.ModelChoiceField(queryset=Magasin.objects.filter(actif=True), label='Magasin')
     emplacement = forms.ModelChoiceField(queryset=Emplacement.objects.filter(actif=True), required=False, label='Emplacement constaté')
     stock_reel_compte = forms.DecimalField(min_value=0, label='Stock réel compté ou quantité à entrer')
+    qte_ok = forms.DecimalField(min_value=0, required=False, label='Quantité disponible / OK')
+    qte_use = forms.DecimalField(min_value=0, required=False, label='Quantité usée')
+    stock_hs = forms.DecimalField(min_value=0, required=False, label='Quantité HS')
+    stock_perdu = forms.DecimalField(min_value=0, required=False, label='Quantité perdue')
     stock_mini = forms.DecimalField(min_value=0, required=False, label='Stock mini corrigé')
     commentaire = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}), label='Commentaire inventaire')
 
@@ -238,7 +254,6 @@ class InventoryAdjustmentForm(forms.Form):
         if allowed_magasins is not None:
             self.fields['magasin'].queryset = allowed_magasins
             self.fields['emplacement'].queryset = Emplacement.objects.filter(magasin__in=allowed_magasins, actif=True)
-
 
 class UserVisibilityForm(forms.ModelForm):
     class Meta:

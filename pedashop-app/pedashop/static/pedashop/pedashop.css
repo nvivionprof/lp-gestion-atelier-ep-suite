@@ -83,3 +83,12 @@ input[type=checkbox]{width:auto}
 
 /* V0.0.1-RC1 — PedaShop prioritaire PC/tablette, lisibilité consultation */
 .pedashop-rc-note{border:1px solid #bfdbfe;background:#eff6ff;border-radius:14px;padding:.8rem 1rem;margin:.8rem 0;color:#1e3a8a;}
+
+
+.suggestion-box{display:flex;flex-direction:column;gap:.35rem;margin:.35rem 0 .75rem 0;max-height:220px;overflow:auto}
+.suggestion-row{width:100%;text-align:left;background:#f8fbff;border:1px solid #cbd5e1;border-radius:6px;padding:.45rem .65rem;cursor:pointer;color:#0f172a}
+.suggestion-row:hover{background:#e0f2fe;border-color:#38bdf8}
+.admin-dropdown{position:relative;display:inline-block}
+.admin-dropdown-menu{position:absolute;right:0;background:white;color:#0f172a;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 12px 30px rgba(15,23,42,.18);min-width:220px;z-index:50;padding:.35rem}
+.admin-menu-item{display:block;padding:.45rem .7rem;color:#0f172a;text-decoration:none;border-radius:6px}
+.admin-menu-item:hover{background:#e0f2fe}

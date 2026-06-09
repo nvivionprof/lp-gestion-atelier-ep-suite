@@ -277,3 +277,6 @@ button.danger,.button.danger{background:#b91c1c;color:#fff}button.small{font-siz
 .module-status{position:static!important;align-self:flex-start!important;margin-top:.55rem!important;background:#e9f7f8!important;color:#087b83!important;}
 @media(max-width:1080px){.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:680px){.module-grid{grid-template-columns:1fr!important}.module-tile{min-height:auto!important}.module-icon{height:96px!important;flex-basis:96px!important}}
+
+
+.lp-dyn-filter,.choice-filter{width:100%;max-width:520px;margin:.5rem 0 1rem 0;padding:.55rem .7rem;border:1px solid #cbd5e1;border-radius:6px}

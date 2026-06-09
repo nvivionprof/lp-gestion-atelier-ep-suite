@@ -1,13 +1,17 @@
 
 {% extends 'pedashop/base.html' %}
 {% block content %}
-<h1>Inventaire / réassort</h1><div class="alert">Inventaire : remplace uniquement le stock physiquement en magasin. Les réservations, préparations et sorties temporaires avec retour prévu ne sont pas modifiées. Le matériel dehors doit revenir via un bon de retour.</div>
-<div class="grid-2"><section class="card"><h2>Nouvelle opération</h2><p class="muted">Recherche dynamique par code, référence, désignation, EAN ou scannette code-barres.</p><form method="post">{% csrf_token %}
+<h1>Entrée en magasin / réassort</h1>
+<div class="card">
+<p class="muted">Recherche dynamique : code produit, référence fabricant, désignation ou code-barres. Le scan d’une scannette USB fonctionne comme une saisie clavier dans le champ de recherche.</p>
+<form method="post">{% csrf_token %}
   <label>Recherche article / code-barres<input id="article-search" autocomplete="off" placeholder="Scanner ou saisir code, référence, désignation"></label><div id="article-suggestions" class="suggestion-box"></div><p id="article-info" class="muted"></p>
   <label>Recherche magasin<input id="magasin-search" autocomplete="off" placeholder="Code ou nom du magasin"></label><div id="magasin-suggestions" class="suggestion-box"></div>
   <label>Recherche emplacement<input id="emplacement-search" autocomplete="off" placeholder="Code ou nom de l’emplacement"></label><div id="emplacement-suggestions" class="suggestion-box"></div>
   {{ form.as_p }}
-  <button class="btn primary">Enregistrer</button></form></section><section class="card"><h2>Dernières opérations</h2><table><thead><tr><th>Date</th><th>Article</th><th>Écart / Qté</th><th>Utilisateur</th></tr></thead><tbody>{% for m in recent %}<tr><td>{{ m.date }}</td><td>{{ m.article.reference_interne }}</td><td>{{ m.quantite }}</td><td>{{ m.utilisateur }}</td></tr>{% empty %}<tr><td colspan="4">Aucune opération.</td></tr>{% endfor %}</tbody></table></section></div>
+  <button class="btn primary" type="submit">Enregistrer</button> <a class="btn" href="javascript:history.back()">Retour</a>
+</form>
+</div>
 
 <script>
 async function lpSearch(url, q){

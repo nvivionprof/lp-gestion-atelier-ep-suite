@@ -1,6 +1,6 @@
 {
   "suite_name": "LP Gestion Atelier EP Suite",
-  "version": "V0.0.1-RC7",
+  "version": "V0.0.1-RC8",
   "name": "LP Gestion Atelier EP Suite — V0.0.1-RC5 exploitation encadrée",
   "description": "Release candidate technique de propreté : synchronisations post-installation sans erreur, API System Manager corrigée et dépendances requests stabilisées.",
   "type": "release-candidate-exploitation-ssh-github-wget-postgresql",
@@ -59,7 +59,7 @@
     "url": "/supervision-bases/",
     "scope": "postgresql module databases"
   },
-  "suite_version": "V0.0.1-RC7",
+  "suite_version": "V0.0.1-RC8",
   "web_update_allowed": false,
   "web_database_backup_restore_allowed": true,
   "features": [

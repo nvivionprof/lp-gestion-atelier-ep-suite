@@ -1,11 +1,22 @@
+
 {% extends 'core/base.html' %}
 {% block content %}
 <h1>Import Excel élèves / utilisateurs</h1>
-<p>Importe le fichier Excel ToolMag ou la base élèves centrale. Les colonnes reconnues incluent : <code>code</code>, <code>identifiant</code>, <code>nom</code>, <code>prenom</code>, <code>classe</code>, <code>formation</code>, <code>groupe</code>, <code>role</code>, <code>droits</code>, <code>mot_de_passe_initial</code>.</p>
-<form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
-  <label>Fichier Excel .xlsx<input type="file" name="file" accept=".xlsx" required></label>
-  <button type="submit">Importer dans LP Core</button>
-</form>
+<section class="panel">
+  <h2>Modèle officiel</h2>
+  <p>Utilise le modèle téléchargeable pour éviter les erreurs de colonnes. Les colonnes peuvent rester vides sauf <code>nom</code> et <code>prenom</code>.</p>
+  <p><a class="button primary" href="{% url 'core_users_import_template' %}">Télécharger le modèle Excel élèves / utilisateurs</a></p>
+  <div class="alert info">
+    Colonnes reconnues : <code>code</code>, <code>identifiant</code>, <code>mot_de_passe_initial</code>, <code>nom</code>, <code>prenom</code>, <code>email</code>, <code>classe</code>, <code>formation</code>, <code>groupe</code>, <code>role</code>, <code>droits</code>, <code>actif</code>, <code>annee_scolaire</code>.
+  </div>
+</section>
+<section class="panel">
+  <h2>Importer</h2>
+  <form method="post" enctype="multipart/form-data" class="form-card">{% csrf_token %}
+    <label>Fichier Excel .xlsx<input type="file" name="file" accept=".xlsx" required></label>
+    <button type="submit">Importer dans LP Core</button>
+  </form>
+</section>
 {% if report %}
 <section class="panel"><h2>Rapport</h2><p>{{ report.created }} créés, {{ report.updated }} mis à jour.</p>{% if report.errors %}<ul class="errors">{% for e in report.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}</section>
 <section class="panel"><h2>Synchronisation modules</h2><p>Après import dans LP Core, pousser la base élèves vers les modules.</p><form method="post" action="{% url 'core_sync_toolmag' %}" class="inline-sync-form">{% csrf_token %}<button class="button primary" type="submit">Synchroniser vers ToolMag</button></form> <form method="post" action="{% url 'core_sync_pedashop' %}" class="inline-sync-form">{% csrf_token %}<button class="button secondary" type="submit">Synchroniser vers PedaShop</button></form></section>
