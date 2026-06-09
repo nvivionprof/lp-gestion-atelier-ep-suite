@@ -99,11 +99,18 @@ run_lego_cmd() {
     return $?
   fi
   if has_docker; then
+    local args=("$@")
+    local i
+    for i in "${!args[@]}"; do
+      if [[ "${args[$i]}" == "$SSL_DIR/lego" ]]; then
+        args[$i]="/lego"
+      fi
+    done
     docker run --rm \
       -e DUCKDNS_TOKEN="$DUCKDNS_TOKEN" \
       -v "$SSL_DIR/lego:/lego" \
       goacme/lego:latest \
-      "$@"
+      "${args[@]}"
     return $?
   fi
   cat >&2 <<'EOM'

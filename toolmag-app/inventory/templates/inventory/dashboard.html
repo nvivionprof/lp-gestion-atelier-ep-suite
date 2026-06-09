@@ -40,8 +40,10 @@
     </table>
   </div>
 </section>
-<div class="actions"><a class="button" href="{% url 'checkout' %}">Nouvelle sortie</a><a class="button secondary" href="{% url 'return_equipment' %}">Retour matériel</a></div>
-
+<section class="panel access-note">
+  <h2>Flux matériel</h2>
+  <p class="hint">Les sorties et retours magasin ne sont pas lancés depuis le tableau de bord. Le point d’accès terrain reste le QR code, la fiche matériel, l’inventaire utilisateur ou l’appareil enregistré.</p>
+</section>
 <script id="toolmag-dashboard-autorefresh">
 (function(){
   var refreshDelayMs = 15000;

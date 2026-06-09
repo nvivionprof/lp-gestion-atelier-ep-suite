@@ -135,3 +135,21 @@ Cette version ajoute la vérification d’intégrité SHA256, le chargement opti
 ## Décision sécurité — mises à jour et sauvegardes web
 
 Les mises à jour applicatives se font exclusivement par SSH/Git. LP Core peut en revanche piloter les sauvegardes/restaurations de bases PostgreSQL par module ou totales, avec manifest, checksums et confirmation administrateur.
+
+
+## Update rapide
+
+```bash
+./update.sh --channel stable
+./update.sh --channel rc
+```
+
+Documentation : `docs/UPDATE_RAPIDE_GIT.md`.
+
+## HTTPS DuckDNS
+
+```bash
+./scripts/configure_duckdns_https.sh stjo-lpsuite.duckdns.org email@example.com TOKEN_DUCKDNS 443 80
+```
+
+Documentation : `docs/HTTPS_DUCKDNS_RAPIDE.md`.
