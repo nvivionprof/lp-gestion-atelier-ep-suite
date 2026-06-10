@@ -3,6 +3,7 @@ from . import views
 from . import views_v2
 
 urlpatterns = [
+    path('exports/configuration/', views.export_pdf_config, name='tp_export_config'),
     path('portal-login/', views.portal_login, name='tp_portal_login'),
     path('aide/', views.help_view, name='tp_help'),
     path('a-propos/', views.about_view, name='tp_about'),

@@ -1,2 +1,12 @@
 {% extends 'pedashop/base.html' %}
-{% block content %}<h1>Magasins</h1><div class="actions"><a class="btn primary" href="{% url 'pedashop_magasin_create' %}">Nouveau magasin</a></div><div class="card table-wrap"><table><thead><tr><th>Code</th><th>Nom</th><th>Responsable</th><th>Actif</th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.code }}</td><td>{{ i.nom }}</td><td>{{ i.responsable }}</td><td>{{ i.actif|yesno:'Oui,Non' }}</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
+{% block content %}
+<h1>Magasins</h1>
+<div class="actions"><a class="btn primary" href="{% url 'pedashop_magasin_create' %}">Nouveau magasin</a></div>
+<form method="post" class="card table-wrap">{% csrf_token %}
+  <input type="hidden" name="action" value="delete_selected">
+  {% if can_admin_magasins %}<div class="actions"><button class="btn danger" type="submit">Supprimer / désactiver les magasins cochés</button><input name="confirmation" placeholder="SUPPRIMER MAGASINS" style="max-width:260px"></div><p class="muted">Les magasins liés à l’historique seront désactivés au lieu d’être supprimés.</p>{% endif %}
+  <table><thead><tr>{% if can_admin_magasins %}<th></th>{% endif %}<th>Code</th><th>Nom</th><th>Responsable</th><th>Actif</th><th>Action</th></tr></thead><tbody>
+  {% for i in items %}<tr>{% if can_admin_magasins %}<td><input type="checkbox" name="selected_magasins" value="{{ i.id }}"></td>{% endif %}<td>{{ i.code }}</td><td>{{ i.nom }}</td><td>{{ i.responsable }}</td><td>{{ i.actif|yesno:'Oui,Non' }}</td><td><a class="btn small" href="{% url 'pedashop_magasin_edit' i.pk %}">Modifier</a></td></tr>{% empty %}<tr><td colspan="6">Aucun magasin.</td></tr>{% endfor %}
+  </tbody></table>
+</form>
+{% endblock %}

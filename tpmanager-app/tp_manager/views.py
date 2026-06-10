@@ -782,3 +782,12 @@ def help_view(request):
 
 def about_view(request):
     return render(request, 'tp_manager/about.html')
+
+
+@require_http_methods(['GET', 'POST'])
+def export_pdf_config(request):
+    if request.method == 'POST':
+        request.session['tp_pdf_identity_mode'] = request.POST.get('identity_mode') or 'anonymous'
+        messages.success(request, 'Configuration export PDF TP Manager enregistrée pour la session.')
+        return redirect('tp_export_config')
+    return render(request, 'tp_manager/export_pdf_config.html', {'identity_mode': request.session.get('tp_pdf_identity_mode', 'anonymous')})

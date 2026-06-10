@@ -6,6 +6,7 @@ from io import BytesIO
 from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
+from django.db.models.deletion import ProtectedError
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -105,7 +106,7 @@ def portal_login(request):
         messages.error(request, 'Compte LP Core non synchronisé dans PedaShop.')
         return redirect('pedashop_login')
     request.session['pedashop_user_id'] = user.id
-    request.session['pedashop_active_role'] = 'magasinier' if user.is_storekeeper_like else 'utilisateur'
+    request.session['pedashop_active_role'] = 'utilisateur'
     messages.success(request, f'Connexion PedaShop via LP Core : {user.first_name} {user.last_name}.')
     return redirect('pedashop_dashboard')
 
@@ -136,6 +137,23 @@ def logout_view(request):
     request.session.pop('pedashop_user_id', None)
     request.session.pop('pedashop_active_role', None)
     return redirect('pedashop_login')
+
+
+@require_http_methods(['POST'])
+def switch_role(request, role):
+    """Bascule explicite Utilisateur / Magasinier, comme dans ToolMag."""
+    user = require_login(request)
+    if not user:
+        return redirect('pedashop_login')
+    role = (role or '').strip().lower()
+    if role not in {'utilisateur', 'magasinier'}:
+        messages.error(request, 'Mode PedaShop inconnu.')
+    elif role == 'magasinier' and not user.is_storekeeper_like:
+        messages.error(request, 'Ce compte n’a pas le droit magasinier PedaShop.')
+    else:
+        request.session['pedashop_active_role'] = role
+        messages.success(request, f'Mode PedaShop actif : {role}.')
+    return redirect(request.META.get('HTTP_REFERER') or 'pedashop_dashboard')
 
 
 @csrf_exempt
@@ -377,11 +395,36 @@ def article_detail(request, pk):
     retours = RetourAttendu.objects.filter(article=article).exclude(statut__in=['retourne', 'perdu']).select_related('ligne_bon__bon', 'magasin_retour_prevu')
     return render(request, 'pedashop/article_detail.html', {'article': article, 'stocks': stocks, 'retours': retours, 'can_edit_articles': _can_edit_articles(request, user)})
 
+@require_http_methods(['GET', 'POST'])
 def magasin_list(request):
     user = require_login(request)
     if not user:
         return redirect('pedashop_login')
-    return render(request, 'pedashop/magasin_list.html', {'items': Magasin.objects.all()})
+    if request.method == 'POST':
+        admin = require_admin(request)
+        if not admin:
+            return redirect('pedashop_login')
+        action = request.POST.get('action')
+        ids = request.POST.getlist('selected_magasins')
+        if action == 'delete_selected' and ids:
+            confirm = (request.POST.get('confirmation') or '').strip()
+            if confirm != 'SUPPRIMER MAGASINS':
+                messages.error(request, 'Confirmation incorrecte. Saisir SUPPRIMER MAGASINS.')
+            else:
+                deleted = 0; disabled = 0
+                for mag in Magasin.objects.filter(pk__in=ids):
+                    try:
+                        mag.delete()
+                        deleted += 1
+                    except ProtectedError:
+                        mag.actif = False
+                        mag.save(update_fields=['actif'])
+                        disabled += 1
+                messages.success(request, f'{deleted} magasin(s) supprimé(s), {disabled} magasin(s) désactivé(s) car liés à l’historique.')
+        elif action == 'delete_selected':
+            messages.warning(request, 'Aucun magasin coché.')
+        return redirect('pedashop_magasin_list')
+    return render(request, 'pedashop/magasin_list.html', {'items': Magasin.objects.all(), 'can_admin_magasins': bool(user and user.is_admin_like)})
 
 
 @require_http_methods(['GET', 'POST'])
@@ -1196,6 +1239,77 @@ def import_excel(request):
         form = ExcelImportForm(allowed_magasins=_visible_magasins(user))
     return render(request, 'pedashop/import_excel.html', {'form': locals().get('form', ExcelImportForm(allowed_magasins=_visible_magasins(user))), 'preview': preview, 'report': report})
 
+
+
+# ---------------------------------------------------------------------------
+# Maintenance PedaShop : vidage contrôlé des données métier
+# ---------------------------------------------------------------------------
+
+def _purge_pedashop_operational_data(include_stores=False):
+    from .models import DemandeAchat, LigneDemandeAchat
+    deletion_order = [
+        StockAlert, MouvementStock, RetourAttendu, Reclamation, BonHistorique,
+        LigneBon, Bon, LigneProjectionPedagogique, ProjectionPedagogique,
+        Reservation, SupplierConsultationLine, SupplierConsultation,
+        LigneDemandeAchat, DemandeAchat,
+        StockArticleMagasin, Article,
+    ]
+    if include_stores:
+        deletion_order.extend([Emplacement, Magasin])
+    report = {}
+    for model in deletion_order:
+        name = model.__name__
+        try:
+            count = model.objects.count()
+            model.objects.all().delete()
+            report[name] = count
+        except Exception as exc:
+            report[name] = f'ERREUR: {exc}'
+    return report
+
+@require_http_methods(['GET', 'POST'])
+def database_purge(request):
+    admin = require_admin(request)
+    if not admin:
+        return redirect('pedashop_login')
+    report = None
+    if request.method == 'POST':
+        confirmation = (request.POST.get('confirmation') or '').strip()
+        include_stores = request.POST.get('include_stores') == '1'
+        if confirmation != 'VIDER PEDASHOP':
+            messages.error(request, 'Confirmation incorrecte. Saisir VIDER PEDASHOP.')
+        else:
+            with transaction.atomic():
+                report = _purge_pedashop_operational_data(include_stores=include_stores)
+            messages.success(request, 'Vidage PedaShop terminé. Les comptes utilisateurs sont conservés.')
+    counts = {
+        'articles': Article.objects.count(),
+        'stocks': StockArticleMagasin.objects.count(),
+        'mouvements': MouvementStock.objects.count(),
+        'bons': Bon.objects.count(),
+        'magasins': Magasin.objects.count(),
+    }
+    return render(request, 'pedashop/database_purge.html', {'counts': counts, 'report': report})
+
+@require_http_methods(['GET', 'POST'])
+def export_pdf_config(request):
+    user = require_login(request)
+    if not user or not (user.is_admin_like or user.is_teacher_like):
+        messages.error(request, 'Configuration export PDF réservée aux professeurs ou administrateurs.')
+        return redirect('pedashop_login' if not user else 'pedashop_dashboard')
+    if request.method == 'POST':
+        request.session['pedashop_pdf_identity_mode'] = request.POST.get('identity_mode') or 'anonymous'
+        request.session['pedashop_pdf_show_code'] = request.POST.get('show_code') == '1'
+        request.session['pedashop_pdf_show_class'] = request.POST.get('show_class') == '1'
+        request.session['pedashop_pdf_show_group'] = request.POST.get('show_group') == '1'
+        messages.success(request, 'Configuration export PDF PedaShop enregistrée pour la session.')
+        return redirect('pedashop_export_config')
+    return render(request, 'pedashop/export_pdf_config.html', {
+        'identity_mode': request.session.get('pedashop_pdf_identity_mode', 'anonymous'),
+        'show_code': request.session.get('pedashop_pdf_show_code', False),
+        'show_class': request.session.get('pedashop_pdf_show_class', True),
+        'show_group': request.session.get('pedashop_pdf_show_group', True),
+    })
 
 def export_bon_pdf(request, pk):
     bon = get_object_or_404(Bon, pk=pk)

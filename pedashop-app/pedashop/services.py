@@ -370,9 +370,16 @@ def commit_import_advanced(rows: List[dict], magasin, actor=None, check_stock_co
         'warnings': [],
     }
     if mode == 'replace_all' and not dry_run:
-        report['deleted_articles'] = Article.objects.count()
+        # On ne supprime plus les articles : l'historique PedaShop référence les articles
+        # via des clés protégées, notamment MouvementStock.article.
+        # Le remplacement total archive les anciens articles, vide les stocks opérationnels,
+        # puis réactive/met à jour les articles présents dans le fichier importé.
+        report['deleted_articles'] = Article.objects.filter(archive=False).count()
+        report['warnings'].append(
+            "Remplacement total : historique conservé ; anciens articles archivés et stocks reconstruits depuis le fichier."
+        )
         StockArticleMagasin.objects.all().delete()
-        Article.objects.all().delete()
+        Article.objects.update(archive=True)
 
     article_fields = [
         'reference_fabricant', 'fabricant', 'designation', 'description', 'code_ean', 'unite',
@@ -408,6 +415,7 @@ def commit_import_advanced(rows: List[dict], magasin, actor=None, check_stock_co
             for f in article_fields:
                 setattr(article, f, row.get(f, getattr(article, f, '')))
             article.designation = article.designation or ref
+            article.archive = False
             article.save()
             report['created_articles'] += 1
         else:
@@ -422,6 +430,9 @@ def commit_import_advanced(rows: List[dict], magasin, actor=None, check_stock_co
                     if value is not None and getattr(article, f) != value:
                         setattr(article, f, value)
                         changed.append(f)
+                if article.archive:
+                    article.archive = False
+                    changed.append('archive')
                 if changed:
                     article.save()
                 report['updated_articles'] += 1

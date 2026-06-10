@@ -1958,3 +1958,12 @@ def anomaly_create(request, system_pk):
         messages.success(request, 'Anomalie créée.')
         return redirect('system_anomaly_detail', anomaly.pk)
     return render(request, 'system_manager/form.html', {'form': form, 'title': f'Signaler une anomalie — {systeme.code}'})
+
+
+@system_admin_required
+def export_pdf_config(request):
+    if request.method == 'POST':
+        request.session['system_pdf_identity_mode'] = request.POST.get('identity_mode') or 'anonymous'
+        messages.success(request, 'Configuration export PDF System Manager enregistrée pour la session.')
+        return redirect('system_export_config')
+    return render(request, 'system_manager/export_pdf_config.html', {'identity_mode': request.session.get('system_pdf_identity_mode', 'anonymous')})

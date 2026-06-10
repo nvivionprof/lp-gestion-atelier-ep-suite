@@ -9,6 +9,7 @@ urlpatterns = [
     path('affichage/', views.affichage_dynamique, name='pedashop_affichage'),
     path('login/', views.login_view, name='pedashop_login'),
     path('logout/', views.logout_view, name='pedashop_logout'),
+    path('role/<str:role>/', views.switch_role, name='pedashop_switch_role'),
     path('api/health/', views.health, name='pedashop_health'),
     path('api/internal/sync-lp-core/', views.internal_sync_lp_core, name='pedashop_internal_sync_lp_core'),
     path('api/articles/search/', views.api_article_search, name='pedashop_api_article_search'),
@@ -60,5 +61,7 @@ urlpatterns = [
 
     path('transfert/', views.transfer_create, name='pedashop_transfer_create'),
     path('import-excel/', views.import_excel, name='pedashop_import_excel'),
+    path('maintenance/vider-bases/', views.database_purge, name='pedashop_database_purge'),
     path('exports/stock.pdf', views.export_stock_pdf, name='pedashop_stock_pdf'),
+    path('exports/configuration/', views.export_pdf_config, name='pedashop_export_config'),
 ]

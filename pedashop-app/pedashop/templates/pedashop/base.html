@@ -1,4 +1,3 @@
-
 {% load static %}
 <!doctype html>
 <html lang="fr">
@@ -13,32 +12,40 @@
   <div class="brand">
     <a href="{% url 'pedashop_dashboard' %}"><img src="{% static 'pedashop/img/logo-pedashop-header.png' %}" alt="PedaShop" class="brand-img"></a>
     <span class="version-badge">{{ PEDASHOP_VERSION }}</span>
-    {% if pedashop_current_user %}<span class="role-pill">{{ request.session.pedashop_active_role|default:'utilisateur' }}</span>{% endif %}
   </div>
   <nav>
     <a href="{% url 'pedashop_dashboard' %}">Tableau de bord</a>
-    <a href="{% url 'pedashop_stock_list' %}">Stock</a>
+    <a href="{% url 'pedashop_stock_list' %}">Catalogue / stock</a>
     {% if pedashop_current_user %}
-      <a href="{% url 'pedashop_article_list' %}">Articles</a>
-      <a href="{% url 'pedashop_bon_list' %}">Bons</a>
+      <details class="admin-dropdown"><summary>Menu utilisateur</summary><div class="admin-dropdown-menu">
+        <a class="admin-menu-item" href="{% url 'pedashop_bon_create' %}">Nouvelle demande / bon</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_bon_list' %}">Mes bons / demandes</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_reclamation_list' %}">Réclamations</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_article_list' %}">Articles</a>
+      </div></details>
+      {% if pedashop_current_user.is_storekeeper_like %}
       <details class="admin-dropdown"><summary>Actions magasinier</summary><div class="admin-dropdown-menu">
+        <a class="admin-menu-item" href="{% url 'pedashop_bon_list' %}">Bons à traiter</a>
         <a class="admin-menu-item" href="{% url 'pedashop_inventory_adjustment' %}">Inventaire</a>
         <a class="admin-menu-item" href="{% url 'pedashop_stock_entry' %}">Entrée / réassort</a>
         <a class="admin-menu-item" href="{% url 'pedashop_movement_list' %}">Mouvements</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_transfer_create' %}">Transfert magasin</a>
         <a class="admin-menu-item" href="{% url 'pedashop_alert_list' %}">Alertes</a>
-        <a class="admin-menu-item" href="{% url 'pedashop_reclamation_list' %}">Réclamations</a>
         <a class="admin-menu-item" href="{% url 'pedashop_affichage' %}">Affichage dynamique</a>
       </div></details>
+      {% endif %}
       {% if pedashop_current_user.is_teacher_like or pedashop_current_user.is_admin_like %}
       <details class="admin-dropdown"><summary>Administration</summary><div class="admin-dropdown-menu">
         <a class="admin-menu-item" href="{% url 'pedashop_import_excel' %}">Import articles</a>
         <a class="admin-menu-item" href="{% url 'pedashop_articles_template_xlsx' %}">Modèle import articles</a>
         <a class="admin-menu-item" href="{% url 'pedashop_articles_export_xlsx' %}">Export articles</a>
+        <a class="admin-menu-item" href="{% url 'pedashop_export_config' %}">Configuration exports PDF</a>
         <a class="admin-menu-item" href="{% url 'pedashop_magasin_list' %}">Magasins</a>
         <a class="admin-menu-item" href="{% url 'pedashop_emplacement_list' %}">Emplacements</a>
         <a class="admin-menu-item" href="{% url 'pedashop_user_list' %}">Utilisateurs</a>
         <a class="admin-menu-item" href="{% url 'pedashop_projection_list' %}">Pré-réservations TP</a>
         <a class="admin-menu-item" href="{% url 'pedashop_consultation_list' %}">Consultations</a>
+        {% if pedashop_current_user.is_admin_like %}<a class="admin-menu-item danger-link" href="{% url 'pedashop_database_purge' %}">Vider les bases PedaShop</a>{% endif %}
       </div></details>
       {% endif %}
       <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu">
@@ -50,8 +57,13 @@
         <a class="admin-menu-item" href="/tpmanager/">TP Manager</a>
         <a class="admin-menu-item" href="/pfmp/">PFMP Manager</a>
       </div></details>
+      <form class="role-switch-form" method="post" action="{% url 'pedashop_switch_role' 'utilisateur' %}">{% csrf_token %}<button class="session-pill {% if request.session.pedashop_active_role|default:'utilisateur' == 'utilisateur' %}active{% endif %}" type="submit">Utilisateur : {{ pedashop_current_user.username }}</button></form>
+      {% if pedashop_current_user.is_storekeeper_like %}<form class="role-switch-form" method="post" action="{% url 'pedashop_switch_role' 'magasinier' %}">{% csrf_token %}<button class="session-pill {% if request.session.pedashop_active_role == 'magasinier' %}active{% endif %}" type="submit">Magasinier : {{ pedashop_current_user.username }}</button></form>{% else %}<span class="session-pill disabled">Connexion magasinier</span>{% endif %}
+      <a class="logout-link" href="{% url 'pedashop_logout' %}">Déconnexion</a>
+    {% else %}
+      <a class="session-pill" href="{% url 'pedashop_login' %}">Connexion utilisateur</a>
+      <a class="session-pill" href="{% url 'pedashop_login' %}">Connexion magasinier</a>
     {% endif %}
-    {% if pedashop_current_user %}<a href="{% url 'pedashop_logout' %}">Déconnexion {{ pedashop_current_user.username }}</a>{% else %}<a href="{% url 'pedashop_login' %}">Connexion</a>{% endif %}
     <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide PedaShop">
       <a class="admin-menu-item" href="{% url 'pedashop_help' %}">Aide PedaShop</a>
       <a class="admin-menu-item" href="{% url 'pedashop_about' %}">À propos</a>

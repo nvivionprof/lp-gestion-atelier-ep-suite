@@ -27,6 +27,7 @@
         <a class="admin-menu-item" title="Créer une séquence" href="{% url 'sequence_manager:sequence_create' %}">Créer une séquence</a>
         <a class="admin-menu-item" title="Evaluation Manager" href="{% url 'evaluation_manager:dashboard' %}">Evaluation Manager</a>
         <a class="admin-menu-item" title="Paramétrage" href="{% url 'tp_referentials' %}">Paramétrage</a>
+        <a class="admin-menu-item" title="Configuration exports PDF" href="{% url 'tp_export_config' %}">Configuration exports PDF</a>
         <form method="post" action="{% url 'tp_sync_lp_core' %}">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser LP Core" type="submit"><span>Synchroniser LP Core</span></button></form>
         <form method="post" action="{% url 'tp_sync_system_manager' %}">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser systèmes" type="submit"><span>Synchroniser systèmes</span></button></form>
         <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
@@ -35,7 +36,7 @@
     {% endif %}
     <a href="{{ SYSTEM_MANAGER_PUBLIC_URL }}" target="_blank" rel="noopener">System Manager</a>
     <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
-    {% if tp_current_user %}<a href="{% url 'tp_logout' %}">Déconnexion {{ tp_current_user.username }}</a>{% else %}<a href="{% url 'tp_login' %}">Connexion</a>{% endif %}
+    {% if tp_current_user %}<span class="tp-session-pill">{% if tp_current_user.is_admin_like %}Admin{% elif tp_current_user.is_prof_like %}Professeur{% else %}Élève{% endif %} : {{ tp_current_user.username }}</span><a href="{% url 'tp_logout' %}">Déconnexion</a>{% else %}<a class="tp-session-pill" href="{% url 'tp_login' %}">Connexion</a>{% endif %}
     <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide TP Manager">
       <a class="admin-menu-item" href="{% url 'tp_help' %}">Aide TP / Séquences / Évaluations</a>
       <a class="admin-menu-item" href="{% url 'tp_about' %}">À propos</a>

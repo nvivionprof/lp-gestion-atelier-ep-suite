@@ -116,3 +116,6 @@
 .brand-logo{min-width:360px!important;display:flex!important;align-items:center!important;gap:.55rem!important;flex-wrap:wrap!important}
 .brand-img{height:66px!important;max-width:430px!important;width:auto!important;object-fit:contain!important;object-position:center!important;background:#fff!important;border-radius:10px!important;padding:4px 8px!important;border:1px solid rgba(255,255,255,.25)!important}
 @media(max-width:860px){.brand-logo{min-width:0!important}.brand-img{height:50px!important;max-width:260px!important}}
+
+/* RC10 — badge session TP Manager */
+.tp-session-pill{display:inline-block;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:7px 11px;font-weight:900;text-decoration:none}.topbar summary{font-weight:900!important}

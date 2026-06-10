@@ -1,6 +1,62 @@
 {% extends 'pedashop/base.html' %}
-{% block content %}<h1>Créer une demande / bon multi-articles</h1><div class="grid-main"><section class="card"><h2>1. Rechercher les articles</h2><form method="get" class="filterbar">{{ search_form.as_p }}<button class="btn" type="submit">Rechercher</button></form><div class="table-wrap"><table><thead><tr><th>Article</th><th>Stock</th><th>Ajouter</th></tr></thead><tbody>{% for s in results %}<tr><td><b>{{ s.article.reference_interne }}</b><br>{{ s.article.designation }}<br><span class="muted">{{ s.article.fabricant }} — {{ s.article.reference_fabricant }} — {{ s.article.categorie }} / {{ s.article.sous_categorie }}</span></td><td>{{ s.magasin.code }} : {{ s.stock_disponible }} dispo</td><td><form method="post" class="add-line-form">{% csrf_token %}<input type="hidden" name="action" value="add_line"><input type="hidden" name="article_id" value="{{ s.article.id }}"><input name="quantite" value="1" style="width:70px"><select name="type_sortie" class="type-sortie"><option value="definitive">Définitive</option><option value="temporaire">Temporaire</option></select><input type="date" name="date_retour_prevue" class="date-retour"><button class="btn small primary" type="submit">Ajouter</button></form></td></tr>{% empty %}<tr><td colspan="3">Aucun résultat.</td></tr>{% endfor %}</tbody></table></div></section><section class="card"><h2>2. Bon en cours</h2><form method="post" id="header-form">{% csrf_token %}<input type="hidden" name="action" value="submit_bon"><div class="form-grid">{{ header_form.as_p }}</div><h3>Articles ajoutés</h3><table><thead><tr><th>Article</th><th>Qté</th><th>Sortie</th><th>Retour</th></tr></thead><tbody>{% for c in cart %}<tr><td>{{ c.article_label }}</td><td>{{ c.quantite }}</td><td>{{ c.type_sortie }}</td><td>{{ c.date_retour_prevue }}</td></tr>{% empty %}<tr><td colspan="4">Aucun article ajouté.</td></tr>{% endfor %}</tbody></table><div class="actions"><button class="btn primary" type="submit">Valider le bon</button></form><form method="post">{% csrf_token %}<input type="hidden" name="action" value="clear_cart"><button class="btn" type="submit">Vider</button></form></div></section></div><script>
+{% block content %}
+<h1>Créer une demande / bon multi-articles</h1>
+<div class="bon-layout-30-70">
+  <section class="card bon-search-panel">
+    <h2>1. Recherche dynamique</h2>
+    <p class="muted">Recherche par code produit, référence, désignation ou code-barres. Compatible scannette.</p>
+    <label for="dynamic-article-search">Article</label>
+    <input id="dynamic-article-search" type="search" placeholder="Scanner ou saisir code / référence / désignation" autocomplete="off">
+    <div id="article-suggestions" class="suggestion-box"></div>
+    <div id="selected-article-card" class="selected-article-card muted">Aucun article sélectionné.</div>
+
+    <details class="advanced-box" open>
+      <summary>Filtres avancés</summary>
+      <form method="get" class="filterbar compact-filter">{{ search_form.as_p }}<button class="btn" type="submit">Filtrer</button></form>
+    </details>
+
+    <h3>Résultats rapides</h3>
+    <div class="table-wrap compact-results"><table><thead><tr><th>Article</th><th>Dispo</th></tr></thead><tbody>
+      {% for s in results %}<tr class="quick-result" data-id="{{ s.article.id }}" data-label="{{ s.article.reference_interne }} — {{ s.article.designation }}" data-info="{{ s.magasin.code }} : {{ s.stock_disponible }} dispo">
+        <td><b>{{ s.article.reference_interne }}</b><br>{{ s.article.designation }}</td><td>{{ s.stock_disponible }}</td>
+      </tr>{% empty %}<tr><td colspan="2">Aucun résultat.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+
+  <section class="card bon-current-panel">
+    <h2>2. Bon en cours</h2>
+    <form method="post" class="add-selected-form" id="add-selected-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_line">
+      <input type="hidden" name="article_id" id="selected-article-id">
+      <div class="bon-add-grid">
+        <div><label>Article sélectionné</label><input id="selected-article-label" readonly placeholder="Sélectionner un article à gauche"></div>
+        <div><label>Quantité</label><input name="quantite" value="1" inputmode="decimal"></div>
+        <div><label>Type sortie</label><select name="type_sortie" id="selected-type-sortie"><option value="definitive">Définitive</option><option value="temporaire">Temporaire</option></select></div>
+        <div><label>Date retour</label><input type="date" name="date_retour_prevue" id="selected-date-retour"></div>
+        <div class="wide"><label>Commentaire ligne</label><input name="commentaire_ligne"></div>
+        <div class="actions"><button class="btn primary" type="submit">Ajouter au bon</button></div>
+      </div>
+    </form>
+
+    <form method="post" id="header-form">{% csrf_token %}<input type="hidden" name="action" value="submit_bon">
+      <h3>En-tête du bon</h3>
+      <div class="form-grid">{{ header_form.as_p }}</div>
+      <h3>Articles ajoutés</h3>
+      <div class="table-wrap"><table><thead><tr><th>Article</th><th>Qté</th><th>Sortie</th><th>Retour</th></tr></thead><tbody>
+        {% for c in cart %}<tr><td>{{ c.article_label }}</td><td>{{ c.quantite }}</td><td>{{ c.type_sortie }}</td><td>{{ c.date_retour_prevue }}</td></tr>{% empty %}<tr><td colspan="4">Aucun article ajouté.</td></tr>{% endfor %}
+      </tbody></table></div>
+      <div class="actions"><button class="btn primary" type="submit">Valider le bon</button></form><form method="post">{% csrf_token %}<input type="hidden" name="action" value="clear_cart"><button class="btn" type="submit">Vider le bon</button></form></div>
+  </section>
+</div>
+<script>
 function syncHeader(form){['id_type_bon','id_magasin','id_professeur_responsable','id_nom_tp','id_classe_ou_groupe','id_commentaire'].forEach(function(id){var el=document.getElementById(id); if(el){var i=document.createElement('input'); i.type='hidden'; i.name=el.name; i.value=el.value; form.appendChild(i);}})}
-document.querySelectorAll('.add-line-form').forEach(function(form){form.addEventListener('submit',function(e){var type=form.querySelector('.type-sortie').value; var date=form.querySelector('.date-retour'); if(type==='temporaire' && !date.value){e.preventDefault(); alert('Date de retour obligatoire pour une sortie temporaire.'); return false;} syncHeader(form);});});
-document.querySelectorAll('.type-sortie').forEach(function(sel){function upd(){var date=sel.closest('form').querySelector('.date-retour'); if(sel.value==='temporaire'){date.style.display='inline-block'; date.required=true;} else {date.style.display='none'; date.required=false; date.value='';}} sel.addEventListener('change',upd); upd();});
-</script>{% endblock %}
+function selectArticle(id,label,info){document.getElementById('selected-article-id').value=id;document.getElementById('selected-article-label').value=label;document.getElementById('selected-article-card').innerHTML='<strong>'+label+'</strong><br>'+(info||'');}
+const input=document.getElementById('dynamic-article-search'); const box=document.getElementById('article-suggestions'); let timer=null;
+input.addEventListener('input',function(){clearTimeout(timer); const q=input.value.trim(); if(q.length<2){box.innerHTML='';return;} timer=setTimeout(function(){fetch('{% url 'pedashop_api_article_search' %}?q='+encodeURIComponent(q)).then(r=>r.json()).then(data=>{box.innerHTML='';(data.results||[]).forEach(function(a){let b=document.createElement('button');b.type='button';b.className='suggestion-row';b.innerHTML='<strong>'+a.reference_interne+'</strong> — '+a.designation+'<br><span class="muted">'+(a.reference_fabricant||'')+' '+(a.code_ean||'')+'</span>';b.onclick=function(){selectArticle(a.id,a.label,a.code_ean||'');box.innerHTML='';input.value=a.reference_interne;};box.appendChild(b);});});},180);});
+document.querySelectorAll('.quick-result').forEach(function(row){row.addEventListener('click',function(){selectArticle(row.dataset.id,row.dataset.label,row.dataset.info);});});
+document.getElementById('add-selected-form').addEventListener('submit',function(e){if(!document.getElementById('selected-article-id').value){e.preventDefault();alert('Sélectionner un article.');return false;}var type=document.getElementById('selected-type-sortie').value;var date=document.getElementById('selected-date-retour');if(type==='temporaire'&&!date.value){e.preventDefault();alert('Date de retour obligatoire pour une sortie temporaire.');return false;}syncHeader(this);});
+function updateReturnDate(){var date=document.getElementById('selected-date-retour'); if(document.getElementById('selected-type-sortie').value==='temporaire'){date.disabled=false;date.required=true;}else{date.disabled=true;date.required=false;date.value='';}}
+document.getElementById('selected-type-sortie').addEventListener('change',updateReturnDate); updateReturnDate();
+</script>
+{% endblock %}

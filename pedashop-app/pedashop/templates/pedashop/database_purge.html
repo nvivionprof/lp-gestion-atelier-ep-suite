@@ -1,0 +1,5 @@
+{% extends 'pedashop/base.html' %}
+{% block content %}
+<h1>Vider les bases PedaShop</h1>
+<div class="card danger-zone"><h2>Action destructive</h2><p>Cette action vide les données métier PedaShop. Les comptes utilisateurs synchronisés sont conservés.</p><ul><li>Articles : {{ counts.articles }}</li><li>Stocks : {{ counts.stocks }}</li><li>Mouvements : {{ counts.mouvements }}</li><li>Bons : {{ counts.bons }}</li><li>Magasins : {{ counts.magasins }}</li></ul><form method="post">{% csrf_token %}<label>Confirmation</label><input name="confirmation" placeholder="VIDER PEDASHOP"><label class="checkline"><input type="checkbox" name="include_stores" value="1"> Vider aussi magasins et emplacements</label><button class="btn danger" type="submit">Vider les bases PedaShop</button></form></div>{% if report %}<div class="card"><h2>Rapport</h2><table><tbody>{% for k,v in report.items %}<tr><th>{{ k }}</th><td>{{ v }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+{% endblock %}
