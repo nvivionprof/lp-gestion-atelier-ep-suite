@@ -628,9 +628,9 @@ def bulk_permissions(request):
                 for u in target_qs:
                     rights = set(u.rights_list())
                     if action == 'add_right':
-                        rights.update(selected_rights)
+                        rights.update([r for r in selected_rights if r])
                     else:
-                        rights.difference_update(selected_rights)
+                        rights.difference_update([r for r in selected_rights if r])
                     clean_rights = sorted({r.strip() for r in rights if r and r.strip()})
                     u.rights = ';'.join(clean_rights)
                     u.save(update_fields=['rights', 'updated_at'])

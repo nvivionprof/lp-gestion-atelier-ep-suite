@@ -1,7 +1,7 @@
 20a9947fa0116d1f4daa5e430bcb343324d65d3c04e3f6984078f6acc6b5da1c  ./.env.example
 36333fc87ca41d6544553c2e038751c6d36ebde728e92d5a4f3e41c0323f7f91  ./.gitattributes
 6bd5cc399cf26339422dec3485e7c2b65e9765342d210b5c4459b362b5aac0a1  ./.gitignore
-65cc7dcd7d79b119533cfe80a0c1dbd0ff3957601acfaf7d848779a57e514b8c  ./.suite-target-version
+6d25c122bb0ecc414c86b6cdbd6af466d210ea1f6bdd644262cabbbe9bf7e61d  ./.suite-target-version
 e77f785f6d4f620d12527bff165f4a72fcc240ba29b33ac2ffd3ba79bd3296d4  ./BOOTSTRAP-WGET.md
 7b13f34451b14bf1cd9255b4776357587ed6af2c9da404e47c0654aac27e4216  ./CHANGELOG_BETA2.md
 8822202a4e93ddb889e3416fd17bc0e6b3589ead139dab7475ef4e19209b8d48  ./CHECKLIST_RECETTE_RC_V0_0_1.md
@@ -17,11 +17,12 @@ b841c82f612bc66ee7e06fbd9171c80142b8c35db261b113be52c7477d15734f  ./README.md
 b9e2218ef0ad4ddb3fb933a5f850aed51b4de99154d0217d18dd0d0a669ce0ef  ./README_V0_0_1_RC4_PATCH.md
 7bb6eec2d06c6a47e72627ef52079a620c57b09bc0a5d275cf7790a58a99a18d  ./README_V0_0_1_RC5_PATCH.md
 becb9531a1133ea113925d413fe95752ee917f14daab894d85ce0969648df22c  ./SUIVI_TECHNIQUE_SUITE.md
-65cc7dcd7d79b119533cfe80a0c1dbd0ff3957601acfaf7d848779a57e514b8c  ./VERSION
-65cc7dcd7d79b119533cfe80a0c1dbd0ff3957601acfaf7d848779a57e514b8c  ./VERSION.txt
+6d25c122bb0ecc414c86b6cdbd6af466d210ea1f6bdd644262cabbbe9bf7e61d  ./VERSION
+6d25c122bb0ecc414c86b6cdbd6af466d210ea1f6bdd644262cabbbe9bf7e61d  ./VERSION.txt
 2f2eb5bb17aef3400de6a26664d0ab37dfba0443a9eaf68c150bda35ba021523  ./apply_rc2_fixes.sh
 2195803e651891a9b346c3a3ee8ff72551a46dd62f216ef8e02f88cf1fe9c8f5  ./apply_v0_0_1_rc10_pedashop_modes_exports_tp_system.sh
 4cacca044d31b643f9a841a12fac727143ec38a5ef050eb35e26af740fb658aa  ./apply_v0_0_1_rc11_ui_rights_pfmp_bulk.sh
+082d7c9e1befc58fbc2d890639024d624230050ad0263142d8d1b396336fae17  ./apply_v0_0_1_rc12_ui_pfmp_routes_rights.sh
 5e89f72ca5a303d49275247456b5918eec00acbf551a41ec721f048b20414fe6  ./apply_v0_0_1_rc3_fixes.sh
 6eaf8beeda8d14471795ba09ed61c5366a27829419aec92d5b0f6ee8b2dd4fb3  ./apply_v0_0_1_rc4_clean_fixes.sh
 2f2421dd92e067881495929f72fefb47d9c6188e449452550d524cf245dd6fba  ./apply_v0_0_1_rc5_final_clean.sh
@@ -50,6 +51,7 @@ bf9d5741008075df302fa61b71a032e3ff883ffbb1e3223eabc00acf08a329f6  ./docs/INSTALL
 7e86e37fc09e81a91598f363e09af02702924fb556a2e131737b3307bbe95eef  ./docs/PFMP_MANAGER_V0_3_0.md
 3f0664876588297f066388b46f1faf9cf9c8f4ec1f00bb54ddf291d31f4703a4  ./docs/PFMP_MANAGER_V0_3_2_CARTE_DISTANCE.md
 6f8fab21752668c456033f838e5c745f3dcc4941ecda03d60618e17d778326a4  ./docs/RC10_EXPORTS_PDF_ACTIVITE.md
+c2089425b2c52f8622e8ed82492edafd0f7482434221b4933b9549ef3964bfb5  ./docs/RC12_UI_DROITS_ROUTES_PFMP.md
 c27fb3cbd44dd92963734e985b09365eaf04cdb04677ab1acec45c725dd14cf9  ./docs/RC9_SYSTEM_MANAGER_CLEANUP_SYNC.md
 04a2c26952a30e6af3c592d4b84889244c4145ebc1e0c76ad156026021a72c16  ./docs/README_DEVELOPPEUR.md
 fb6912b1f7ef8f48f88f86d1ed3ae2d74d004955de32c4976924ed616e9139a6  ./docs/RELEASE_BETA2_V0_0_1.md
@@ -118,9 +120,6 @@ cb6a467ecdcd8d8968f26819e5557beccf0ba898b61f37179a0672a55208d7ab  ./docs/update-
 84ce0acc127de166a52f0929ac97a0c3f55edd540face3b58f47d0e175a68d15  ./docs/update-v2.9.5-hotfix-menus-admin.md
 cea3ebc63e5c0d544a50eed217bc3a683c14c986d1195b62c622a3ca9e311805  ./docs/upgrade-safe-v1.3.md
 6ebd098203a3ba670c56982654be97a24631de5b0459ce93b4b38bc41aeee644  ./docs/visual-identity-v1.5.md
-7e38e4477ed7895af51a1bd6b6fb2f94b57344f0585109eec36ce0528e20045a  ./imports/base_demo_lp_core.csv
-54a9a557100599509f184006eeec3fddfb3c73dea10efef907b3721e69e29af4  ./imports/base_demo_lp_core.xlsx
-35a1076f975501f78b0a6a89f52f35f07496f7a4840dc0fe82cb6024497fd2b1  ./imports/base_eleves_2025_2026.xlsx
 282ab14eadae022b586d5e73893e63e8fb40d70bb062adf035a104d52d2b3220  ./install.sh
 70a4a0224b60b86b5b477d48986f5a0b5492b505cdb77a5e94b9b4b791e038ee  ./inventory-app/index.html
 5e62c463a26189715ef03a5346561bca24c4b4c8d83c060fb2f744df6418d78c  ./lp-core-app/Dockerfile
@@ -150,6 +149,7 @@ a39521fe4eeb1af5493e0ef8f17aa59a64300c179102b79abdcb4158fe74e96e  ./lp-core-app/
 06994fd88ef97efbe7c4a91739bf21a939c2a6ce1e56f3b170583cea83ac8c76  ./lp-core-app/core/migrations/0012_beta2_access_modes_rgpd_photo.py
 8b5fc98cab7726cdfaaffefe10dab7fffedc7df12a60fd8861976efa71edc778  ./lp-core-app/core/migrations/0013_database_backup_restore_actions.py
 da8aacf055fd0e78af08531cacb1c1793c420e5500bd155dd8e6323c53c5f0b7  ./lp-core-app/core/migrations/0014_coreuser_rights_textfield.py
+e83a095a9c9ddbf309bcd785d342e339a5a1b44d8ad9e3fc5f13a1575455ffc5  ./lp-core-app/core/migrations/9991_rc12_coreuser_rights_textfield.py
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./lp-core-app/core/migrations/__init__.py
 984bb2a5edf3ec474a2d8dbb587c132c3d6b60d2804951e6e9ed31341436b082  ./lp-core-app/core/models.py
 d5c05751f64d929802ed8330f5dc31d68578b55be94d8fef669eb9795fd80830  ./lp-core-app/core/static/core/camera_upload.css
@@ -180,7 +180,7 @@ a1423c5a8fec1ecf7f30578fe13991baef8e84a911323fb23f9047b455bf158b  ./lp-core-app/
 df557416cdfff59190f7bede4bba45ab7fc7f764190b913364d49663b223c0ea  ./lp-core-app/core/templates/core/atelier_blocks.html
 ab420e7ea203dece52c400479b2ffb8e253bbfd4fd5a8ed020a9e41a90ef04e2  ./lp-core-app/core/templates/core/backup_restore.html
 7b273cfb04952837fb8e7e03e5f14274d862ecb4ff746c0103dd2eed6d669db2  ./lp-core-app/core/templates/core/base.html
-1103cd9378f701c0607acb5f4942aca5aea54259bee2d8521c724bd9d48cb4b4  ./lp-core-app/core/templates/core/bulk_permissions.html
+9478effc0933b6b41d45430318733719600689c724c764d3220c784bfbda09f9  ./lp-core-app/core/templates/core/bulk_permissions.html
 7867159cc13ebde6855cc8a09c0db9fedfca2fb8d31bbb5f1248eb94a17d41db  ./lp-core-app/core/templates/core/classes.html
 1829538f9febbc5b12618979ee412a69e1e29ff6e9d33ca623dc76077b1ab4d7  ./lp-core-app/core/templates/core/dashboard.html
 bc3c03ad69f49b00b633a35456074124cda91a9ed62fc28d4f310e1a05aea700  ./lp-core-app/core/templates/core/database_supervision.html
@@ -197,7 +197,7 @@ dbdb65051bf590b20f73f23ea9e030a927a468d4213e1c4ef401a0504017e638  ./lp-core-app/
 286ad88979921c9ce5bf1071170d51f80bc2f55f2e75c13af664dd91159017e6  ./lp-core-app/core/templates/core/users_import.html
 8bc10aa2a1b829e38df58e8db9a1fdbb521f6eb82ee121db694e5949e704466c  ./lp-core-app/core/templates/core/users_list.html
 ccfcd6fa6bd0105a0193363ea72b461b13f3bd334eee9211683254484f893abd  ./lp-core-app/core/templates/core/workshop_zones.html
-0caf0c600e7ac06515b5c7d4f648739014245d11357eada91f54e5f3a5b5d937  ./lp-core-app/core/views.py
+79fe9ad19ad6d6320b3409057e985efa8936d38f195c853c70dba0a47eca5ee3  ./lp-core-app/core/views.py
 e4d42cbda8639499a40a49bbe45245b2357de059aa86abb0193f92f913b062f3  ./lp-core-app/docker-entrypoint.sh
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./lp-core-app/lp_core_project/__init__.py
 3a5b3741e7c69f917c156bfb4466bf53315c55f06d6169380fb5d0303c92874a  ./lp-core-app/lp_core_project/settings.py
@@ -205,7 +205,7 @@ b2c101c976b9cdf0d11a5e415f9b315c29b00b16585aa3bf0bec2ea5bb256668  ./lp-core-app/
 33e81a9962bc65ddd74da2d93afa368f9701a51e5f0bff06a0ef110c0d53b809  ./lp-core-app/lp_core_project/wsgi.py
 4356ec02a6741ec1b96f7f1a5a87deee6048a0e2c5abcbf609fdd9f8f1c600c1  ./lp-core-app/manage.py
 0b992196940521798b403e0e6a143c2a814bd650d8b67d5c92ddf894b07eeae8  ./lp-core-app/requirements.txt
-d294878ddb32280ba3d7ca9089c65ea4cfaa959dd862d7a25a7029d20c9622a3  ./manifest.json
+75687c90fba5cb92a8ca4de0b006357a0204bbb3d610390717209492800ad8fc  ./manifest.json
 30d188267f977e4b1d80157568ad8a2a284ed849ce6845a85eaa425649c037b5  ./nginx/Dockerfile
 9bf39e70175286184a614441435b4e14717088a602e651b2557f00c9c22dc4d6  ./nginx/entrypoint.sh
 7d7624154bf399f90a3fa361830149e321b6c9a2eada0cb077187cbd3727b7e4  ./pedashop-app/Dockerfile
@@ -240,7 +240,7 @@ b9e8ecc3db6271ff06af5453185e9baaaca80b3eaa7c417712d575a00317ef6b  ./pedashop-app
 3f31597392663fc530867c788201cc370ede54c43dd211d2448a76f74b91e42b  ./pedashop-app/pedashop/static/pedashop/img/logo-pedashop-header.png
 afa52df8a037139146aaf2a6ea206a6de397b4864a8e3c584fe800911304a919  ./pedashop-app/pedashop/static/pedashop/img/logo-pedashop.png
 c560c7753db057d34ddcd7954092ea6c7ca8dee85d18abc0a2f6a701a3e8da42  ./pedashop-app/pedashop/static/pedashop/img/logo-pedashop.svg
-76f148a181b16bfd5d766e62754e18826f7928385d473129428295708286fd31  ./pedashop-app/pedashop/static/pedashop/pedashop.css
+4a9649b6a3e1da85fe5faaddcf2d37e2ea9eb5ef1726061ee540ff97eb22f355  ./pedashop-app/pedashop/static/pedashop/pedashop.css
 96f1c4cb1e287fa9ada40d670af3918bcf746494b47fb73ede9d6a93811d78fe  ./pedashop-app/pedashop/sync.py
 c2fd115de8936da4c8efb536e0e52f9d2b5338b5731370a3e80f6bba3cd82fed  ./pedashop-app/pedashop/templates/pedashop/about.html
 0165ef4f5e68551d4fbaf94f147d37fda98e7ce861f79c1011a69aa26adfed02  ./pedashop-app/pedashop/templates/pedashop/affichage.html
@@ -248,7 +248,7 @@ c2fd115de8936da4c8efb536e0e52f9d2b5338b5731370a3e80f6bba3cd82fed  ./pedashop-app
 306635cb108bb62dfecb05d03b6c0a764b7159f5aac0fce937e5ab782f0393fd  ./pedashop-app/pedashop/templates/pedashop/article_detail.html
 a5f05393e6a4fae4799f6c384a53ca0bf251e7adaaf04bd75f0ca2bed26a9f20  ./pedashop-app/pedashop/templates/pedashop/article_list.html
 c552e6466b7cfa1ebe80432d85e7cbc4c083da056bee741b5729bcb22e001eee  ./pedashop-app/pedashop/templates/pedashop/base.html
-eee3bb582f24624cd8e4f84677adc0fb9155ccc4f45ebf44e4dfd8b6bb9a7e54  ./pedashop-app/pedashop/templates/pedashop/bon_create.html
+6b384686e2b84bc093e11cb6798f72ff78aa325359deb0f298cf18d0d2a2967f  ./pedashop-app/pedashop/templates/pedashop/bon_create.html
 34e96313951ac12f5a72df1f39ce3c76c77fa665c2ad7bc6104c10be3e8fd3e0  ./pedashop-app/pedashop/templates/pedashop/bon_detail.html
 8d460c8e5d050060ad02c4b889b688cf1f77d8ad81fa2278b45918d6d56f6dcf  ./pedashop-app/pedashop/templates/pedashop/bon_distribute.html
 9c9ffcbeb852c24606727dfa236fdbff565cc1965a13ee2867ab4b8a0125ae10  ./pedashop-app/pedashop/templates/pedashop/bon_list.html
@@ -301,7 +301,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./pfmp-app/pfm
 1c444d900e3143997fa99f58d5214f51adb8af00bc567d47bf8ecc8a89c718d2  ./pfmp-app/pfmp_manager/models.py
 8b02b2c75521f78316ea9949022ebfafe92a0195940d79d91d43a09e5892128d  ./pfmp-app/pfmp_manager/permissions.py
 7670a7162ec5892fab95edf12cf0ea888cf1d36200009ca7b8dd9a0979732b58  ./pfmp-app/pfmp_manager/static/pfmp_manager/img/logo_pfmp_manager.png
-f73c1c97a579758af53613d64716983371b37e332d018f0ba690cb8814112be5  ./pfmp-app/pfmp_manager/static/pfmp_manager/pfmp.css
+5f22a8b99a808bb78784333d26fa805212f728ff75f196e4fc4edf9f2d1a88f6  ./pfmp-app/pfmp_manager/static/pfmp_manager/pfmp.css
 d8fa5bbff2ef4c1e52da9e8aa2b074eff61522830cde4bfa9a7fed85187188dc  ./pfmp-app/pfmp_manager/sync.py
 b3662ff41aa314bb18ed716de452aff3b1e92ea97bd3376e31916c5da3cef2d1  ./pfmp-app/pfmp_manager/templates/pfmp_manager/about.html
 bc402b7e549ebe0f2014a922c7f635a81fa6a6bfd1b63bcd9696746acf428afb  ./pfmp-app/pfmp_manager/templates/pfmp_manager/announcement_list.html
@@ -313,7 +313,7 @@ ff72491bd3da5b573863aede908de61897e54c34268200c8ee41eaf1e1b1a7f6  ./pfmp-app/pfm
 c4e51e178098dc30b9e4fe13194cbb0d219b323043cc129364c0a315d4ef78d9  ./pfmp-app/pfmp_manager/templates/pfmp_manager/form.html
 7884797e42837974ce6a3620fdc46369ad1a54044755b4bfc176bd81441800c8  ./pfmp-app/pfmp_manager/templates/pfmp_manager/help.html
 d6ae06c5e426521e85c2ea165538b976f36d84741bd692aeb3575200f3a468b6  ./pfmp-app/pfmp_manager/templates/pfmp_manager/login.html
-ced9ad11290618d28f1c8c7a4f85ae31439658e4fa56f024a1d9cd882d590c4f  ./pfmp-app/pfmp_manager/templates/pfmp_manager/map.html
+c9246cf0518703b8daec9bd62982c803dc69c6d672aa983c09d5fcaaf4a12321  ./pfmp-app/pfmp_manager/templates/pfmp_manager/map.html
 7aa7a9f959987372651d2822d048347956d3940b14b41f896fe1edca9622c180  ./pfmp-app/pfmp_manager/templates/pfmp_manager/period_list.html
 c4310aaf11668764c0de23a5c140544ecdbf712cf528b8fd062c3789c838c3e9  ./pfmp-app/pfmp_manager/urls.py
 71088050b0e1baf441af95d8680ef04461c6e8b5762cfb5c7f08d1d84a5278b0  ./pfmp-app/pfmp_manager/views.py
@@ -343,7 +343,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./safety-app/s
 a8f4cf3b50d666d58e4ae57ad211a68e20fc0058d34e08ab04b9775776e474bd  ./safety-app/safety_manager/models.py
 b9887d34098dce85faf659f8063edefe256cc90ef9182724b0a12f61ec903a83  ./safety-app/safety_manager/permissions.py
 4926e21099a670ee3cce30f8b0598fa7e022f322da0b9250b846dbb57bf54e33  ./safety-app/safety_manager/services.py
-78d73df5fa9d0c1396a558a45cbeead84fbabb204cdf5f1cfa8207f930e87fad  ./safety-app/safety_manager/static/safety_manager/base.css
+9f9a3a2cd09acfe094b12f26c194973b2e70c6a24d8456d03e40f2a742a36620  ./safety-app/safety_manager/static/safety_manager/base.css
 d5c05751f64d929802ed8330f5dc31d68578b55be94d8fef669eb9795fd80830  ./safety-app/safety_manager/static/safety_manager/camera_upload.css
 b9e8ecc3db6271ff06af5453185e9baaaca80b3eaa7c417712d575a00317ef6b  ./safety-app/safety_manager/static/safety_manager/camera_upload.js
 0b1573b8be8caf131a2ee07d24638c0690522645b8a9bfc6e78603717fea606c  ./safety-app/safety_manager/static/safety_manager/img/logo_safety_manager.png
@@ -427,6 +427,7 @@ e589d25b47357768710f55db4bae6af85dc338f33a07decbadaf53008fca23b3  ./scripts/post
 93c60057014389a032a9e21e9d366f0a549a9602eaf30763149d181580777162  ./scripts/postgres/init-multiple-databases.sh
 8c16836d1095a4a4fc74b590bf55fa80275f3df37290d13310b206cf0c52321c  ./scripts/postgres/restore_database_backup.sh
 e9afb7806f197edad7a892e268d5a20e04df852fe61dd4959575fe7aa9f7ab4a  ./scripts/release_apply.sh
+cabdec049d44bbf9c8f023f5587c3b890d9902e8d4491acf8b744b7aea3119d5  ./scripts/repair_routes_after_wsl.sh
 252c10390230a4dce791ea0894f531cf920b010ed5d16823e2a7be0fce0c783a  ./scripts/restart_module.sh
 27076d5f8d2a9cc40c6b19c1acc6f8e0631bbdf3efca7949eb6db5e23a89334c  ./scripts/restore_backup.sh
 8960b2acaad4ed805da3358300fc0207211b77220eaa6dde31997707e6b0bf01  ./scripts/restore_full_backup.sh
@@ -478,7 +479,7 @@ b9e8ecc3db6271ff06af5453185e9baaaca80b3eaa7c417712d575a00317ef6b  ./system-manag
 da17a4e27f80f89042c79a40a6fcd8b92934526c350cd0b9e3df40c1958769da  ./system-manager-app/system_manager/static/system_manager/drawing_canvas.js
 c05b40b14b2b2961f239f6b6ffcd7a3150ecc5a6d4f2fe470880a226ebe63b3c  ./system-manager-app/system_manager/static/system_manager/img/logo_system_manager.png
 35cc3a7408375f0cfb6c3cbd577bca6dc231f19ba2d611cdb6534a0dd8fa2e2b  ./system-manager-app/system_manager/static/system_manager/img/logo_system_manager.svg
-9a85e9c88adf3e5cb8ab3410b84356bccee7031190cc362f00c9018be5f5702a  ./system-manager-app/system_manager/static/system_manager/system.css
+d13d5bb674571145594fdd7331d400e4df352286710756ec921b3bb8dac9c18b  ./system-manager-app/system_manager/static/system_manager/system.css
 5d497f2c2d19c6544440ea67da1a8f1837d0cec34f0b4df715cfa47b30153cdb  ./system-manager-app/system_manager/sync.py
 b2332f20f66721c7b4fea560cca885129e0a5443fc7a0982a004c828581ac807  ./system-manager-app/system_manager/templates/system_manager/_document_row.html
 40f1c964fe9c9a7dbea4515b8c585a023276a7453c0c9a4a1e273fc3fb73b91f  ./system-manager-app/system_manager/templates/system_manager/about.html
@@ -701,7 +702,7 @@ d5c05751f64d929802ed8330f5dc31d68578b55be94d8fef669eb9795fd80830  ./tpmanager-ap
 b9e8ecc3db6271ff06af5453185e9baaaca80b3eaa7c417712d575a00317ef6b  ./tpmanager-app/tp_manager/static/tp_manager/camera_upload.js
 fdeeb0e539dc93bd9154a680a419aae4c518cf04dec55282d856a1cd32dfda8b  ./tpmanager-app/tp_manager/static/tp_manager/img/logo_tpmanager.png
 a1423c5a8fec1ecf7f30578fe13991baef8e84a911323fb23f9047b455bf158b  ./tpmanager-app/tp_manager/static/tp_manager/img/logo_tpmanager.svg
-78783f5117d151b3ac4ba645266d4e87df9753742b57917c89b5154776aae3a9  ./tpmanager-app/tp_manager/static/tp_manager/tp.css
+64b9fc2c12ce6ababab2e3e8afe0b9dbd81fcb59563a6a27f0aed25599b23e6e  ./tpmanager-app/tp_manager/static/tp_manager/tp.css
 5148db5010518fca021ab136996fdabc7d3e045c8ab96b6f71c7e4bb086c6061  ./tpmanager-app/tp_manager/sync.py
 f7486e02cf168213e72fe5a394115d169173d0cedf2a389d1502f85ebf03d0e7  ./tpmanager-app/tp_manager/templates/tp_manager/about.html
 a5b431f37a3c7e4da8a30382ae6545ece05cbc91fdc40fc5859c316c0fccf4fd  ./tpmanager-app/tp_manager/templates/tp_manager/base.html

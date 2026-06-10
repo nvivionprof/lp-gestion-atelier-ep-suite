@@ -1,5 +1,5 @@
 {% extends 'pedashop/base.html' %}
-{% block content %}
+{% block content %}<style>.container{max-width:100%!important;width:100%!important;margin:0!important;padding:18px 24px!important}.bon-create-rc12-fullwidth{width:100%}.bon-layout-30-70{display:grid!important;grid-template-columns:30% 70%!important;gap:16px!important;align-items:start!important}.bon-layout-30-70>.card{min-width:0!important}@media(max-width:1050px){.bon-layout-30-70{grid-template-columns:1fr!important}}</style><div class="bon-create-rc12-fullwidth">
 <h1>Créer une demande / bon multi-articles</h1>
 <div class="bon-create-layout">
   <section class="card bon-search-panel">
@@ -42,4 +42,4 @@ search.addEventListener('input', function(){clearTimeout(timer); const q=this.va
 document.getElementById('add-selected-form').addEventListener('submit',function(e){var type=this.querySelector('.type-sortie').value; var date=this.querySelector('.date-retour'); if(type==='temporaire' && !date.value){e.preventDefault(); alert('Date de retour obligatoire pour une sortie temporaire.'); return false;} syncHeader(this);});
 document.querySelectorAll('.type-sortie').forEach(function(sel){function upd(){var form=sel.closest('form'); var date=form.querySelector('.date-retour'); var wrap=form.querySelector('.date-retour-wrap'); if(sel.value==='temporaire'){if(wrap)wrap.style.display='block'; date.required=true;} else {if(wrap)wrap.style.display='none'; date.required=false; date.value='';}} sel.addEventListener('change',upd); upd();});
 </script>
-{% endblock %}
+</div>{% endblock %}

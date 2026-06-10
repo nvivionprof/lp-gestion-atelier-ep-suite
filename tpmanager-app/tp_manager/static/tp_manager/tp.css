@@ -143,3 +143,34 @@
 .lp-role-pill.active{background:#2563eb!important;border-color:#bfdbfe!important;}
 .lp-role-pill.secondary{background:#0f3f78!important;}
 .lp-role-pill:hover{filter:brightness(1.05);text-decoration:none!important;}
+
+/* RC12 — pastilles de connexion harmonisées type ToolMag */
+.topbar .lp-role-pill,
+.topbar .role-pill,
+.topbar .session-pill,
+.topbar .identity-pill,
+.topbar .user-pill,
+.topbar .active-role-pill {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:30px !important;
+  padding:.34rem .78rem !important;
+  border-radius:999px !important;
+  background:#1d4ed8 !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.45) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12), 0 1px 4px rgba(15,23,42,.18) !important;
+  font-size:.92rem !important;
+  font-weight:900 !important;
+  line-height:1.1 !important;
+  white-space:nowrap !important;
+  text-decoration:none !important;
+}
+.topbar .lp-role-pill.secondary,
+.topbar .lp-role-pill.magasinier,
+.topbar .role-pill.magasinier {
+  background:#1e40af !important;
+}
+.topbar .lp-role-pill.warning { background:#f97316 !important; }
+

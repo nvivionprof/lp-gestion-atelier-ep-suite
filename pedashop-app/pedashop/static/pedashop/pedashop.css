@@ -123,3 +123,34 @@ input[type=checkbox]{width:auto}
 
 /* V0.0.1-RC11 — bon dynamique 30/70 */
 .bon-create-layout{width:100%;display:grid;grid-template-columns:30% minmax(0,70%);gap:16px;align-items:start}.bon-search-panel,.bon-current-panel{min-width:0}.selected-article-card{display:grid;gap:.65rem;margin-top:1rem;border:1px solid #bfdbfe;background:#eff6ff;border-radius:14px;padding:1rem}.advanced-search{margin-top:1rem}.advanced-search summary{font-weight:900;cursor:pointer}.date-retour-wrap{display:none}@media(max-width:980px){.bon-create-layout{grid-template-columns:1fr}}
+
+/* RC12 — pastilles de connexion harmonisées type ToolMag */
+.topbar .lp-role-pill,
+.topbar .role-pill,
+.topbar .session-pill,
+.topbar .identity-pill,
+.topbar .user-pill,
+.topbar .active-role-pill {
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:30px !important;
+  padding:.34rem .78rem !important;
+  border-radius:999px !important;
+  background:#1d4ed8 !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.45) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12), 0 1px 4px rgba(15,23,42,.18) !important;
+  font-size:.92rem !important;
+  font-weight:900 !important;
+  line-height:1.1 !important;
+  white-space:nowrap !important;
+  text-decoration:none !important;
+}
+.topbar .lp-role-pill.secondary,
+.topbar .lp-role-pill.magasinier,
+.topbar .role-pill.magasinier {
+  background:#1e40af !important;
+}
+.topbar .lp-role-pill.warning { background:#f97316 !important; }
+

@@ -1,6 +1,13 @@
 
 {% extends 'core/base.html' %}
 {% block content %}
+<style>
+  .container{max-width:100%!important;width:100%!important;margin:0!important;padding:18px 24px!important;}
+  .bulk-rc12-full-width{width:100%;}
+  .bulk-rc12-full-width .rights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:.55rem;}
+  .bulk-rc12-full-width .rights-grid label{min-height:48px;}
+</style>
+<div class="bulk-rc12-full-width">
 <h1>Gestion par lot — droits, magasins, habilitations et RGPD</h1>
 <section class="panel">
   <h2>Fonctionnement</h2>
@@ -28,7 +35,13 @@
     <div class="bulk-block" data-actions="add_right remove_right">
       <h3>Droits</h3>
       <input class="choice-filter" data-target="rights-grid" placeholder="Rechercher droit par code, module ou désignation">
-      <div class="rights-grid" id="rights-grid">{% for right in rights_defs %}<label data-filter="{{ right.code }} {{ right.module }} {{ right.label }}"><input type="checkbox" name="rights_codes" value="{{ right.code }}"> <span>{{ right.code }}</span><small>{{ right.module }} — {{ right.label }}</small></label>{% empty %}<p>Aucun droit paramétré.</p>{% endfor %}</div>
+      <div class="rights-grid" id="rights-grid">{% for right in rights_defs %}<label data-filter="{{ right.code }} {{ right.module }} {{ right.label }}"><input type="checkbox" name="rights_codes" value="{{ right.code }}"> <span>{{ right.code }}</span><small>{{ right.module }} — {{ right.label }}</small></label>{% empty %}<p>Aucun droit paramétré.</p>{% endfor %}
+        <label data-filter="MODULE_PFMP core pfmp portail stage"><input type="checkbox" name="rights_codes" value="MODULE_PFMP"> <span>MODULE_PFMP</span><small>core — Voir PFMP Manager dans le portail</small></label>
+        <label data-filter="PFMP_ADMIN pfmp administration"><input type="checkbox" name="rights_codes" value="PFMP_ADMIN"> <span>PFMP_ADMIN</span><small>pfmp — Administration PFMP Manager</small></label>
+        <label data-filter="PFMP_PROF pfmp professeur suivi élèves"><input type="checkbox" name="rights_codes" value="PFMP_PROF"> <span>PFMP_PROF</span><small>pfmp — Suivi PFMP professeur</small></label>
+        <label data-filter="PFMP_ELEVE pfmp élève portail"><input type="checkbox" name="rights_codes" value="PFMP_ELEVE"> <span>PFMP_ELEVE</span><small>pfmp — Accès élève PFMP</small></label>
+        <label data-filter="PFMP_EXPORT_ACTIVITE pfmp export pdf"><input type="checkbox" name="rights_codes" value="PFMP_EXPORT_ACTIVITE"> <span>PFMP_EXPORT_ACTIVITE</span><small>pfmp — Export PDF activité PFMP</small></label>
+</div>
     </div>
 
     <div class="bulk-block" data-actions="set_role">
@@ -89,4 +102,5 @@ document.querySelectorAll('.choice-filter').forEach(input=>{
   });
 });
 </script>
+</div>
 {% endblock %}

@@ -112,6 +112,8 @@
       render();
     });
     render();
+    forceLeafletResize();
+    window.addEventListener('resize', forceLeafletResize);
   }
 
   function visibleCompanies() {
@@ -161,6 +163,13 @@
       radiusCircle = L.circle([lat, lng], {radius: Number(maxDistance.value) * 1000}).addTo(map);
     }
     renderResults(items);
+  }
+
+  function forceLeafletResize() {
+    if (!map || !map.invalidateSize) return;
+    map.invalidateSize(true);
+    setTimeout(function(){ map.invalidateSize(true); }, 250);
+    setTimeout(function(){ map.invalidateSize(true); }, 800);
   }
 
   function initMap() {
