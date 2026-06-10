@@ -1,6 +1,6 @@
 {
   "suite_name": "LP Gestion Atelier EP Suite",
-  "version": "V0.0.1-RC10",
+  "version": "V0.0.1-RC11",
   "name": "LP Gestion Atelier EP Suite — V0.0.1-RC5 exploitation encadrée",
   "description": "Release candidate technique de propreté : synchronisations post-installation sans erreur, API System Manager corrigée et dépendances requests stabilisées.",
   "type": "release-candidate-exploitation-ssh-github-wget-postgresql",

@@ -106,7 +106,7 @@ class CoreUser(TimeStampedModel):
     class_name = models.CharField(max_length=80, blank=True)
     group_name = models.CharField(max_length=80, blank=True)
     role_principal = models.CharField(max_length=50, choices=ROLE_CHOICES, default='utilisateur')
-    rights = models.CharField(max_length=255, blank=True, help_text='Droits séparés par ;')
+    rights = models.TextField(blank=True, help_text='Droits séparés par ;')
     active = models.BooleanField(default=True)
     school_year = models.CharField(max_length=20, blank=True)
     password_hash = models.CharField(max_length=255, blank=True)

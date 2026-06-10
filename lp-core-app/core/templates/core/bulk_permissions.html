@@ -7,6 +7,7 @@
   <p>Cette page applique une action à tous les utilisateurs cochés, ou à tous les utilisateurs filtrés si aucun utilisateur n'est coché.</p>
   <ul>
     <li><strong>Droits</strong> : ajout ou retrait des codes de droits consommés par les modules.</li>
+    <li><strong>Rôle principal</strong> : modifie le rôle de base LP Core : élève, utilisateur, magasinier, professeur, responsable ou administrateur.</li>
     <li><strong>Magasins</strong> : affecte les magasins LP Core aux utilisateurs. Les magasins <code>global</code> sont transversaux, les magasins <code>pedashop</code> ou <code>toolmag</code> ciblent un module.</li>
     <li><strong>Certifications</strong> : ajoute une habilitation/certification à tout le lot.</li>
     <li><strong>RGPD</strong> : règle en masse le droit à l'image et les blocages photo/document.</li>
@@ -22,12 +23,22 @@
 <form method="post">{% csrf_token %}<input type="hidden" name="q" value="{{ q }}"><input type="hidden" name="class_name" value="{{ class_name }}"><input type="hidden" name="formation" value="{{ formation }}"><input type="hidden" name="role" value="{{ role }}">
   <div class="panel"><button type="button" onclick="document.querySelectorAll('.user-check').forEach(c=>c.checked=true)">Tout cocher dans le filtre</button> <button type="button" onclick="document.querySelectorAll('.user-check').forEach(c=>c.checked=false)">Tout décocher</button></div>
   <section class="panel"><h2>Action à appliquer</h2>
-    <label>Action<select name="bulk_action" id="bulk-action" onchange="updateBulkBlocks()"><option value="add_right">Ajouter droit</option><option value="remove_right">Retirer droit</option><option value="add_store">Affecter magasin</option><option value="remove_store">Retirer magasin</option><option value="add_certification">Ajouter habilitation / certification</option><option value="set_image_authorization">Droit à l'image / opposition parentale</option></select></label>
+    <label>Action<select name="bulk_action" id="bulk-action" onchange="updateBulkBlocks()"><option value="add_right">Ajouter droit</option><option value="remove_right">Retirer droit</option><option value="set_role">Modifier rôle principal</option><option value="add_store">Affecter magasin</option><option value="remove_store">Retirer magasin</option><option value="add_certification">Ajouter habilitation / certification</option><option value="set_image_authorization">Droit à l'image / opposition parentale</option></select></label>
 
     <div class="bulk-block" data-actions="add_right remove_right">
       <h3>Droits</h3>
       <input class="choice-filter" data-target="rights-grid" placeholder="Rechercher droit par code, module ou désignation">
       <div class="rights-grid" id="rights-grid">{% for right in rights_defs %}<label data-filter="{{ right.code }} {{ right.module }} {{ right.label }}"><input type="checkbox" name="rights_codes" value="{{ right.code }}"> <span>{{ right.code }}</span><small>{{ right.module }} — {{ right.label }}</small></label>{% empty %}<p>Aucun droit paramétré.</p>{% endfor %}</div>
+    </div>
+
+    <div class="bulk-block" data-actions="set_role">
+      <h3>Rôle principal</h3>
+      <p class="muted">Le rôle principal sert de base aux modules. Les droits détaillés restent gérés séparément.</p>
+      <label>Nouveau rôle
+        <select name="target_role">
+          {% for code,label in roles %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </label>
     </div>
 
     <div class="bulk-block" data-actions="add_store remove_store">

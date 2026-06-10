@@ -631,10 +631,23 @@ def bulk_permissions(request):
                         rights.update(selected_rights)
                     else:
                         rights.difference_update(selected_rights)
-                    u.rights = ';'.join(sorted(rights))
+                    clean_rights = sorted({r.strip() for r in rights if r and r.strip()})
+                    u.rights = ';'.join(clean_rights)
                     u.save(update_fields=['rights', 'updated_at'])
                 messages.success(request, f'Droits mis à jour sur {target_qs.count()} utilisateur(s).')
                 log_core_action(actor, action.upper(), 'bulk', ';'.join(selected_rights))
+        elif action == 'set_role':
+            target_role = request.POST.get('target_role')
+            allowed_roles = {code for code, _label in CoreUser.ROLE_CHOICES}
+            if target_role in allowed_roles:
+                count = target_qs.count()
+                for u in target_qs:
+                    u.role_principal = target_role
+                    u.save(update_fields=['role_principal', 'updated_at'])
+                messages.success(request, f'Rôle principal mis à jour sur {count} utilisateur(s).')
+                log_core_action(actor, 'SET_ROLE_BULK', 'bulk', target_role)
+            else:
+                messages.error(request, 'Rôle principal invalide ou non renseigné.')
         elif action in {'add_store', 'remove_store'}:
             store_ids = request.POST.getlist('stores')
             if store_ids:

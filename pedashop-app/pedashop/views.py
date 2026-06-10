@@ -139,6 +139,21 @@ def logout_view(request):
     return redirect('pedashop_login')
 
 
+def switch_mode_view(request, mode):
+    user = require_login(request)
+    if not user:
+        return redirect('pedashop_login')
+    if mode not in {'utilisateur', 'magasinier'}:
+        messages.error(request, 'Mode PedaShop invalide.')
+        return redirect('pedashop_dashboard')
+    if mode == 'magasinier' and not user.is_storekeeper_like:
+        messages.error(request, 'Ce compte n’a pas le droit magasinier PedaShop.')
+        return redirect('pedashop_dashboard')
+    request.session['pedashop_active_role'] = mode
+    messages.success(request, f'Mode PedaShop actif : {mode}.')
+    return redirect(request.META.get('HTTP_REFERER') or 'pedashop_dashboard')
+
+
 @require_http_methods(['POST'])
 def switch_role(request, role):
     """Bascule explicite Utilisateur / Magasinier, comme dans ToolMag."""
@@ -439,6 +454,34 @@ def magasin_form(request, pk=None):
         messages.success(request, 'Magasin enregistré.')
         return redirect('pedashop_magasin_list')
     return render(request, 'pedashop/form.html', {'form': form, 'title': 'Magasin'})
+
+
+
+@require_http_methods(['POST'])
+def magasin_bulk_delete(request):
+    user = require_admin(request)
+    if not user:
+        return redirect('pedashop_login')
+    ids = request.POST.getlist('magasins')
+    deleted = 0
+    disabled = 0
+    for magasin in Magasin.objects.filter(id__in=ids):
+        try:
+            used = (
+                magasin.stocks.exists() or magasin.bons.exists() or magasin.projections.exists() or
+                magasin.reservations.exists() or magasin.mouvements_sortants.exists() or magasin.mouvements_entrants.exists()
+            )
+        except Exception:
+            used = True
+        if used:
+            magasin.actif = False
+            magasin.save(update_fields=['actif'])
+            disabled += 1
+        else:
+            magasin.delete()
+            deleted += 1
+    messages.success(request, f'Magasins traités : {deleted} supprimé(s), {disabled} désactivé(s) car liés à l’historique.')
+    return redirect('pedashop_magasin_list')
 
 
 def emplacement_list(request):

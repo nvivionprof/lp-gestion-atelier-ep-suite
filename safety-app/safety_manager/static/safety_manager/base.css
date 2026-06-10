@@ -79,3 +79,27 @@ h2{margin:.2rem 0 1rem;color:#111827}
 .help-page ol { margin-bottom: 1.5rem; }
 .help-page li { margin: .35rem 0; }
 .help-page .muted { opacity: .75; font-size: .95rem; }
+
+/* V0.0.1-RC11 — pastilles de connexion harmonisées type ToolMag */
+.lp-role-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:.35rem!important;
+  min-height:30px!important;
+  padding:.34rem .78rem!important;
+  border-radius:999px!important;
+  background:#1d4ed8!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.55)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 1px 4px rgba(15,23,42,.25)!important;
+  font-size:.92rem!important;
+  font-weight:900!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+}
+.lp-role-pill.active{background:#2563eb!important;border-color:#bfdbfe!important;}
+.lp-role-pill.secondary{background:#0f3f78!important;}
+.lp-role-pill:hover{filter:brightness(1.05);text-decoration:none!important;}

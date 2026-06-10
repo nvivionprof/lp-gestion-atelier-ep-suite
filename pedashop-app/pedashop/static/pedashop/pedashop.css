@@ -96,3 +96,30 @@ input[type=checkbox]{width:auto}
 
 /* RC10 — bandeau mode Utilisateur/Magasinier + bon 30/70 + maintenance */
 .role-switch-form{display:inline-block;margin:0}.role-switch-form button{font-family:inherit}.session-pill{display:inline-block;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:7px 11px;font-weight:800;text-decoration:none;cursor:pointer}.session-pill.active{background:var(--orange);border-color:var(--orange);box-shadow:0 0 0 2px rgba(255,255,255,.22) inset}.session-pill.disabled{opacity:.55}.logout-link{opacity:.86}.danger-link{color:#991b1b!important}.danger-zone{border-color:#fecaca;background:#fff7f7}.checkline{display:flex;gap:.45rem;align-items:center;margin:.55rem 0}.checkline input{width:auto}.bon-layout-30-70{display:grid;grid-template-columns:minmax(260px,30%) minmax(520px,70%);gap:16px;align-items:start}.bon-search-panel{min-width:0}.bon-current-panel{min-width:0}.compact-filter{grid-template-columns:1fr}.compact-results{max-height:520px}.quick-result{cursor:pointer}.quick-result:hover td{background:#e0f2fe!important}.selected-article-card{border:1px dashed var(--border);border-radius:12px;padding:10px;margin:10px 0;background:#f8fafc}.bon-add-grid{display:grid;grid-template-columns:1.6fr .55fr .8fr .9fr;gap:10px;align-items:end;margin-bottom:16px}.bon-add-grid .wide{grid-column:1 / span 3}.compact-filter p{margin:.25rem 0}.compact-filter label{font-size:.88rem}.compact-filter input,.compact-filter select{padding:7px}.admin-dropdown summary{font-weight:900!important}.topbar nav{font-weight:800}@media(max-width:1000px){.bon-layout-30-70{grid-template-columns:1fr}.bon-add-grid{grid-template-columns:1fr}.bon-add-grid .wide{grid-column:auto}}
+
+/* V0.0.1-RC11 — pastilles de connexion harmonisées type ToolMag */
+.lp-role-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:.35rem!important;
+  min-height:30px!important;
+  padding:.34rem .78rem!important;
+  border-radius:999px!important;
+  background:#1d4ed8!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.55)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 1px 4px rgba(15,23,42,.25)!important;
+  font-size:.92rem!important;
+  font-weight:900!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+}
+.lp-role-pill.active{background:#2563eb!important;border-color:#bfdbfe!important;}
+.lp-role-pill.secondary{background:#0f3f78!important;}
+.lp-role-pill:hover{filter:brightness(1.05);text-decoration:none!important;}
+
+/* V0.0.1-RC11 — bon dynamique 30/70 */
+.bon-create-layout{width:100%;display:grid;grid-template-columns:30% minmax(0,70%);gap:16px;align-items:start}.bon-search-panel,.bon-current-panel{min-width:0}.selected-article-card{display:grid;gap:.65rem;margin-top:1rem;border:1px solid #bfdbfe;background:#eff6ff;border-radius:14px;padding:1rem}.advanced-search{margin-top:1rem}.advanced-search summary{font-weight:900;cursor:pointer}.date-retour-wrap{display:none}@media(max-width:980px){.bon-create-layout{grid-template-columns:1fr}}

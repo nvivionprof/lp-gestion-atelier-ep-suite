@@ -30,7 +30,7 @@
     <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
     <a href="{{ TOOLMAG_PUBLIC_BASE_URL }}" target="_blank" rel="noopener">ToolMag</a>
     {% if safety_current_user and safety_current_user.is_admin_like %}<a title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>{% endif %}
-    {% if safety_current_user %}<a href="{% url 'safety_logout' %}">Déconnexion {{ safety_current_user.username }}</a>{% else %}<a href="{% url 'safety_login' %}">Connexion</a>{% endif %}
+    {% if safety_current_user %}<span class="lp-role-pill active safety-role-pill">Utilisateur : {{ safety_current_user.code|default:safety_current_user.username }}</span><a href="{% url 'safety_logout' %}">Déconnexion</a>{% else %}<a href="{% url 'safety_login' %}">Connexion</a>{% endif %}
     <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide Safety Manager">
       <a class="admin-menu-item" href="{% url 'safety_help' %}">Aide Safety</a>
       <a class="admin-menu-item" href="{% url 'safety_about' %}">À propos</a>

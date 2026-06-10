@@ -2,3 +2,45 @@
 
 /* PFMP Manager V0.3.2 — carte entreprises */
 .map-filters{grid-template-columns:1fr 260px auto}.geo-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem;align-items:end}.geo-actions{display:flex;flex-wrap:wrap;gap:.45rem}.button-secondary{background:#eaf5f6;color:var(--navy);border:1px solid var(--border)}.small-note{font-size:.92rem}.map-layout-real{align-items:start}.map-panel{padding:.7rem}.leaflet-map{min-height:590px;border-radius:16px;border:1px solid var(--border);overflow:hidden;background:#e8f1f3}.map-results-panel{max-height:650px;overflow:auto}.map-results{display:grid;gap:.65rem}.map-result-card{display:block;text-decoration:none;color:var(--text)}.map-result-card h3{margin:.1rem 0}.map-fallback{padding:1rem;color:var(--muted)}@media(max-width:1000px){.geo-tools,.map-filters{grid-template-columns:1fr}.leaflet-map{min-height:430px}.map-results-panel{max-height:none}}
+
+/* V0.0.1-RC11 — pastilles de connexion harmonisées type ToolMag */
+.lp-role-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:.35rem!important;
+  min-height:30px!important;
+  padding:.34rem .78rem!important;
+  border-radius:999px!important;
+  background:#1d4ed8!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.55)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 1px 4px rgba(15,23,42,.25)!important;
+  font-size:.92rem!important;
+  font-weight:900!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+}
+.lp-role-pill.active{background:#2563eb!important;border-color:#bfdbfe!important;}
+.lp-role-pill.secondary{background:#0f3f78!important;}
+.lp-role-pill:hover{filter:brightness(1.05);text-decoration:none!important;}
+
+/* V0.0.1-RC11 — correctif carte PFMP / Leaflet local minimal */
+.leaflet-map{width:100%!important;height:590px!important;min-height:590px!important;position:relative!important;overflow:hidden!important;background:#e8f1f3!important;}
+.leaflet-container{width:100%!important;height:100%!important;position:relative!important;overflow:hidden!important;outline:0!important;}
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute!important;left:0;top:0;}
+.leaflet-tile{max-width:none!important;max-height:none!important;user-select:none!important;pointer-events:none!important;}
+.leaflet-container img.leaflet-tile{max-width:none!important;}
+.leaflet-control-container .leaflet-top,.leaflet-control-container .leaflet-bottom{position:absolute!important;z-index:1000!important;pointer-events:none!important;}
+.leaflet-control-container .leaflet-top{top:0!important}.leaflet-control-container .leaflet-right{right:0!important}.leaflet-control-container .leaflet-bottom{bottom:0!important}.leaflet-control-container .leaflet-left{left:0!important}
+.leaflet-control{position:relative!important;z-index:1000!important;pointer-events:auto!important;float:left!important;clear:both!important;}
+@media(max-width:1000px){.leaflet-map{height:430px!important;min-height:430px!important;}}
+
+/* V0.0.1-RC11 — PFMP bandeau harmonisé avec les autres modules */
+.topbar{background:#0b2d4d!important;color:#fff!important;border-bottom:0!important;box-shadow:0 3px 10px rgba(0,0,0,.12)!important;}
+.brand span{display:inline-block!important;padding:.22rem .55rem!important;border-radius:999px!important;background:#eff6ff!important;color:#083665!important;font-size:.78rem!important;font-weight:900!important;white-space:nowrap!important;}
+nav a,summary{color:#fff!important;font-weight:800!important;}
+nav a:hover,summary:hover{background:rgba(255,255,255,.12)!important;}
+details div a{color:#083665!important;}

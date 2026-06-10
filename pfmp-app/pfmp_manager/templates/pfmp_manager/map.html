@@ -183,6 +183,10 @@
     }
     map.on('click', function (event) { setOrigin(event.latlng.lat, event.latlng.lng); });
     render();
+    // pfmp-map-invalidate-size : correction affichage tuiles Leaflet quand la carte est initialisée dans un layout responsive.
+    setTimeout(function(){ map.invalidateSize(); }, 150);
+    setTimeout(function(){ map.invalidateSize(); }, 600);
+    window.addEventListener('resize', function(){ map.invalidateSize(); });
   }
 
   document.getElementById('apply-distance').addEventListener('click', render);
