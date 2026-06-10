@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
 import os
 import csv
@@ -1813,6 +1814,7 @@ def api_atelier_blocks(request):
     } for b in blocks]})
 
 
+@csrf_exempt
 @require_http_methods(['POST'])
 def api_system_manager_referentials_import(request):
     """Import contrôlé des zones/sous-zones/blocs envoyés par System Manager."""

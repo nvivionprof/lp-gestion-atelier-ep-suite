@@ -153,3 +153,10 @@ Documentation : `docs/UPDATE_RAPIDE_GIT.md`.
 ```
 
 Documentation : `docs/HTTPS_DUCKDNS_RAPIDE.md`.
+
+
+## RC9 — System Manager
+
+- Suppression de l'ancien admin SQL `/system/admin-sql/`.
+- Synchronisation System Manager → LP Core corrigée côté CSRF/API interne.
+- Synchronisations visibles uniquement depuis Paramétrage.

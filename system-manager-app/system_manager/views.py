@@ -713,33 +713,7 @@ def api_systems(request):
     } for s in systems]})
 
 
-# --- Administration SQL base module ---
-def sql_database_admin(request):
-    from .permissions import system_admin_required
-    from .db_sql_admin import render_sql_admin
-    @system_admin_required
-    def _view(req):
-        return render_sql_admin(req, 'system_manager/sql_database.html', 'System Manager')
-    return _view(request)
-
-
-def sql_database_export(request):
-    from .permissions import system_admin_required
-    from .db_sql_admin import export_sql_response
-    @system_admin_required
-    def _view(req):
-        return export_sql_response(req, 'system-manager')
-    return _view(request)
-
-
-def sql_database_import(request):
-    from .permissions import system_admin_required
-    from .db_sql_admin import import_sql_response
-    @system_admin_required
-    def _view(req):
-        return import_sql_response(req, 'system_manager/sql_database.html', 'System Manager', 'system-manager')
-    return _view(request)
-
+# --- Administration SQL base module supprimée : sauvegarde/restauration centralisée dans LP Core ---
 def help_view(request):
     return render(request, 'system_manager/help.html')
 

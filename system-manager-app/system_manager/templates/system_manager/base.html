@@ -29,8 +29,6 @@
         <a class="admin-menu-item" title="Droits temporaires élèves" href="{% url 'system_temporary_permissions' %}">Droits temporaires élèves</a>
         <a class="admin-menu-item" title="Sauvegarde / import" href="{% url 'system_backup' %}">Sauvegarde / import</a>
         <a class="admin-menu-item" title="Historiques" href="{% url 'system_history' %}">Historiques</a>
-        <form method="post" action="{% url 'system_sync_lp_core' %}" onsubmit="return confirm('Attention : cette synchronisation LP Core → System Manager peut écraser certains référentiels locaux. Action réservée administrateur. Continuer ?');">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser LP Core" type="submit"><span>Synchroniser LP Core</span></button></form>
-        <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
         <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
       </div></details>
     {% endif %}
