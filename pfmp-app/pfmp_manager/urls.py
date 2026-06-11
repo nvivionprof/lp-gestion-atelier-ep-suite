@@ -16,6 +16,7 @@ urlpatterns=[
  path('affectations/',views.assignment_list,name='pfmp_assignment_list'),
  path('affectations/creer/',views.assignment_create,name='pfmp_assignment_create'),
  path('affectations/<int:assignment_pk>/demarches/creer/',views.step_create,name='pfmp_step_create'),
+ path('historique/',views.history_view,name='pfmp_history'),
  path('annonces/',views.announcement_list,name='pfmp_announcement_list'),
  path('annonces/creer/',views.announcement_create,name='pfmp_announcement_create'),
  path('aide/',views.help_view,name='pfmp_help'), path('a-propos/',views.about_view,name='pfmp_about'),

@@ -232,6 +232,139 @@ def company_geojson(request):
         })
     return JsonResponse({'type': 'FeatureCollection', 'features': features})
 
+
+
+def history_view(request):
+    """Historique PFMP : affectations, démarches et annonces.
+
+    Accès : prof/admin = historique complet ; élève = uniquement ses affectations et démarches.
+    Les filtres utilisent le principe retenu dans la suite : champ libre + suggestions.
+    """
+    user = current_pfmp_user(request)
+    if not user:
+        return redirect('pfmp_login')
+
+    q = (request.GET.get('q') or '').strip()
+    student_q = (request.GET.get('student') or '').strip()
+    company_q = (request.GET.get('company') or '').strip()
+    period_q = (request.GET.get('period') or '').strip()
+    formation_q = (request.GET.get('formation') or '').strip()
+    status = (request.GET.get('status') or '').strip()
+    event_type = (request.GET.get('event_type') or 'all').strip()
+
+    assignments = StudentAssignment.objects.select_related('student', 'period', 'company', 'teacher').order_by('-updated_at')
+    steps = StudentStep.objects.select_related('assignment', 'assignment__student', 'assignment__period', 'assignment__company', 'created_by').order_by('-date')
+    announcements = CompanyAnnouncement.objects.select_related('company').prefetch_related('formations').order_by('-created_at')
+
+    if not user.is_prof_like:
+        assignments = assignments.filter(student=user)
+        steps = steps.filter(assignment__student=user)
+        announcements = announcements.filter(status='published')
+        if user.formation_code:
+            announcements = announcements.filter(Q(formations__isnull=True) | Q(formations__code=user.formation_code)).distinct()
+
+    if q:
+        assignments = assignments.filter(
+            Q(student__first_name__icontains=q) | Q(student__last_name__icontains=q) | Q(student__code__icontains=q) |
+            Q(period__title__icontains=q) | Q(company__name__icontains=q) | Q(student_comment__icontains=q) | Q(teacher_comment__icontains=q)
+        )
+        steps = steps.filter(
+            Q(title__icontains=q) | Q(comment__icontains=q) | Q(assignment__student__first_name__icontains=q) |
+            Q(assignment__student__last_name__icontains=q) | Q(assignment__company__name__icontains=q) | Q(assignment__period__title__icontains=q)
+        )
+        announcements = announcements.filter(Q(title__icontains=q) | Q(company__name__icontains=q) | Q(missions__icontains=q) | Q(expected_profile__icontains=q))
+
+    if student_q:
+        student_filter = Q(student__code__icontains=student_q) | Q(student__username__icontains=student_q) | Q(student__first_name__icontains=student_q) | Q(student__last_name__icontains=student_q)
+        assignments = assignments.filter(student_filter)
+        steps = steps.filter(Q(assignment__student__code__icontains=student_q) | Q(assignment__student__username__icontains=student_q) | Q(assignment__student__first_name__icontains=student_q) | Q(assignment__student__last_name__icontains=student_q))
+
+    if company_q:
+        assignments = assignments.filter(Q(company__name__icontains=company_q) | Q(company__city__icontains=company_q))
+        steps = steps.filter(Q(assignment__company__name__icontains=company_q) | Q(assignment__company__city__icontains=company_q))
+        announcements = announcements.filter(Q(company__name__icontains=company_q) | Q(company__city__icontains=company_q))
+
+    if period_q:
+        assignments = assignments.filter(period__title__icontains=period_q)
+        steps = steps.filter(assignment__period__title__icontains=period_q)
+        announcements = announcements.filter(period_text__icontains=period_q)
+
+    if formation_q:
+        assignments = assignments.filter(Q(student__formation_code__icontains=formation_q) | Q(period__formations__code__icontains=formation_q)).distinct()
+        steps = steps.filter(Q(assignment__student__formation_code__icontains=formation_q) | Q(assignment__period__formations__code__icontains=formation_q)).distinct()
+        announcements = announcements.filter(formations__code__icontains=formation_q).distinct()
+
+    if status:
+        assignments = assignments.filter(status=status)
+        announcements = announcements.filter(status=status)
+
+    events = []
+    if event_type in {'all', 'assignment'}:
+        for a in assignments[:300]:
+            events.append({
+                'type': 'Affectation',
+                'date': a.updated_at,
+                'sort': a.updated_at.isoformat() if a.updated_at else '',
+                'title': f"{a.student.full_name} — {a.period.title}",
+                'subtitle': a.company.name if a.company else 'Entreprise non renseignée',
+                'status': a.get_status_display(),
+                'detail': a.teacher_comment or a.student_comment or '',
+            })
+    if event_type in {'all', 'step'}:
+        for s in steps[:300]:
+            events.append({
+                'type': 'Démarche',
+                'date': s.date,
+                'sort': s.date.isoformat() if s.date else '',
+                'title': s.title,
+                'subtitle': f"{s.assignment.student.full_name} — {s.assignment.period.title}",
+                'status': s.get_step_type_display(),
+                'detail': s.comment or '',
+            })
+    if event_type in {'all', 'announcement'}:
+        for a in announcements[:200]:
+            events.append({
+                'type': 'Annonce',
+                'date': a.created_at,
+                'sort': a.created_at.isoformat() if a.created_at else '',
+                'title': a.title,
+                'subtitle': a.company.name,
+                'status': a.get_status_display(),
+                'detail': a.missions or a.expected_profile or '',
+            })
+
+    events.sort(key=lambda item: item.get('sort') or '', reverse=True)
+
+    if request.GET.get('export') == 'csv':
+        import csv
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="pfmp_historique.csv"'
+        response.write('\ufeff')
+        writer = csv.writer(response, delimiter=';')
+        writer.writerow(['date', 'type', 'titre', 'contexte', 'statut', 'detail'])
+        for event in events:
+            writer.writerow([event['date'], event['type'], event['title'], event['subtitle'], event['status'], event['detail']])
+        return response
+
+    context = {
+        'events': events[:500],
+        'q': q,
+        'student_q': student_q,
+        'company_q': company_q,
+        'period_q': period_q,
+        'formation_q': formation_q,
+        'status': status,
+        'event_type': event_type,
+        'students': PfmpUser.objects.filter(role_principal='eleve', active=True).order_by('last_name', 'first_name')[:500],
+        'companies': Company.objects.exclude(status='inactive').order_by('name')[:500],
+        'periods': PfmpPeriod.objects.exclude(status='archived').order_by('-start_date')[:100],
+        'formations': Formation.objects.filter(active=True).order_by('code'),
+        'assignment_status_choices': StudentAssignment.STATUS,
+        'announcement_status_choices': CompanyAnnouncement.STATUS,
+        'user': user,
+    }
+    return render(request, 'pfmp_manager/history.html', context)
+
 def announcement_list(request):
     return render(request,'pfmp_manager/announcement_list.html',{'announcements':CompanyAnnouncement.objects.select_related('company').order_by('-created_at')[:200]})
 
