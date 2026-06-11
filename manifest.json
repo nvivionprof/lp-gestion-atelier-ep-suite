@@ -1,8 +1,11 @@
 {
-  "name": "lp-gestion-atelier-ep-suite-rc14-maintenance",
-  "version": "V0.0.1-RC14",
-  "type": "installation-complete-and-maintenance-tools",
-  "description": "RC14 corrective : installateur interactif, update, upgrade classique, compatibilité, sauvegarde, base démo optionnelle.",
-  "safe_for_web_update": false,
-  "requires_ssh": true
+  "version": "V0.0.1-RC15",
+  "type": "installation_complete_ssh_et_maintenance",
+  "contains": [
+    "install.sh fresh install avec suppression instances précédentes",
+    "scripts/reset_fresh_install.sh",
+    "migrations avant démarrage des apps",
+    "admin et collectstatic compatibles apps non démarrées",
+    "patch seed_core idempotent PROF-0001"
+  ]
 }

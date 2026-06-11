@@ -19,24 +19,21 @@ class Command(BaseCommand):
 
     def _upsert_user(self, *, code, username, password, first_name, last_name, formation, class_name, role, rights):
         CoreClass.objects.get_or_create(formation=formation, name=class_name, school_year='2025-2026')
-        user, created = CoreUser.objects.get_or_create(
-            code=code,
-            defaults={
-                'username': username,
-                'first_name': first_name,
-                'last_name': last_name,
-                'formation': formation,
-                'class_name': class_name,
-                'role_principal': role,
-                'rights': rights,
-                'active': True,
-                'school_year': '2025-2026',
-                'initial_password_for_sync': password,
-                'source': 'demo',
-            }
-        )
-        changed = False
+
+        # RC15 : idempotence forte. Les imports XLSX peuvent créer un utilisateur
+        # avec username=PROF-0001 mais code différent. On cherche donc d'abord
+        # par code, puis par username, avant toute création afin d'éviter
+        # l'erreur UNIQUE sur core_coreuser.username.
+        user = CoreUser.objects.filter(code=code).order_by('id').first()
+        if user is None:
+            user = CoreUser.objects.filter(username=username).order_by('id').first()
+        created = user is None
+        if user is None:
+            user = CoreUser(code=code, username=username)
+
+        changed = created
         for field, value in {
+            'code': code,
             'username': username,
             'first_name': first_name,
             'last_name': last_name,
@@ -49,10 +46,10 @@ class Command(BaseCommand):
             'initial_password_for_sync': password,
             'source': 'demo',
         }.items():
-            if getattr(user, field) != value:
+            if hasattr(user, field) and getattr(user, field) != value:
                 setattr(user, field, value)
                 changed = True
-        if created or not user.password_hash:
+        if created or not getattr(user, 'password_hash', ''):
             user.set_password(password)
             changed = True
         if changed:
