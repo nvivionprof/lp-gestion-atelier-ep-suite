@@ -1,11 +1,7 @@
 {
-  "version": "V0.0.1-RC15",
-  "type": "installation_complete_ssh_et_maintenance",
-  "contains": [
-    "install.sh fresh install avec suppression instances précédentes",
-    "scripts/reset_fresh_install.sh",
-    "migrations avant démarrage des apps",
-    "admin et collectstatic compatibles apps non démarrées",
-    "patch seed_core idempotent PROF-0001"
-  ]
+  "version": "V0.0.1-RC16",
+  "type": "upgrade classique",
+  "module": "PFMP Manager",
+  "description": "Cartographie entreprises, contacts visibles selon profil, import XLSX, suivi de recherche eleve, actions horodatees, export PDF.",
+  "apply_script": "apply_v0_0_1_rc16_pfmp_complete.sh"
 }
