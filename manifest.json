@@ -1,7 +1,13 @@
 {
-  "version": "V0.0.1-RC16",
-  "type": "upgrade classique",
-  "module": "PFMP Manager",
-  "description": "Cartographie entreprises, contacts visibles selon profil, import XLSX, suivi de recherche eleve, actions horodatees, export PDF.",
-  "apply_script": "apply_v0_0_1_rc16_pfmp_complete.sh"
+  "version": "V0.0.1-RC17",
+  "type": "upgrade classique PFMP Manager",
+  "requires": "V0.0.1-RC16 ou application complète du payload RC17",
+  "database_migration": "aucune migration supplémentaire par rapport à RC16 ; migration 0002_rc16_pfmp_complete incluse",
+  "features": [
+    "édition manuelle entreprise interface web",
+    "édition manuelle contact interface web",
+    "prochaine action dès l'ajout initial à une recherche",
+    "libellés de formulaires en français",
+    "bilan période/classe : élèves avec accord, sans accord, nombre d'entreprises sollicitées"
+  ]
 }
