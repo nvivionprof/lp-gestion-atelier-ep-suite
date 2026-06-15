@@ -1,0 +1,51 @@
+{% extends 'pfmp_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">Fiche entreprise</p>
+      <h1>{{ company.name }}</h1>
+      <p class="lead">{{ company.activity|default:company.source_activity|default:'Activité non renseignée' }}</p>
+    </div>
+    <div class="actions">
+      <a class="button" href="{% url 'pfmp_search_add_company' company.pk %}">Ajouter à ma recherche</a>
+      {% if user and user.is_prof_like %}<a class="button secondary" href="{% url 'pfmp_company_update' company.pk %}">Modifier l’entreprise</a>{% endif %}
+    </div>
+  </div>
+  <dl class="details-grid">
+    <dt>Adresse</dt><dd>{{ company.full_address|default:company.address|default:'—' }} {{ company.postal_code }} {{ company.city }}</dd>
+    <dt>Coordonnées GPS</dt><dd>{% if company.latitude and company.longitude %}{{ company.latitude }}, {{ company.longitude }}{% else %}À géocoder{% endif %}</dd>
+    <dt>Téléphone entreprise</dt><dd>{{ company.phone|default:'—' }}</dd>
+    <dt>Adresse mail générale</dt><dd>{{ company.email|default:'—' }}</dd>
+    <dt>Site web</dt><dd>{% if company.website %}<a href="{{ company.website }}" target="_blank" rel="noopener">{{ company.website }}</a>{% else %}—{% endif %}</dd>
+    <dt>Formations</dt><dd>{% for f in company.formations.all %}{{ f.code }}{% if not forloop.last %}, {% endif %}{% empty %}Toutes / non précisé{% endfor %}</dd>
+    <dt>Tags</dt><dd>{% for t in company.tags.all %}{{ t.label }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+    <dt>Visibilité élèves</dt><dd>{% if company.student_visible %}Visible{% else %}Masquée{% endif %}</dd>
+    <dt>Statut</dt><dd>{{ company.get_status_display }}</dd>
+  </dl>
+</section>
+<section class="panel">
+  <div class="section-title"><h2>Contacts associés</h2>{% if user and user.is_prof_like %}<a class="button" href="{% url 'pfmp_contact_create' company.pk %}">Ajouter un contact</a>{% endif %}</div>
+  <table>
+    <tr><th>Contact</th><th>Fonction</th><th>Type</th><th>Adresse mail visible</th>{% if user and user.is_prof_like %}<th>Téléphones</th><th>Proximité</th><th>Actions</th>{% endif %}</tr>
+    {% for contact in contacts %}
+      <tr>
+        <td>{% if user and user.is_prof_like %}{{ contact.full_name }}{% else %}{% if contact.student_visible %}{{ contact.full_name }}{% else %}Contact PFMP{% endif %}{% endif %}</td>
+        <td>{{ contact.role|default:'—' }}</td>
+        <td>{{ contact.get_contact_type_display }}</td>
+        <td>{{ contact.email|default:'—' }}</td>
+        {% if user and user.is_prof_like %}
+          <td>{{ contact.phone|default:'—' }}{% if contact.mobile_phone %} / {{ contact.mobile_phone }}{% endif %}</td>
+          <td>{% if contact.use_personal_location_for_student_search %}Adresse contact utilisable, masquée élèves{% else %}Non{% endif %}</td>
+          <td><a href="{% url 'pfmp_contact_update' company.pk contact.pk %}">Modifier</a></td>
+        {% endif %}
+      </tr>
+    {% empty %}<tr><td colspan="7">Aucun contact enregistré.</td></tr>{% endfor %}
+  </table>
+  <p class="muted">Règle élèves : seule l’adresse mail des contacts autorisés est visible. Les adresses personnelles et commentaires internes restent masqués.</p>
+</section>
+<section class="panel">
+  <h2>Recherches liées à cette entreprise</h2>
+  <table><tr><th>Élève</th><th>Période</th><th>État</th><th>Dernière action</th><th></th></tr>{% for s in searches %}<tr><td>{{ s.student.full_name }}</td><td>{{ s.period.title }}</td><td>{{ s.get_status_display }}</td><td>{{ s.last_action_at|default:'—' }}</td><td><a href="{% url 'pfmp_search_detail' s.pk %}">Ouvrir</a></td></tr>{% empty %}<tr><td colspan="5">Aucune recherche liée.</td></tr>{% endfor %}</table>
+</section>
+{% endblock %}

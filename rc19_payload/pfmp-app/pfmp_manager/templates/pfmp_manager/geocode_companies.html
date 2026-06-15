@@ -1,0 +1,48 @@
+{% extends 'pfmp_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">Cartographie PFMP</p>
+      <h1>Géocodage des entreprises</h1>
+    </div>
+    <div class="actions">
+      <a class="button secondary" href="{% url 'pfmp_company_list' %}">Retour aux entreprises</a>
+      <a class="button secondary" href="{% url 'pfmp_map' %}">Voir la carte</a>
+    </div>
+  </div>
+
+  <p class="muted">
+    Cette page recherche les coordonnées GPS à partir de l’adresse complète des entreprises.
+    Les entreprises sans coordonnées restent importées et visibles en liste, mais elles ne peuvent pas être placées sur la carte tant que le géocodage n’est pas fait.
+  </p>
+
+  <div class="cards">
+    <div class="card"><strong>{{ stats.total }}</strong><span>entreprises actives</span></div>
+    <div class="card"><strong>{{ stats.avec_coordonnees }}</strong><span>avec coordonnées</span></div>
+    <div class="card"><strong>{{ stats.a_geocoder }}</strong><span>à géocoder</span></div>
+    <div class="card"><strong>{{ stats.ok }}</strong><span>OK</span></div>
+    <div class="card"><strong>{{ stats.ambigu }}</strong><span>ambiguës</span></div>
+    <div class="card"><strong>{{ stats.echec }}</strong><span>échecs</span></div>
+    <div class="card"><strong>{{ stats.contacts_a_geocoder }}</strong><span>contacts de proximité à géocoder</span></div>
+  </div>
+
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="button">Lancer le géocodage</button>
+  </form>
+
+  <div class="alert info">
+    <strong>Confidentialité contacts :</strong>
+    les adresses personnelles des contacts ne sont jamais visibles par les élèves. Elles peuvent seulement servir de point de proximité si le contact est explicitement autorisé pour cela.
+  </div>
+</section>
+
+{% if output %}
+<section class="panel">
+  <h2>Rapport du dernier géocodage</h2>
+  <pre>{{ output }}</pre>
+</section>
+{% endif %}
+{% endblock %}

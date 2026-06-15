@@ -1,0 +1,12 @@
+{% extends 'pfmp_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-title"><div><p class="eyebrow">Organisation PFMP</p><h1>Périodes PFMP</h1></div><a class="button" href="{% url 'pfmp_period_create' %}">Créer une période</a></div>
+  <table>
+    <tr><th>Période</th><th>Dates</th><th>Classes concernées</th><th>Formations</th><th>Statut</th><th>Suivi</th></tr>
+    {% for p in periods %}
+      <tr><td>{{ p.title }}</td><td>{{ p.start_date }} → {{ p.end_date }}</td><td>{{ p.class_names|default:'—' }}</td><td>{% for f in p.formations.all %}{{ f.code }}{% if not forloop.last %}, {% endif %}{% empty %}Toutes{% endfor %}</td><td>{{ p.get_status_display }}</td><td><a href="{% url 'pfmp_period_summary' p.pk %}">Bilan recherches / accords</a></td></tr>
+    {% empty %}<tr><td colspan="6">Aucune période PFMP.</td></tr>{% endfor %}
+  </table>
+</section>
+{% endblock %}

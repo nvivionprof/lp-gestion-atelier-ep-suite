@@ -52,3 +52,18 @@ postgres-db/data/
 !postgres-db/.gitkeep
 # Suite local state
 .suite-version
+
+# LP Suite TLS secrets
+.env
+*.key
+*.pem
+*.csr
+ssl/fullchain.pem
+ssl/privkey.pem
+ssl/acme/*
+!ssl/.gitkeep
+!ssl/acme/.gitkeep
+certs/manual/*
+certs/acme/*
+!certs/manual/.gitkeep
+!certs/acme/.gitkeep

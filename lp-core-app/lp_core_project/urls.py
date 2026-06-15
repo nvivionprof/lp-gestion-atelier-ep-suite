@@ -1,10 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from core import views
 
 urlpatterns = [
+    path('tls/', include('lp_core_tls_manager.urls')),
     path('', views.dashboard, name='core_dashboard'),
     path('login/', views.login_view, name='core_login'),
     path('logout/', views.logout_view, name='core_logout'),
