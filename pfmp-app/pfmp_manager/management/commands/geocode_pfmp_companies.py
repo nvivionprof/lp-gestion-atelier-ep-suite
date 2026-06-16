@@ -33,8 +33,12 @@ def _clean_parts(*parts):
 
 
 def _company_query(company):
+    # full_address contient déjà l'adresse complète lorsqu'elle vient de l'import.
+    # Ne pas le concaténer avec address + CP + ville, sinon Nominatim reçoit une requête doublée.
+    if company.full_address:
+        return _clean_parts(company.full_address)
+
     return _clean_parts(
-        company.full_address,
         company.address,
         company.postal_code,
         company.city,
@@ -105,16 +109,25 @@ class Command(BaseCommand):
             writer.writeheader()
             writer.writerows(rows)
 
+    def _mark_company_failed(self, company, query, message, options):
+        if not options['dry_run']:
+            company.geocoding_status = GEOCODING_FAILED
+            company.osm_search_url = _osm_url(query)
+            if not company.full_address:
+                company.full_address = query[:360]
+            company.save(update_fields=['geocoding_status', 'osm_search_url', 'full_address', 'updated_at'])
+        return self._result_to_row('entreprise', company, query, GEOCODING_FAILED, message)
+
     def _geocode_company(self, company, options):
         query = _company_query(company)
         if not query:
-            return self._result_to_row('entreprise', company, query, GEOCODING_FAILED, 'Adresse absente')
+            return self._mark_company_failed(company, query, 'Adresse absente', options)
 
         data, err = self._fetch(query, provider_url=options['provider_url'], timeout=options['timeout'], user_agent=options['user_agent'])
         if err:
-            return self._result_to_row('entreprise', company, query, GEOCODING_FAILED, err)
+            return self._mark_company_failed(company, query, err, options)
         if not data:
-            return self._result_to_row('entreprise', company, query, GEOCODING_FAILED, 'Aucun résultat')
+            return self._mark_company_failed(company, query, 'Aucun résultat', options)
 
         first = data[0]
         lat = _decimal(first.get('lat'))
@@ -166,9 +179,16 @@ class Command(BaseCommand):
         elif options['retry_failed']:
             company_qs = company_qs.filter(geocoding_status__in=[GEOCODING_FAILED, GEOCODING_AMBIGUOUS])
         elif options['missing_only']:
-            company_qs = company_qs.filter(Q(latitude__isnull=True) | Q(longitude__isnull=True) | Q(geocoding_status='') | Q(geocoding_status=GEOCODING_PENDING))
+            company_qs = company_qs.filter(
+                Q(geocoding_status='') |
+                Q(geocoding_status=GEOCODING_PENDING) |
+                ((Q(latitude__isnull=True) | Q(longitude__isnull=True)) & ~Q(geocoding_status=GEOCODING_FAILED))
+            )
         else:
-            company_qs = company_qs.filter(Q(latitude__isnull=True) | Q(longitude__isnull=True) | Q(geocoding_status=GEOCODING_PENDING))
+            company_qs = company_qs.filter(
+                Q(geocoding_status=GEOCODING_PENDING) |
+                ((Q(latitude__isnull=True) | Q(longitude__isnull=True)) & ~Q(geocoding_status=GEOCODING_FAILED))
+            )
 
         if options['limit'] and options['limit'] > 0:
             company_qs = company_qs[:options['limit']]
@@ -186,7 +206,7 @@ class Command(BaseCommand):
             ok += 1 if row['statut'] == GEOCODING_OK else 0
             ambiguous += 1 if row['statut'] == GEOCODING_AMBIGUOUS else 0
             failed += 1 if row['statut'] == GEOCODING_FAILED else 0
-            self.stdout.write(f"{row['statut']} — {company.name} — {row['latitude']} {row['longitude']}")
+            self.stdout.write(f"{row['statut']} — {company.name} — {row['latitude']} {row['longitude']} — {row['message']}")
             if options['delay'] > 0:
                 time.sleep(options['delay'])
 

@@ -163,6 +163,7 @@ def company_list(request):
     q=(request.GET.get('q') or '').strip()
     formation=(request.GET.get('formation') or '').strip()
     status=(request.GET.get('status') or '').strip()
+    geocoding_status=(request.GET.get('geocoding_status') or '').strip()
     tag=(request.GET.get('tag') or '').strip()
     companies=Company.objects.exclude(status='inactive').prefetch_related('formations','tags')
     if not (user and user.is_prof_like):
@@ -173,13 +174,27 @@ def company_list(request):
         companies=companies.filter(Q(formations__code=formation)|Q(domains_text__icontains=formation))
     if status:
         companies=companies.filter(status=status)
+    if geocoding_status:
+        companies=companies.filter(geocoding_status=geocoding_status)
     if tag:
         companies=companies.filter(tags__code=tag)
     return render(request,'pfmp_manager/company_list.html',{
-        'companies':companies.distinct().order_by('name')[:500], 'q':q, 'formation':formation, 'status':status, 'tag':tag,
+        'companies':companies.distinct().order_by('name')[:500],
+        'q':q,
+        'formation':formation,
+        'status':status,
+        'geocoding_status':geocoding_status,
+        'tag':tag,
         'formations':Formation.objects.filter(active=True).order_by('code'),
         'tags':CompanyTag.objects.filter(active=True).order_by('label'),
         'status_choices':Company.STATUS_CHOICES,
+        'geocoding_status_choices':[
+            ('A_GEOCODER','À géocoder'),
+            ('OK','OK'),
+            ('AMBIGU','Ambigu'),
+            ('ECHEC','Échec'),
+            ('MANUEL','Manuel'),
+        ],
         'user':user,
     })
 
