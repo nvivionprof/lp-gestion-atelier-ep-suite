@@ -230,6 +230,14 @@ class EnrollmentHistory(TimeStampedModel):
 
 
 class Location(TimeStampedModel):
+    class LocationType(models.TextChoices):
+        CABINET = 'armoire', 'Armoire'
+        SHELF = 'etagere', 'Étagère'
+        BOARD = 'tableau', 'Tableau'
+        RACK = 'rayonnage', 'Rayonnage'
+        WORKSHOP_ZONE = 'zone', 'Zone atelier'
+        OTHER = 'autre', 'Autre'
+
     class Meta:
         ordering = ['name']
         verbose_name = 'Emplacement'
@@ -238,8 +246,34 @@ class Location(TimeStampedModel):
     name = models.CharField('Nom', max_length=120, unique=True)
     description = models.TextField('Description', blank=True)
 
+    location_type = models.CharField('Type d’emplacement', max_length=30, choices=LocationType.choices, default=LocationType.CABINET)
+    number = models.CharField('Numéro', max_length=50, blank=True, help_text='Exemple : A1, E2, TGBT1')
+    level = models.CharField('Niveau / tablette / tiroir', max_length=80, blank=True, help_text='Exemple : étagère 2, tablette haute, rangée B')
+    place = models.CharField('Place / crochet / bac', max_length=80, blank=True, help_text='Exemple : place 04, bac 12, crochet 08')
+    room = models.CharField('Salle / local', max_length=120, blank=True)
+    zone = models.CharField('Zone interne', max_length=120, blank=True)
+    active = models.BooleanField('Actif', default=True)
+
+    secure_storage = models.BooleanField('Emplacement sécurisé', default=False)
+    secure_cabinet = models.CharField('Numéro d’armoire sécurisée', max_length=50, blank=True)
+    secure_locker = models.CharField('Numéro de casier', max_length=50, blank=True)
+
+    def display_label(self):
+        if self.secure_storage:
+            cabinet = self.secure_cabinet or '—'
+            locker = self.secure_locker or '—'
+            return f'Armoire sécurisée {cabinet} — Casier {locker}'
+        parts = [
+            self.get_location_type_display(),
+            self.number,
+            self.level,
+            self.place,
+        ]
+        label = ' — '.join(str(p) for p in parts if p)
+        return label or self.name
+
     def __str__(self):
-        return self.name
+        return self.display_label()
 
 
 class Category(TimeStampedModel):
@@ -346,13 +380,51 @@ class EquipmentDocument(TimeStampedModel):
 
 
 class Component(TimeStampedModel):
+    class LineType(models.TextChoices):
+        COMPONENT = 'component', 'Composant réel'
+        SECTION = 'section', 'Section / compartiment'
+        NOTE = 'note', 'Note libre'
+
     equipment = models.ForeignKey(Equipment, related_name='components', on_delete=models.CASCADE)
-    name = models.CharField('Nom', max_length=160)
+
+    line_type = models.CharField(
+        'Type de ligne',
+        max_length=20,
+        choices=LineType.choices,
+        default=LineType.COMPONENT,
+        help_text='Composant réel, section/tiroir/poche, ou note libre.'
+    )
+
+    name = models.CharField(
+        'Nom',
+        max_length=160,
+        help_text='Pour une section : nom du tiroir, de la poche ou du compartiment.'
+    )
+
+    section_label = models.CharField(
+        'Libellé complémentaire',
+        max_length=160,
+        blank=True,
+        help_text='Optionnel : précision de section ou note.'
+    )
+
     required = models.BooleanField(default=True)
     expected_quantity = models.PositiveIntegerField(default=1)
     default_condition = models.CharField(max_length=30, choices=Equipment.Condition.choices, default=Equipment.Condition.GOOD)
     photo = models.ImageField(upload_to='components/', blank=True)
     sort_order = models.PositiveIntegerField(default=0)
+
+    mobile_page_break = models.BooleanField(
+        'Nouvelle page mobile',
+        default=True,
+        help_text='Pour une section : démarre une nouvelle page dans l’inventaire téléphone.'
+    )
+
+    inventory_required = models.BooleanField(
+        'À contrôler en inventaire',
+        default=True,
+        help_text='Désactiver pour une note ou une ligne informative.'
+    )
 
     class Meta:
         ordering = ['sort_order', 'name']
@@ -360,8 +432,29 @@ class Component(TimeStampedModel):
         verbose_name = 'Composant'
         verbose_name_plural = 'Composants'
 
+    @property
+    def is_section(self):
+        return self.line_type == self.LineType.SECTION
+
+    @property
+    def is_note(self):
+        return self.line_type == self.LineType.NOTE
+
+    @property
+    def is_component(self):
+        return self.line_type == self.LineType.COMPONENT
+
+    @property
+    def inventory_check_required(self):
+        return self.line_type == self.LineType.COMPONENT and self.inventory_required
+
+    def display_label(self):
+        if self.section_label:
+            return f'{self.name} — {self.section_label}'
+        return self.name
+
     def __str__(self):
-        return f'{self.equipment.code} / {self.name}'
+        return f'{self.equipment.code} / {self.display_label()}'
 
 
 class Loan(TimeStampedModel):
@@ -383,6 +476,35 @@ class Loan(TimeStampedModel):
     condition_return = models.CharField(max_length=30, choices=Equipment.Condition.choices, blank=True)
     comment_return = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=LoanStatus.choices, default=LoanStatus.OPEN)
+
+    destination_zone_core_id = models.CharField(
+        'ID zone LP Core',
+        max_length=80,
+        blank=True,
+        help_text='Identifiant de la zone atelier issue de LP Core.'
+    )
+    destination_zone_code = models.CharField(
+        'Code zone LP Core',
+        max_length=80,
+        blank=True
+    )
+    destination_zone_label_snapshot = models.CharField(
+        'Destination atelier',
+        max_length=180,
+        blank=True,
+        help_text='Libellé copié au moment de la sortie pour conserver l’historique.'
+    )
+    destination_zone_free_text = models.CharField(
+        'Destination libre',
+        max_length=180,
+        blank=True,
+        help_text='À utiliser si la zone LP Core n’est pas encore disponible.'
+    )
+
+
+    @property
+    def destination_label(self):
+        return self.destination_zone_label_snapshot or self.destination_zone_free_text or ''
 
     class Meta:
         ordering = ['-checked_out_at']

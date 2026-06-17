@@ -111,6 +111,18 @@ class CheckoutForm(forms.Form):
     due_at = forms.DateTimeField(label='Retour prévu', required=False, widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
     condition_out = forms.ChoiceField(label='État de sortie', choices=global_condition_choices)
     comment_out = forms.CharField(label='Commentaire sortie', required=False, widget=forms.Textarea(attrs={'rows': 3}))
+    destination_zone_core_id = forms.CharField(label='ID zone LP Core', required=False, widget=forms.HiddenInput)
+    destination_zone_code = forms.CharField(label='Code zone LP Core', required=False)
+    destination_zone_label_snapshot = forms.CharField(
+        label='Zone destination atelier',
+        required=False,
+        help_text='Zone issue de LP Core. Recommandé pour les vues dynamiques par zone.'
+    )
+    destination_zone_free_text = forms.CharField(
+        label='Destination libre',
+        required=False,
+        help_text='À utiliser si la zone LP Core n’existe pas encore.'
+    )
 
     def __init__(self, *args, current_storekeeper=None, current_borrower=None, **kwargs):
         self.current_storekeeper = current_storekeeper
@@ -310,9 +322,41 @@ class EquipmentForm(forms.ModelForm):
 class ComponentEditForm(forms.ModelForm):
     class Meta:
         model = Component
-        fields = ['name', 'required', 'expected_quantity', 'default_condition', 'photo', 'sort_order']
-        labels = {'name': 'Composant', 'required': 'Présent normalement', 'expected_quantity': 'Qté', 'default_condition': 'Statut', 'sort_order': 'Ordre'}
-        widgets = {'photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'data-camera-upload': '1'})}
+        fields = [
+            'line_type',
+            'name',
+            'section_label',
+            'required',
+            'expected_quantity',
+            'default_condition',
+            'photo',
+            'sort_order',
+            'mobile_page_break',
+            'inventory_required',
+        ]
+        labels = {
+            'line_type': 'Type de ligne',
+            'name': 'Nom / libellé',
+            'section_label': 'Complément',
+            'required': 'Présent normalement',
+            'expected_quantity': 'Qté',
+            'default_condition': 'Statut',
+            'sort_order': 'Ordre',
+            'mobile_page_break': 'Nouvelle page sur téléphone',
+            'inventory_required': 'À contrôler en inventaire',
+        }
+        widgets = {
+            'photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'data-camera-upload': '1'})
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        line_type = cleaned.get('line_type')
+        if line_type in [Component.LineType.SECTION, Component.LineType.NOTE]:
+            cleaned['required'] = False
+            cleaned['expected_quantity'] = 1
+            cleaned['inventory_required'] = False
+        return cleaned
 
 
 class EquipmentDocumentEditForm(forms.ModelForm):

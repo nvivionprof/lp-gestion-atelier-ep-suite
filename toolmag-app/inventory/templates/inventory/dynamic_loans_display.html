@@ -1,0 +1,62 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<section class="panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">ToolMag</p>
+      <h1>Affichage dynamique des sorties</h1>
+      <p class="muted">Vue filtrable par zone destination LP Core, statut et retard de retour.</p>
+    </div>
+  </div>
+
+  <form class="filters" method="get">
+    <label>Zone LP Core ID
+      <input name="zone_core_id" value="{{ zone_core_id }}" placeholder="Ex. 12">
+    </label>
+    <label>Code / libellé zone
+      <input name="zone" value="{{ zone_code }}" placeholder="Ex. BOX_2 ou Atelier électricité">
+    </label>
+    <label>Statut
+      <select name="status">
+        <option value="open" {% if status_filter == 'open' %}selected{% endif %}>En cours</option>
+        <option value="late" {% if status_filter == 'late' %}selected{% endif %}>En retard</option>
+        <option value="problem" {% if status_filter == 'problem' %}selected{% endif %}>Avec anomalie</option>
+        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Tous</option>
+      </select>
+    </label>
+    <button>Filtrer</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Sorties affichées</h2>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Matériel</th>
+          <th>Emprunteur</th>
+          <th>Destination</th>
+          <th>Sortie</th>
+          <th>Retour prévu</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loan in loans %}
+        <tr class="{% if loan.is_late %}danger{% endif %}">
+          <td><strong>{{ loan.equipment.code }}</strong><br>{{ loan.equipment.name }}</td>
+          <td>{{ loan.borrower.first_name }} {{ loan.borrower.last_name }}<br><small>{{ loan.borrower.class_name }} {{ loan.borrower.group_name }}</small></td>
+          <td>{{ loan.destination_label|default:"—" }}</td>
+          <td>{{ loan.checked_out_at|date:"d/m/Y H:i" }}</td>
+          <td>{% if loan.due_at %}{{ loan.due_at|date:"d/m/Y H:i" }}{% else %}—{% endif %}</td>
+          <td>{% if loan.is_late %}EN RETARD{% else %}{{ loan.get_status_display }}{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Aucune sortie pour ce filtre.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -53,4 +53,5 @@ urlpatterns = [
     path('evaluation/', views.evaluation_dashboard, name='evaluation_dashboard'),
     path('evaluation/seances/', views.evaluation_sessions, name='evaluation_sessions'),
     path('evaluation/export/', views.evaluation_export_excel, name='evaluation_export_excel'),
+    path('display/dynamic-loans/', views.dynamic_loans_display, name='dynamic_loans_display'),
 ]

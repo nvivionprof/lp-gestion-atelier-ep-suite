@@ -1,20 +1,282 @@
 {% extends 'inventory/base.html' %}
 {% block content %}
 <h1>Composants — {{ equipment.code }} {{ equipment.name }}</h1>
+
 <section class="panel">
-  <h2>{% if component %}Modifier un composant{% else %}Ajouter un composant{% endif %}</h2>
+  <h2>{% if component %}Modifier une ligne{% else %}Ajouter une ligne{% endif %}</h2>
+  <p class="hint">
+    Une ligne peut être un composant réel, une section/compartiment ou une note.
+    Les sections et notes ne sont pas contrôlées en inventaire : pas de quantité, pas d’état, pas de case à cocher.
+  </p>
+
   <form method="post" enctype="multipart/form-data">{% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Enregistrer</button>
-    <a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Retour fiche</a>
+    <div class="formgrid">
+      {% for field in form %}
+        <label class="component-field component-field-{{ field.name }}">
+          {{ field.label }}
+          {{ field }}
+          {% if field.help_text %}<small class="hint">{{ field.help_text }}</small>{% endif %}
+          {% if field.errors %}<small class="error">{{ field.errors }}</small>{% endif %}
+        </label>
+      {% endfor %}
+    </div>
+    <div class="actions">
+      <button type="submit">Enregistrer</button>
+      <a class="button secondary" href="{% url 'equipment_detail' equipment.code %}">Retour fiche</a>
+    </div>
   </form>
 </section>
+
 <section class="panel">
-  <h2>Composants existants</h2>
-  <table><thead><tr><th>Nom</th><th>Qté</th><th>Présent</th><th>Statut</th><th>Photo</th><th>Action</th></tr></thead><tbody>
-  {% for c in components %}
-    <tr><td>{{ c.name }}</td><td>{{ c.expected_quantity }}</td><td>{{ c.required|yesno:'Oui,Non' }}</td><td>{{ c.get_default_condition_display }}</td><td>{% if c.photo %}<img class="component-thumb" src="{{ c.photo.url }}">{% else %}-{% endif %}</td><td><a class="button secondary" href="?edit={{ c.id }}">Modifier</a>{% if can_delete %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="delete_id" value="{{ c.id }}"><button class="danger" type="submit">Supprimer</button></form>{% endif %}</td></tr>
-  {% empty %}<tr><td colspan="6">Aucun composant.</td></tr>{% endfor %}
-  </tbody></table>
+  <div class="section-title">
+    <div>
+      <h2>Structure du matériel composé</h2>
+      <p class="hint">Sur PC, utilise la souris pour glisser-déposer les lignes. Sur téléphone, le drag and drop est désactivé.</p>
+    </div>
+  </div>
+
+  <form method="post" id="component-reorder-form">{% csrf_token %}
+    <input type="hidden" name="reorder_components" value="1">
+    <input type="hidden" name="component_order" id="component-order-input">
+  </form>
+
+  <div class="component-lines" id="component-lines">
+    {% for c in components %}
+    <article class="component-line component-line-{{ c.line_type }}" data-component-id="{{ c.id }}" draggable="false">
+      <div class="component-drag-handle" title="Glisser pour déplacer">☰</div>
+
+      <div class="component-line-photo">
+        {% if c.photo %}
+          <img class="component-thumb" src="{{ c.photo.url }}" alt="{{ c.name }}">
+        {% else %}
+          <span class="muted">Photo</span>
+        {% endif %}
+      </div>
+
+      <div class="component-line-main">
+        {% if c.line_type == 'section' %}
+          <strong class="component-line-title">Section — {{ c.name }}</strong>
+          {% if c.section_label %}<p class="hint">{{ c.section_label }}</p>{% endif %}
+          {% if c.mobile_page_break %}<span class="badge">Nouvelle page mobile</span>{% endif %}
+        {% elif c.line_type == 'note' %}
+          <strong class="component-line-title">Note — {{ c.name }}</strong>
+          {% if c.section_label %}<p class="hint">{{ c.section_label }}</p>{% endif %}
+        {% else %}
+          <strong class="component-line-title">{{ c.name }}</strong>
+          <p class="hint">
+            Qté : {{ c.expected_quantity }} —
+            Présent normalement : {{ c.required|yesno:'Oui,Non' }} —
+            État : {{ c.get_default_condition_display }}
+          </p>
+        {% endif %}
+        <small>Ordre : {{ c.sort_order }}</small>
+      </div>
+
+      <div class="component-line-actions">
+        <a class="button secondary" href="?edit={{ c.id }}">Modifier</a>
+        {% if can_delete %}
+        <form method="post" style="display:inline">{% csrf_token %}
+          <input type="hidden" name="delete_id" value="{{ c.id }}">
+          <button class="danger" type="submit">Supprimer</button>
+        </form>
+        {% endif %}
+      </div>
+    </article>
+    {% empty %}
+      <p class="muted">Aucune ligne.</p>
+    {% endfor %}
+  </div>
+
+  <div class="actions dragdrop-actions">
+    <button class="button" type="button" id="save-component-order" disabled>Enregistrer l’ordre</button>
+  </div>
 </section>
+
+<script>
+(function(){
+  const typeField = document.getElementById('id_line_type');
+  if (!typeField) return;
+
+  const fieldsToDisableForInfoLines = [
+    'required',
+    'expected_quantity',
+    'default_condition',
+    'inventory_required'
+  ];
+
+  function syncFields(){
+    const isInfoLine = typeField.value === 'section' || typeField.value === 'note';
+
+    fieldsToDisableForInfoLines.forEach(name => {
+      const wrapper = document.querySelector('.component-field-' + name);
+      const field = document.getElementById('id_' + name);
+      if (!wrapper || !field) return;
+
+      wrapper.style.display = isInfoLine ? 'none' : '';
+      if (isInfoLine) {
+        if (field.type === 'checkbox') field.checked = false;
+        if (name === 'expected_quantity') field.value = '1';
+      }
+    });
+
+    const mobileWrapper = document.querySelector('.component-field-mobile_page_break');
+    if (mobileWrapper) {
+      mobileWrapper.style.display = typeField.value === 'section' ? '' : 'none';
+    }
+  }
+
+  typeField.addEventListener('change', syncFields);
+  syncFields();
+})();
+</script>
+
+<script>
+(function(){
+  const list = document.getElementById('component-lines');
+  const saveBtn = document.getElementById('save-component-order');
+  const orderInput = document.getElementById('component-order-input');
+  const reorderForm = document.getElementById('component-reorder-form');
+
+  if (!list || !saveBtn || !orderInput || !reorderForm) return;
+
+  const isFinePointer = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+  if (!isFinePointer) {
+    document.querySelectorAll('.component-drag-handle').forEach(h => h.style.display = 'none');
+    return;
+  }
+
+  let dragged = null;
+
+  list.querySelectorAll('.component-line').forEach(item => {
+    item.setAttribute('draggable', 'true');
+
+    item.addEventListener('dragstart', e => {
+      dragged = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      dragged = null;
+      saveBtn.disabled = false;
+    });
+  });
+
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (!dragged) return;
+
+    const afterElement = getDragAfterElement(list, e.clientY);
+    if (afterElement == null) {
+      list.appendChild(dragged);
+    } else {
+      list.insertBefore(dragged, afterElement);
+    }
+  });
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.component-line:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      }
+
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  saveBtn.addEventListener('click', () => {
+    const ids = [...list.querySelectorAll('.component-line')]
+      .map(el => el.dataset.componentId)
+      .filter(Boolean);
+
+    orderInput.value = ids.join(',');
+    reorderForm.submit();
+  });
+})();
+</script>
+
+<style>
+.component-lines {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.component-line {
+  display: grid;
+  grid-template-columns: 2.5rem 70px 1fr auto;
+  gap: .75rem;
+  align-items: center;
+  border: 1px solid rgba(148, 163, 184, .35);
+  border-radius: 12px;
+  padding: .75rem;
+  background: #fff;
+}
+
+.component-line-section {
+  border-left: 6px solid #2563eb;
+  background: #eff6ff;
+}
+
+.component-line-note {
+  border-left: 6px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.component-line-component {
+  border-left: 6px solid #16a34a;
+}
+
+.component-drag-handle {
+  cursor: grab;
+  font-size: 1.4rem;
+  color: #64748b;
+  text-align: center;
+  user-select: none;
+}
+
+.component-line.dragging {
+  opacity: .45;
+}
+
+.component-line-photo {
+  text-align: center;
+}
+
+.component-line-main p {
+  margin: .25rem 0;
+}
+
+.component-line-actions {
+  display: flex;
+  gap: .4rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.dragdrop-actions {
+  margin-top: 1rem;
+}
+
+@media (max-width: 800px) {
+  .component-line {
+    grid-template-columns: 60px 1fr;
+  }
+
+  .component-drag-handle {
+    display: none;
+  }
+
+  .component-line-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+</style>
 {% endblock %}

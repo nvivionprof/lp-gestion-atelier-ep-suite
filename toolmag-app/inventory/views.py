@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.core import signing
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Count, Q
 from django.http import FileResponse, HttpResponse, JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -624,9 +624,20 @@ def equipment_create(request):
         return denied
     form = EquipmentForm(request.POST or None, request.FILES or None)
     if request.method == 'POST' and form.is_valid():
-        equipment = form.save()
-        messages.success(request, f'Fiche matériel créée : {equipment.code} — {equipment.name}.')
-        return redirect('equipment_detail', code=equipment.code)
+        requested_code = (form.cleaned_data.get('code') or '').strip()
+
+        if requested_code and Equipment.objects.filter(code__iexact=requested_code).exists():
+            form.add_error('code', 'Un matériel avec ce code existe déjà.')
+            messages.warning(request, 'Matériel déjà existant : vérifie le code inventaire avant de créer une nouvelle fiche.')
+        else:
+            try:
+                equipment = form.save()
+            except IntegrityError:
+                form.add_error('code', 'Un matériel avec ce code existe déjà ou le code généré est déjà utilisé.')
+                messages.warning(request, 'Matériel déjà existant : vérifie le code inventaire.')
+            else:
+                messages.success(request, f'Fiche matériel créée : {equipment.code} — {equipment.name}.')
+                return redirect('equipment_detail', code=equipment.code)
     return render(request, 'inventory/equipment_form.html', {'form': form, 'mode': 'create'})
 
 
@@ -715,12 +726,16 @@ def equipment_duplicate(request, code):
                         for comp in source.components.all():
                             Component.objects.create(
                                 equipment=new_equipment,
+                                line_type=getattr(comp, 'line_type', Component.LineType.COMPONENT),
                                 name=comp.name,
-                                required=comp.required,
-                                expected_quantity=comp.expected_quantity,
+                                section_label=getattr(comp, 'section_label', ''),
+                                required=comp.required if getattr(comp, 'line_type', Component.LineType.COMPONENT) == Component.LineType.COMPONENT else False,
+                                expected_quantity=comp.expected_quantity if getattr(comp, 'line_type', Component.LineType.COMPONENT) == Component.LineType.COMPONENT else 1,
                                 default_condition=Equipment.Condition.WATCH,
                                 photo=comp.photo.name if comp.photo else '',
                                 sort_order=comp.sort_order,
+                                mobile_page_break=getattr(comp, 'mobile_page_break', True),
+                                inventory_required=getattr(comp, 'inventory_required', True) if getattr(comp, 'line_type', Component.LineType.COMPONENT) == Component.LineType.COMPONENT else False,
                             )
                     if form.cleaned_data.get('copy_documents'):
                         for doc in source.documents.filter(active=True):
@@ -761,6 +776,15 @@ def equipment_components_edit(request, code):
     component = None
     if edit_id:
         component = get_object_or_404(Component, id=edit_id, equipment=equipment)
+    if request.method == 'POST' and request.POST.get('reorder_components'):
+        raw_order = request.POST.get('component_order', '')
+        ids = [item.strip() for item in raw_order.split(',') if item.strip()]
+        with transaction.atomic():
+            for index, comp_id in enumerate(ids, start=1):
+                Component.objects.filter(id=comp_id, equipment=equipment).update(sort_order=index * 10)
+        messages.success(request, 'Ordre des lignes mis à jour.')
+        return redirect('equipment_components_edit', code=equipment.code)
+
     if request.method == 'POST' and request.POST.get('delete_id') and is_super_admin_person(actor):
         comp = get_object_or_404(Component, id=request.POST.get('delete_id'), equipment=equipment)
         comp.delete()
@@ -770,10 +794,40 @@ def equipment_components_edit(request, code):
     if request.method == 'POST' and not request.POST.get('delete_id') and form.is_valid():
         comp = form.save(commit=False)
         comp.equipment = equipment
-        comp.save()
-        messages.success(request, 'Composant enregistré.')
-        return redirect('equipment_components_edit', code=equipment.code)
-    return render(request, 'inventory/equipment_components_form.html', {'equipment': equipment, 'form': form, 'component': component, 'components': equipment.components.all(), 'can_delete': is_super_admin_person(actor)})
+
+        duplicate_qs = Component.objects.filter(
+            equipment=equipment,
+            name__iexact=(comp.name or '').strip()
+        )
+
+        if component:
+            duplicate_qs = duplicate_qs.exclude(pk=component.pk)
+
+        if duplicate_qs.exists():
+            form.add_error('name', 'Une ligne avec ce nom existe déjà dans ce matériel.')
+            messages.warning(
+                request,
+                'Composant, section ou note déjà existant dans ce matériel : vérifie la structure avant d’ajouter une nouvelle ligne.'
+            )
+        else:
+            if comp.line_type in [Component.LineType.SECTION, Component.LineType.NOTE]:
+                comp.required = False
+                comp.expected_quantity = 1
+                comp.inventory_required = False
+                comp.default_condition = Equipment.Condition.GOOD
+
+            try:
+                comp.save()
+            except IntegrityError:
+                form.add_error('name', 'Une ligne avec ce nom existe déjà dans ce matériel.')
+                messages.warning(
+                    request,
+                    'Composant, section ou note déjà existant dans ce matériel.'
+                )
+            else:
+                messages.success(request, 'Composant enregistré.')
+                return redirect('equipment_components_edit', code=equipment.code)
+    return render(request, 'inventory/equipment_components_form.html', {'equipment': equipment, 'form': form, 'component': component, 'components': _all_component_lines_for_equipment(equipment), 'can_delete': is_super_admin_person(actor)})
 
 
 def equipment_documents_edit(request, code):
@@ -954,6 +1008,25 @@ def _inventory_items_map(inventory):
     return {item.component_id: item for item in inventory.items.all()}
 
 
+def _inventory_components_for_equipment(equipment):
+    """Lignes réellement contrôlables en inventaire.
+    Les sections et notes structurent l’affichage mais ne génèrent aucun check.
+    """
+    if not equipment:
+        return Component.objects.none()
+    return equipment.components.filter(
+        line_type=Component.LineType.COMPONENT,
+        inventory_required=True,
+    ).order_by('sort_order', 'name')
+
+
+def _all_component_lines_for_equipment(equipment):
+    """Toutes les lignes de structure pour l’édition : sections, notes, composants."""
+    if not equipment:
+        return Component.objects.none()
+    return equipment.components.all().order_by('sort_order', 'name')
+
+
 def _component_rows(components, inventory=None):
     items = _inventory_items_map(inventory)
     rows = []
@@ -1073,7 +1146,7 @@ def checkout(request):
                 checked_by, checked_by_role = selected_user_inventory.borrower, 'utilisateur'
             else:
                 checked_by, checked_by_role = _inventory_actor_for_check(request, storekeeper=storekeeper)
-            for component in equipment.components.all():
+            for component in equipment.components.filter(line_type=Component.LineType.COMPONENT, inventory_required=True):
                 present, condition, comment = _component_post_values(request, component)
                 ComponentCheck.objects.create(
                     loan=loan,
@@ -1098,7 +1171,7 @@ def checkout(request):
             initial['equipment_code'] = request.GET['equipment']
             try:
                 equipment = Equipment.objects.get(code=request.GET['equipment'])
-                components = equipment.components.all()
+                components = _inventory_components_for_equipment(equipment)
                 pending_inventory = UserInventory.objects.filter(
                     equipment=equipment,
                     inventory_type=UserInventory.InventoryType.OUT,
@@ -1119,7 +1192,7 @@ def checkout(request):
     control_url = None
     selected_user_inventory = None
     if equipment and not components:
-        components = equipment.components.all()
+        components = _inventory_components_for_equipment(equipment)
     if equipment:
         form_borrower_code = None
         try:
@@ -1170,7 +1243,7 @@ def return_equipment(request):
             else:
                 checked_by, checked_by_role = _inventory_actor_for_check(request, storekeeper=storekeeper)
             has_problem = False
-            for component in equipment.components.all():
+            for component in equipment.components.filter(line_type=Component.LineType.COMPONENT, inventory_required=True):
                 present, condition, comment = _component_post_values(request, component)
                 ComponentCheck.objects.create(
                     loan=loan,
@@ -1212,7 +1285,7 @@ def return_equipment(request):
             try:
                 equipment = Equipment.objects.get(code=request.GET['equipment'])
                 loan = Loan.objects.get(equipment=equipment, status=Loan.LoanStatus.OPEN)
-                components = equipment.components.all()
+                components = _inventory_components_for_equipment(equipment)
                 pending_inventory = _latest_user_inventory(equipment, loan.borrower, UserInventory.InventoryType.RETURN, loan=loan)
                 if pending_inventory:
                     initial['condition_return'] = pending_inventory.global_condition
@@ -1317,7 +1390,7 @@ def user_inventory_equipment(request, code, inventory_type):
         if not out_inventory:
             messages.warning(request, 'Il faut d’abord faire l’inventaire utilisateur de sortie avant l’inventaire de retour.')
             return redirect('user_inventory_equipment', code=equipment.code, inventory_type=UserInventory.InventoryType.OUT)
-    components = list(equipment.components.all())
+    components = list(_inventory_components_for_equipment(equipment))
     documents = equipment.documents.filter(active=True)
     # V25 : l'inventaire utilisateur doit toujours être vierge.
     # Le magasinier, lui, peut relire un inventaire utilisateur ou le dernier contrôle connu.
@@ -2753,3 +2826,33 @@ def help_view(request):
 
 def about_view(request):
     return render(request, 'inventory/about.html')
+
+
+def dynamic_loans_display(request):
+    """Affichage dynamique des sorties magasin, filtrable par zone LP Core."""
+    zone_core_id = (request.GET.get('zone_core_id') or '').strip()
+    zone_code = (request.GET.get('zone') or '').strip()
+    status_filter = (request.GET.get('status') or 'open').strip()
+
+    loans = Loan.objects.select_related('equipment', 'borrower', 'checkout_storekeeper').order_by('due_at', '-checked_out_at')
+
+    if status_filter == 'open':
+        loans = loans.filter(status=Loan.LoanStatus.OPEN)
+    elif status_filter == 'late':
+        loans = loans.filter(status=Loan.LoanStatus.OPEN, due_at__lt=timezone.now())
+    elif status_filter == 'problem':
+        loans = loans.filter(status=Loan.LoanStatus.PROBLEM)
+
+    if zone_core_id:
+        loans = loans.filter(destination_zone_core_id=zone_core_id)
+
+    if zone_code:
+        loans = loans.filter(Q(destination_zone_code=zone_code) | Q(destination_zone_label_snapshot__icontains=zone_code))
+
+    return render(request, 'inventory/dynamic_loans_display.html', {
+        'loans': loans[:300],
+        'zone_core_id': zone_core_id,
+        'zone_code': zone_code,
+        'status_filter': status_filter,
+        'now': timezone.now(),
+    })
