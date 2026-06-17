@@ -75,7 +75,6 @@ exports/
 *.xlsx
 *.tgz
 *.zip
-*-db/
 .rc16-backup-*/
 rc16_payload/
 rc17_payload/
