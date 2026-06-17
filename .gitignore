@@ -67,3 +67,18 @@ certs/manual/*
 certs/acme/*
 !certs/manual/.gitkeep
 !certs/acme/.gitkeep
+
+# Fichiers locaux de patch / sauvegarde / export
+patch_*.py
+*.bak*
+exports/
+*.xlsx
+*.tgz
+*.zip
+*-db/
+.rc16-backup-*/
+rc16_payload/
+rc17_payload/
+rc19_payload/
+__pycache__/
+*.pyc
