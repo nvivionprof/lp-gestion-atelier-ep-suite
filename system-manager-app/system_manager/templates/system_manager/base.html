@@ -30,7 +30,7 @@
         <a class="admin-menu-item" title="Sauvegarde / import" href="{% url 'system_backup' %}">Sauvegarde / import</a>
         <a class="admin-menu-item" title="Historiques" href="{% url 'system_history' %}">Historiques</a>
         <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
-      </div></details>
+      </div><a href="/system/xlsx/">Export / import XLSX</a></details>
     {% endif %}
     <details class="admin-dropdown suite-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier accessibles">
       {% for app in suite_app_links %}<a class="admin-menu-item" href="{{ app.url }}" target="_blank" rel="noopener">{{ app.name }}</a>{% empty %}<span class="admin-menu-item muted">Aucune application disponible</span>{% endfor %}

@@ -41,7 +41,7 @@
           <a class="admin-menu-item" title="Synchroniser LP Core" href="{% url 'sync_core_users' %}">Synchroniser LP Core</a>
           <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
         </div>
-      </details>
+      <a href="/toolmag/xlsx/">Export / import XLSX</a></details>
     {% endif %}
     {% if request.session.borrower_code or request.session.storekeeper_code %}
       <span class="role-indicators" aria-label="Rôles actifs ToolMag">

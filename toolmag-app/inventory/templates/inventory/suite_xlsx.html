@@ -1,0 +1,62 @@
+{% extends "inventory/base.html" %}
+{% block content %}
+<section class="panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">Administration données</p>
+      <h1>Export / import XLSX — {{ module_name }}</h1>
+      <p class="muted">
+        Génération du modèle, export des données et import XLSX du module ToolMag.
+      </p>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h2>Modèle XLSX vide</h2>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="template">
+        <button class="button" type="submit">Télécharger le modèle</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Export XLSX</h2>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="export">
+        <button class="button" type="submit">Exporter ToolMag</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Import XLSX</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="import">
+
+        <p>
+          <label>Fichier XLSX<br>
+            <input type="file" name="xlsx_file" accept=".xlsx" required>
+          </label>
+        </p>
+
+        <p>
+          <label>
+            <input type="checkbox" name="dry_run" checked>
+            Simulation dry-run, aucune donnée écrite
+          </label>
+        </p>
+
+        <button class="button" type="submit">Importer</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert warning">
+    <strong>Important :</strong>
+    le XLSX ne contient pas physiquement les photos, documents ou médias.
+  </div>
+</section>
+{% endblock %}

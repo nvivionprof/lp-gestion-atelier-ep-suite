@@ -35,7 +35,7 @@
       <a class="admin-menu-item" href="{% url 'safety_help' %}">Aide Safety</a>
       <a class="admin-menu-item" href="{% url 'safety_about' %}">À propos</a>
     </div></details>
-  </nav>
+  <a href="/safety/xlsx/">Export / import XLSX</a></nav>
 </header>
 <main class="container">
   {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}

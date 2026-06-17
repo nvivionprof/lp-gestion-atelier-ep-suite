@@ -32,7 +32,7 @@
         <form method="post" action="{% url 'tp_sync_system_manager' %}">{% csrf_token %}<button class="admin-menu-item" title="Synchroniser systèmes" type="submit"><span>Synchroniser systèmes</span></button></form>
         <a class="admin-menu-item" title="Base SQL" href="{% url 'sql_database_admin' %}">Base SQL</a>
         <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
-      </div></details>
+      </div><a href="/tpmanager/xlsx/">Export / import XLSX</a></details>
     {% endif %}
     <a href="{{ SYSTEM_MANAGER_PUBLIC_URL }}" target="_blank" rel="noopener">System Manager</a>
     <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>

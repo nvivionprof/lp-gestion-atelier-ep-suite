@@ -46,7 +46,7 @@
         <a href="{% url 'core_help' %}">Aide LP Core</a>
         <a href="{% url 'core_about' %}">À propos</a>
       </div></details>
-  </nav>
+  <a href="/xlsx/">Export / import XLSX</a><a href="/admin-xlsx/">Exports / imports XLSX suite</a></nav>
 </header>
 <main class="container">
   {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}

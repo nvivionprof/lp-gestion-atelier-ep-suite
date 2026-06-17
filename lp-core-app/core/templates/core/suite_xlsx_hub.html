@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block content %}
+<section class="panel">
+  <div class="section-title">
+    <div>
+      <p class="eyebrow">Administration données</p>
+      <h1>Export / import XLSX — Suite complète</h1>
+      <p class="muted">
+        Accès centralisé aux modèles XLSX, exports et imports module par module.
+      </p>
+    </div>
+  </div>
+
+  <div class="cards">
+    {% for module in modules %}
+      <div class="card">
+        <h2>{{ module.name }}</h2>
+        <p class="muted">{{ module.description }}</p>
+        <p><a class="button" href="{{ module.url }}">Ouvrir</a></p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="alert warning">
+    <strong>Important :</strong>
+    les XLSX ne remplacent pas une sauvegarde complète.
+    Avant réinstallation, conserver aussi les médias, documents et dumps JSON/SQL.
+  </div>
+</section>
+{% endblock %}

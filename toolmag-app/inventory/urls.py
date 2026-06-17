@@ -1,7 +1,9 @@
 from django.urls import path
 from . import views
+from . import suite_xlsx_views
 
 urlpatterns = [
+    path('xlsx/', suite_xlsx_views.suite_xlsx_page, name='toolmag_suite_xlsx'),
     path('aide/', views.help_view, name='help'),
     path('a-propos/', views.about_view, name='about'),
     path('', views.dashboard, name='dashboard'),
