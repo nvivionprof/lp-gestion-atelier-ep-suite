@@ -137,6 +137,21 @@ class CompanyContact(models.Model):
     formations=models.ManyToManyField(Formation, blank=True)
     active=models.BooleanField(default=True)
     note=models.TextField(blank=True)
+    student_extra_info=models.TextField(
+        blank=True,
+        verbose_name='Info complémentaire visible élèves',
+        help_text='Information affichée aux élèves pour ce contact, sans donnée personnelle sensible.'
+    )
+    local_relay_possible=models.BooleanField(
+        default=False,
+        verbose_name='Relais de proximité possible',
+        help_text='Si activé, le contact n’est pas affiché comme contact élève classique mais son point GPS peut servir de relais de proximité.'
+    )
+    relay_student_info=models.TextField(
+        blank=True,
+        verbose_name='Info relais visible élèves',
+        help_text='Texte affiché aux élèves avec la mention relais de proximité possible.'
+    )
     personal_address=models.CharField(max_length=240, blank=True)
     personal_postal_code=models.CharField(max_length=20, blank=True)
     personal_city=models.CharField(max_length=120, blank=True)

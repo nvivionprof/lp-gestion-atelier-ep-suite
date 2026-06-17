@@ -277,8 +277,12 @@
           '</small>';
 
       const source = c.source === 'contact_proximite'
-        ? '<small>Proximité contact — adresse masquée</small>'
+        ? '<small>' + escapeHtml(c.proximity_label || 'Point de proximité — adresse masquée') + '</small>'
         : '<small>Adresse entreprise</small>';
+
+      const relayInfo = c.relay_student_info
+        ? '<p class="muted small-note">' + escapeHtml(c.relay_student_info) + '</p>'
+        : '';
 
       const el = document.createElement('div');
       el.className = 'mini-card map-result-card';
@@ -287,6 +291,7 @@
         '<p>' + escapeHtml(c.activity || 'Activité non renseignée') + '</p>' +
         '<small>' + escapeHtml((c.postal_code || '') + ' ' + (c.city || '')) + '</small><br>' +
         source + '<br>' +
+        relayInfo +
         distance +
         '<p><a href="' + c.detail_url + '">Voir fiche</a> · <a href="' + c.add_url + '">Ajouter à ma recherche</a></p>';
 
@@ -304,7 +309,8 @@
         .addTo(group)
         .bindPopup(
           '<b>' + escapeHtml(c.name) + '</b><br>' +
-          escapeHtml(c.city || c.proximity_label || '') + '<br>' +
+          escapeHtml(c.proximity_label || c.city || '') + '<br>' +
+          (c.relay_student_info ? '<small>' + escapeHtml(c.relay_student_info) + '</small><br>' : '') +
           '<a href="' + c.detail_url + '">Voir fiche</a><br>' +
           '<a href="' + c.add_url + '">Ajouter à ma recherche</a>'
         );

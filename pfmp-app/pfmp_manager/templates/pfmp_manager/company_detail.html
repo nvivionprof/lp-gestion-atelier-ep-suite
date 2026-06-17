@@ -12,6 +12,7 @@
       {% if user and user.is_prof_like %}<a class="button secondary" href="{% url 'pfmp_company_update' company.pk %}">Modifier l’entreprise</a>{% endif %}
     </div>
   </div>
+
   <dl class="details-grid">
     <dt>Adresse</dt><dd>{{ company.full_address|default:company.address|default:'—' }} {{ company.postal_code }} {{ company.city }}</dd>
     <dt>Coordonnées GPS</dt><dd>{% if company.latitude and company.longitude %}{{ company.latitude }}, {{ company.longitude }}{% else %}À géocoder{% endif %}</dd>
@@ -22,30 +23,89 @@
     <dt>Tags</dt><dd>{% for t in company.tags.all %}{{ t.label }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
     <dt>Visibilité élèves</dt><dd>{% if company.student_visible %}Visible{% else %}Masquée{% endif %}</dd>
     <dt>Statut</dt><dd>{{ company.get_status_display }}</dd>
+    {% if company.student_visible_notes %}
+      <dt>Informations élèves</dt><dd>{{ company.student_visible_notes|linebreaksbr }}</dd>
+    {% endif %}
   </dl>
 </section>
+
 <section class="panel">
-  <div class="section-title"><h2>Contacts associés</h2>{% if user and user.is_prof_like %}<a class="button" href="{% url 'pfmp_contact_create' company.pk %}">Ajouter un contact</a>{% endif %}</div>
+  <div class="section-title">
+    <h2>Contacts associés</h2>
+    {% if user and user.is_prof_like %}<a class="button" href="{% url 'pfmp_contact_create' company.pk %}">Ajouter un contact</a>{% endif %}
+  </div>
+
   <table>
-    <tr><th>Contact</th><th>Fonction</th><th>Type</th><th>Adresse mail visible</th>{% if user and user.is_prof_like %}<th>Téléphones</th><th>Proximité</th><th>Actions</th>{% endif %}</tr>
+    <tr>
+      <th>Contact</th>
+      <th>Fonction</th>
+      <th>Type</th>
+      <th>Adresse mail visible</th>
+      <th>Info complémentaire élèves</th>
+      {% if user and user.is_prof_like %}<th>Téléphones</th><th>Proximité</th><th>Actions</th>{% endif %}
+    </tr>
+
     {% for contact in contacts %}
       <tr>
-        <td>{% if user and user.is_prof_like %}{{ contact.full_name }}{% else %}{% if contact.student_visible %}{{ contact.full_name }}{% else %}Contact PFMP{% endif %}{% endif %}</td>
+        <td>
+          {% if user and user.is_prof_like %}
+            {{ contact.full_name }}
+          {% else %}
+            {% if contact.student_visible %}{{ contact.full_name }}{% else %}Contact PFMP{% endif %}
+          {% endif %}
+        </td>
         <td>{{ contact.role|default:'—' }}</td>
         <td>{{ contact.get_contact_type_display }}</td>
         <td>{{ contact.email|default:'—' }}</td>
+        <td>{{ contact.student_extra_info|default:'—'|linebreaksbr }}</td>
+
         {% if user and user.is_prof_like %}
           <td>{{ contact.phone|default:'—' }}{% if contact.mobile_phone %} / {{ contact.mobile_phone }}{% endif %}</td>
-          <td>{% if contact.use_personal_location_for_student_search %}Adresse contact utilisable, masquée élèves{% else %}Non{% endif %}</td>
+          <td>
+            {% if contact.local_relay_possible %}
+              <strong>Relais de proximité possible</strong><br>
+              {% if contact.use_personal_location_for_student_search %}
+                Point GPS personnel utilisable, adresse masquée élèves
+              {% else %}
+                Relais déclaré mais point GPS non activé
+              {% endif %}
+              {% if contact.relay_student_info %}<br><span class="muted">{{ contact.relay_student_info }}</span>{% endif %}
+            {% elif contact.use_personal_location_for_student_search %}
+              Adresse contact utilisable, masquée élèves
+            {% else %}
+              Non
+            {% endif %}
+          </td>
           <td><a href="{% url 'pfmp_contact_update' company.pk contact.pk %}">Modifier</a></td>
         {% endif %}
       </tr>
-    {% empty %}<tr><td colspan="7">Aucun contact enregistré.</td></tr>{% endfor %}
+    {% empty %}
+      <tr><td colspan="{% if user and user.is_prof_like %}8{% else %}5{% endif %}">Aucun contact enregistré.</td></tr>
+    {% endfor %}
   </table>
-  <p class="muted">Règle élèves : seule l’adresse mail des contacts autorisés est visible. Les adresses personnelles et commentaires internes restent masqués.</p>
+
+  {% if user and user.is_prof_like %}
+    <p class="muted">Règle professeurs : les relais de proximité restent visibles en gestion, avec leurs options de point GPS.</p>
+  {% else %}
+    <p class="muted">Règle élèves : les relais de proximité ne sont pas affichés comme contacts classiques. Seules les informations autorisées sont visibles.</p>
+  {% endif %}
 </section>
+
 <section class="panel">
   <h2>Recherches liées à cette entreprise</h2>
-  <table><tr><th>Élève</th><th>Période</th><th>État</th><th>Dernière action</th><th></th></tr>{% for s in searches %}<tr><td>{{ s.student.full_name }}</td><td>{{ s.period.title }}</td><td>{{ s.get_status_display }}</td><td>{{ s.last_action_at|default:'—' }}</td><td><a href="{% url 'pfmp_search_detail' s.pk %}">Ouvrir</a></td></tr>{% empty %}<tr><td colspan="5">Aucune recherche liée.</td></tr>{% endfor %}</table>
+  <table>
+    <tr><th>Élève</th><th>Période</th><th>État</th><th>Dernière action</th><th></th></tr>
+    {% for s in searches %}
+      <tr>
+        <td>{{ s.student.full_name }}</td>
+        <td>{{ s.period.title }}</td>
+        <td>{{ s.get_status_display }}</td>
+        <td>{{ s.last_action_at|default:'—' }}</td>
+        <td><a href="{% url 'pfmp_search_detail' s.pk %}">Ouvrir</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Aucune recherche liée.</td></tr>
+    {% endfor %}
+  </table>
 </section>
 {% endblock %}

@@ -66,8 +66,8 @@ class CompanyContactForm(forms.ModelForm):
         model = CompanyContact
         fields = [
             'full_name', 'role', 'service', 'email', 'phone', 'mobile_phone',
-            'contact_type', 'visibility', 'student_visible', 'teacher_visible',
-            'formations', 'active', 'can_help_transport',
+            'contact_type', 'visibility', 'student_visible', 'student_extra_info', 'teacher_visible',
+            'formations', 'active', 'can_help_transport', 'local_relay_possible', 'relay_student_info',
             'personal_address', 'personal_postal_code', 'personal_city',
             'personal_latitude', 'personal_longitude', 'use_personal_location_for_student_search',
             'note'
@@ -113,6 +113,9 @@ class CompanyContactForm(forms.ModelForm):
             'contact_type': 'Type de contact',
             'visibility': 'Visibilité générale',
             'student_visible': 'Contact visible par les élèves',
+            'student_extra_info': 'Info complémentaire visible élèves',
+            'local_relay_possible': 'Relais de proximité possible',
+            'relay_student_info': 'Info relais visible élèves',
             'teacher_visible': 'Contact visible par les professeurs',
             'formations': 'Formations concernées',
             'active': 'Contact actif',
@@ -132,6 +135,9 @@ class CompanyContactForm(forms.ModelForm):
         }
         help_texts = {
             'student_visible': 'Même si activé, l’élève ne verra que l’adresse mail du contact.',
+            'student_extra_info': 'Information visible par les élèves en plus du mail autorisé. Ne pas saisir d’information personnelle sensible.',
+            'local_relay_possible': 'Si coché, le contact sert de relais de proximité. Il ne sera pas affiché comme contact classique côté élève.',
+            'relay_student_info': 'Exemple : Relais possible pour covoiturage familial, point de chute proche, contact de confiance.',
             'use_personal_location_for_student_search': 'Utilise les coordonnées personnelles pour la recherche par proximité sans afficher l’adresse à l’élève.',
         }
 

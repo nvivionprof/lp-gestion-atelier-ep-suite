@@ -108,7 +108,7 @@ def _require_login(request):
 def _student_contact_queryset(company, user):
     qs = company.contacts.filter(active=True)
     if user and not user.is_prof_like:
-        qs = qs.filter(student_visible=True)
+        qs = qs.filter(student_visible=True).exclude(local_relay_possible=True)
         if user.formation_code:
             qs = qs.filter(Q(formations__isnull=True) | Q(formations__code=user.formation_code)).distinct()
     return qs
@@ -392,34 +392,88 @@ def _filtered_company_queryset(request):
 
 def _company_geo_payload(companies, user=None):
     payload = []
+
     for company in companies:
-        lat = company.latitude
-        lng = company.longitude
-        source = 'entreprise'
-        proximity_label = ''
-        if lat is None or lng is None:
-            contact = company.contacts.filter(active=True, use_personal_location_for_student_search=True, personal_latitude__isnull=False, personal_longitude__isnull=False).first()
-            if contact:
-                lat, lng = contact.personal_latitude, contact.personal_longitude
-                source = 'contact_proximite'
-                proximity_label = 'Point de proximité contact — adresse masquée'
+        # Relais de proximité prioritaire :
+        # - actif
+        # - marqué relais
+        # - coordonnées personnelles disponibles
+        # - adresse personnelle masquée aux élèves
+        relay_contact = company.contacts.filter(
+            active=True,
+            local_relay_possible=True,
+            use_personal_location_for_student_search=True,
+            personal_latitude__isnull=False,
+            personal_longitude__isnull=False,
+        ).order_by('full_name').first()
+
+        if relay_contact:
+            lat = relay_contact.personal_latitude
+            lng = relay_contact.personal_longitude
+            source = 'contact_proximite'
+            proximity_label = f'Relais de proximité possible : {relay_contact.full_name}'
+            relay_full_name = relay_contact.full_name
+            relay_student_info = relay_contact.relay_student_info or relay_contact.student_extra_info or ''
+            address = ''
+            postal_code = ''
+            city = ''
+        else:
+            lat = company.latitude
+            lng = company.longitude
+            source = 'entreprise'
+            proximity_label = ''
+            relay_full_name = ''
+            relay_student_info = ''
+            address = company.address
+            postal_code = company.postal_code
+            city = company.city
+
+            # Compatibilité avec l’ancien fonctionnement :
+            # si l’entreprise n’a pas de GPS, on accepte un contact point de proximité non relais.
+            if lat is None or lng is None:
+                contact = company.contacts.filter(
+                    active=True,
+                    use_personal_location_for_student_search=True,
+                    personal_latitude__isnull=False,
+                    personal_longitude__isnull=False,
+                ).order_by('full_name').first()
+                if contact:
+                    lat = contact.personal_latitude
+                    lng = contact.personal_longitude
+                    source = 'contact_proximite'
+                    if contact.local_relay_possible:
+                        proximity_label = f'Relais de proximité possible : {contact.full_name}'
+                        relay_full_name = contact.full_name
+                        relay_student_info = contact.relay_student_info or contact.student_extra_info or ''
+                    else:
+                        proximity_label = 'Point de proximité contact — adresse masquée'
+                        relay_full_name = ''
+                        relay_student_info = ''
+                    address = ''
+                    postal_code = ''
+                    city = ''
+
         if lat is None or lng is None:
             continue
+
         payload.append({
             'id': company.pk,
             'name': company.name,
             'activity': company.activity,
-            'address': company.address if source == 'entreprise' else '',
-            'postal_code': company.postal_code if source == 'entreprise' else '',
-            'city': company.city if source == 'entreprise' else '',
+            'address': address if source == 'entreprise' else '',
+            'postal_code': postal_code if source == 'entreprise' else '',
+            'city': city if source == 'entreprise' else '',
             'lat': float(lat),
             'lng': float(lng),
             'status': company.get_status_display(),
             'source': source,
             'proximity_label': proximity_label,
+            'relay_full_name': relay_full_name,
+            'relay_student_info': relay_student_info,
             'detail_url': reverse('pfmp_company_detail', args=[company.pk]),
             'add_url': reverse('pfmp_search_add_company', args=[company.pk]),
         })
+
     return payload
 
 
