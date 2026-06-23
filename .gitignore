@@ -86,3 +86,23 @@ __pycache__/
 rc14_maintenance_payload/
 rc15_payload/
 rc19_tls_payload/
+
+# Archives locales / payloads historiques hors dépôt propre
+.patch-backups/
+.rc16-backup-*/
+rc14_maintenance_payload/
+rc15_payload/
+rc16_payload/
+rc17_payload/
+rc19_payload/
+rc19_tls_payload/
+
+# Fichiers temporaires locaux
+patch_*.py
+*.bak*
+exports/
+*.xlsx
+*.tgz
+*.zip
+__pycache__/
+*.pyc
