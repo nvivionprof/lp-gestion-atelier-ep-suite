@@ -1,0 +1,23 @@
+{% extends 'display_manager/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3">Layouts</h1>
+  <a class="btn btn-primary" href="{% url 'display_manager:layout_create' %}">Nouveau layout</a>
+</div>
+<div class="row g-3">
+{% for layout in layouts %}
+  <div class="col-lg-4">
+    <div class="card p-3 h-100">
+      <h2 class="h5">{{ layout.name }}</h2>
+      <p class="text-muted">{{ layout.get_column_position_display }} — {{ layout.target_width }}×{{ layout.target_height }}</p>
+      <div class="d-flex gap-2">
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'display_manager:layout_edit' layout.pk %}">Éditer</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'display_manager:layout_duplicate' layout.pk %}">Dupliquer</a>
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="col"><div class="card p-3 text-muted">Aucun layout.</div></div>
+{% endfor %}
+</div>
+{% endblock %}

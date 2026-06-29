@@ -17,10 +17,7 @@
       <a href="{% url 'core_my_account' %}">Ma fiche</a>
       <details class="nav-dropdown"><summary>Applications</summary><div>
         <a href="{% url 'core_dashboard' %}">LP Core</a>
-        <details class="nav-dropdown"><summary>Applications</summary><div>
-        <a href="{% url 'core_dashboard' %}">LP Core</a>
         {% for module in suite_modules %}<a href="{{ module.url }}">{{ module.name }}</a>{% endfor %}
-      </div></details>
       </div></details>
       {% if core_current_user.is_admin_like %}
         <details class="nav-dropdown"><summary>Administration</summary><div>
@@ -36,17 +33,22 @@
           <a href="{% url 'core_public_settings' %}">URLs / HTTPS</a>
           <a href="{% url 'core_backup_restore' %}">Sauvegardes</a>
           <a href="{% url 'core_database_supervision' %}">Supervision bases</a>
+          <a href="/admin-xlsx/">Exports / imports XLSX suite</a>
         </div></details>
       {% endif %}
-      <a href="{% url 'core_logout' %}">Déconnexion {{ core_current_user.username }}</a>
-    {% else %}
-      <a href="{% url 'core_login' %}">Connexion</a>
-    {% endif %}
       <details class="nav-dropdown"><summary>Aide</summary><div>
         <a href="{% url 'core_help' %}">Aide LP Core</a>
         <a href="{% url 'core_about' %}">À propos</a>
       </div></details>
-  <a href="/xlsx/">Export / import XLSX</a><a href="/admin-xlsx/">Exports / imports XLSX suite</a></nav>
+      <a href="{% url 'core_logout' %}">Déconnexion {{ core_current_user.username }}</a>
+    {% else %}
+      <a href="{% url 'core_login' %}">Connexion</a>
+      <details class="nav-dropdown"><summary>Aide</summary><div>
+        <a href="{% url 'core_help' %}">Aide LP Core</a>
+        <a href="{% url 'core_about' %}">À propos</a>
+      </div></details>
+    {% endif %}
+  </nav>
 </header>
 <main class="container">
   {% if messages %}{% for message in messages %}<div class="alert {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}

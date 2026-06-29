@@ -1,0 +1,21 @@
+{% extends 'display_manager/base.html' %}
+{% block title %}Connexion - LP Display Manager{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">LP Suite</p>
+    <h1>Connexion LP Display Manager</h1>
+    <p class="lead">L’accès recommandé se fait depuis le portail LP Core. Un accès local reste disponible pour l’administrateur.</p>
+  </div>
+  <div><a class="button secondary" href="/">Retour LP Core</a></div>
+</section>
+<section class="panel" style="max-width:520px">
+  <form method="post">
+    {% csrf_token %}
+    <p><label>Identifiant<br><input name="username" autocomplete="username" required></label></p>
+    <p><label>Mot de passe<br><input name="password" type="password" autocomplete="current-password" required></label></p>
+    <button class="button" type="submit">Se connecter</button>
+    <a class="button secondary" href="/">LP Core</a>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LP Display Player - {{ screen.name }}</title>
+  <link rel="stylesheet" href="{% static 'display_manager/css/player.css' %}">
+</head>
+<body data-token="{{ screen.player_token }}">
+  <div id="lpdisplay-root" class="layout right">
+    <div id="zone-main" class="zone zone-main"><div class="empty">LP Display Manager<br>{{ screen.name }}</div></div>
+    <div id="thumb-column" class="thumb-column">
+      <div id="zone-thumb1" class="zone zone-thumb"><div class="empty">Miniature 1</div></div>
+      <div id="zone-thumb2" class="zone zone-thumb"><div class="empty">Miniature 2</div></div>
+      <div id="zone-thumb3" class="zone zone-thumb"><div class="empty">Miniature 3</div></div>
+    </div>
+  </div>
+  <div id="lpdisplay-status"></div>
+  <script>
+    window.LPDISPLAY = {
+      token: "{{ screen.player_token }}",
+      manifestUrl: "{% url 'display_manager:api_manifest' screen.player_token %}",
+      heartbeatUrl: "{% url 'display_manager:api_heartbeat' screen.player_token %}",
+      commandsUrl: "{% url 'display_manager:api_commands' screen.player_token %}",
+      commandResultBase: "{{ LPDISPLAY_BASE_PATH }}/api/player/{{ screen.player_token }}/commands/"
+    };
+  </script>
+  <script src="{% static 'display_manager/js/player.js' %}"></script>
+</body>
+</html>

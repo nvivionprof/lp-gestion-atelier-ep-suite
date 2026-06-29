@@ -1,4 +1,30 @@
 services:
+  lp-display-manager-app:
+    build: ./lp-display-manager-app
+    container_name: lp-display-manager-app
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      DJANGO_SECRET_KEY: ${LPDISPLAY_SECRET_KEY:-change-me-in-env}
+      DJANGO_DEBUG: ${LPDISPLAY_DEBUG:-0}
+      DJANGO_ALLOWED_HOSTS: ${LPDISPLAY_ALLOWED_HOSTS:-localhost,127.0.0.1,lp-display-manager-app,*}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${LPDISPLAY_CSRF_TRUSTED_ORIGINS:-http://localhost:9000}
+      LPDISPLAY_BASE_PATH: /lpdisplaymanager
+      LPDISPLAY_MEDIA_ROOT: /app/media
+      LPDISPLAY_DB_ENGINE: sqlite
+      LPDISPLAY_DB_NAME: /app/data/lpdisplaymanager.sqlite3
+      LP_CORE_API_TOKEN: ${LP_CORE_API_TOKEN:-change_me_internal_core_token}
+      LPDISPLAY_ADMIN_USERNAME: ${LPDISPLAY_ADMIN_USERNAME:-admin}
+      LPDISPLAY_ADMIN_PASSWORD: ${LPDISPLAY_ADMIN_PASSWORD:-admin}
+      LPDISPLAY_ADMIN_RESET: ${LPDISPLAY_ADMIN_RESET:-1}
+    volumes:
+      - ./data/lpdisplaymanager/db:/app/data
+      - ./data/lpdisplaymanager/media:/app/media
+      - ./data/lpdisplaymanager/staticfiles:/app/staticfiles
+    networks:
+      - lp-suite-net
+
   postgres:
     image: postgres:16-alpine
     container_name: lp-suite-postgres
@@ -42,6 +68,7 @@ services:
     - ./system-manager-db/data/staticfiles:/gateway-static/system-manager:ro
     - ./tpmanager-db/data/staticfiles:/gateway-static/tpmanager:ro
     - ./pfmp-db/data/staticfiles:/gateway-static/pfmp:ro
+    - ./data/lpdisplaymanager/staticfiles:/gateway-static/lp-display-manager:ro
     - ./lp-core-db/data/media:/gateway-media/lp-core:ro
     - ./toolmag-db/data/media:/gateway-media/toolmag:ro
     - ./safety-db/data/media:/gateway-media/safety:ro
@@ -49,6 +76,7 @@ services:
     - ./system-manager-db/data/media:/gateway-media/system-manager:ro
     - ./tpmanager-db/data/media:/gateway-media/tpmanager:ro
     - ./pfmp-db/data/media:/gateway-media/pfmp:ro
+    - ./data/lpdisplaymanager/media:/gateway-media/lp-display-manager:ro
     ports:
     - ${GATEWAY_HTTP_PORT:-9000}:80
     - ${GATEWAY_HTTPS_PORT:-9443}:443
@@ -60,6 +88,7 @@ services:
     - system-manager-app
     - tpmanager-app
     - pfmp-app
+    - lp-display-manager-app
     networks:
     - lp-suite-net
   lp-core-app:
@@ -378,6 +407,7 @@ services:
       '
     networks:
     - lp-suite-net
+
 networks:
   lp-suite-net:
     driver: bridge

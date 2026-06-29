@@ -1,0 +1,37 @@
+{% extends 'display_manager/base.html' %}
+{% block content %}
+<h1 class="h3 mb-4">QR actions</h1>
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card p-3">
+      <h2 class="h5">Créer une QR action</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary">Créer</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card p-3">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Nom</th><th>Action</th><th>Écran</th><th>Durée</th><th>URL</th></tr></thead>
+        <tbody>
+        {% for qr in qr_actions %}
+          <tr>
+            <td>{{ qr.name }}</td>
+            <td>{{ qr.get_action_display }}</td>
+            <td>{{ qr.target_screen }}</td>
+            <td>{{ qr.duration_seconds }} s</td>
+            <td><code>{{ request.scheme }}://{{ request.get_host }}{{ qr.qr_url }}</code></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-muted">Aucune QR action.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p class="small text-muted">La génération PNG du QR code est prévue en V0.1.1. Pour V0.1, copier l'URL dans un générateur QR interne ou navigateur.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

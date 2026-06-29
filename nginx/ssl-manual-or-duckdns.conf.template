@@ -38,4 +38,15 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Host $host;
     }
+
+    # LP Display Manager
+    location /lpdisplaymanager/ {
+        proxy_pass http://lp-display-manager-app:8000/lpdisplaymanager/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Script-Name /lpdisplaymanager;
+        proxy_redirect off;
+    }
 }

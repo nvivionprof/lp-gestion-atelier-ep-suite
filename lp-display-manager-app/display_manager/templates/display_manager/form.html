@@ -1,0 +1,12 @@
+{% extends 'display_manager/base.html' %}
+{% block content %}
+<h1 class="h3 mb-4">{{ title }}</h1>
+<div class="card p-3">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Enregistrer</button>
+    <a class="btn btn-outline-secondary" href="javascript:history.back()">Annuler</a>
+  </form>
+</div>
+{% endblock %}

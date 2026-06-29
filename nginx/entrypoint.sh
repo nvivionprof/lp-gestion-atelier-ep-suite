@@ -25,6 +25,9 @@ cat <<'EOF'
   absolute_redirect off;
   port_in_redirect off;
 
+  resolver 127.0.0.11 valid=10s ipv6=off;
+  resolver_timeout 5s;
+
   location ^~ /.well-known/acme-challenge/ {
     root /var/www/certbot;
     default_type "text/plain";
@@ -37,6 +40,9 @@ cat <<'EOF'
   location = /system { return 301 /system/; }
   location = /tpmanager { return 301 /tpmanager/; }
   location = /pfmp { return 301 /pfmp/; }
+  location = /lpdisplaymanager { return 301 /lpdisplaymanager/; }
+  location = /displaymanager { return 301 /lpdisplaymanager/; }
+  location ^~ /displaymanager/ { return 301 /lpdisplaymanager/; }
 
   # Fichiers statiques servis directement par le portail depuis les STATIC_ROOT collectés.
   location ^~ /static/core/ { alias /gateway-static/lp-core/core/; expires 1h; access_log off; }
@@ -49,6 +55,9 @@ cat <<'EOF'
   location ^~ /static/evaluation_manager/ { alias /gateway-static/tpmanager/evaluation_manager/; expires 1h; access_log off; }
   location ^~ /static/sequence_manager/ { alias /gateway-static/tpmanager/sequence_manager/; expires 1h; access_log off; }
   location ^~ /static/pfmp_manager/ { alias /gateway-static/pfmp/pfmp_manager/; expires 1h; access_log off; }
+  location ^~ /static/display_manager/ { alias /gateway-static/lp-display-manager/display_manager/; expires 1h; access_log off; }
+  location ^~ /lpdisplaymanager/static/ { alias /gateway-static/lp-display-manager/; expires 1h; access_log off; }
+  location ^~ /lpdisplaymanager/uploads/ { alias /gateway-media/lp-display-manager/; expires 1h; access_log off; }
 
   # Médias utilisateurs : photos, documents et pièces jointes.
   # Servis directement par la passerelle pour éviter les pertes de préfixe /system, /tpmanager, etc.
@@ -74,49 +83,103 @@ cat <<'EOF'
     include /etc/nginx/conf.d/lp-proxy-common.inc;
     proxy_set_header X-Forwarded-Prefix /toolmag;
     proxy_set_header X-Script-Name /toolmag;
-    proxy_pass http://toolmag-app:8000/;
+    set $toolmag_upstream toolmag-app:8000;
+    rewrite ^/toolmag/(.*)$ /$1 break;
+    proxy_pass http://$toolmag_upstream;
   }
   location ^~ /safety/ {
     add_header X-LP-Gateway-Module "safety" always;
     include /etc/nginx/conf.d/lp-proxy-common.inc;
     proxy_set_header X-Forwarded-Prefix /safety;
     proxy_set_header X-Script-Name /safety;
-    proxy_pass http://safety-app:8000/;
+    set $safety_upstream safety-app:8000;
+    rewrite ^/safety/(.*)$ /$1 break;
+    proxy_pass http://$safety_upstream;
   }
   location ^~ /pedashop/ {
     add_header X-LP-Gateway-Module "pedashop" always;
     include /etc/nginx/conf.d/lp-proxy-common.inc;
     proxy_set_header X-Forwarded-Prefix /pedashop;
     proxy_set_header X-Script-Name /pedashop;
-    proxy_pass http://pedashop-app:8000/;
+    set $pedashop_upstream pedashop-app:8000;
+    rewrite ^/pedashop/(.*)$ /$1 break;
+    proxy_pass http://$pedashop_upstream;
   }
   location ^~ /system/ {
     add_header X-LP-Gateway-Module "system" always;
     include /etc/nginx/conf.d/lp-proxy-common.inc;
     proxy_set_header X-Forwarded-Prefix /system;
     proxy_set_header X-Script-Name /system;
-    proxy_pass http://system-manager-app:8000/;
+    set $system_upstream system-manager-app:8000;
+    rewrite ^/system/(.*)$ /$1 break;
+    proxy_pass http://$system_upstream;
   }
   location ^~ /tpmanager/ {
     add_header X-LP-Gateway-Module "tpmanager" always;
     include /etc/nginx/conf.d/lp-proxy-common.inc;
     proxy_set_header X-Forwarded-Prefix /tpmanager;
     proxy_set_header X-Script-Name /tpmanager;
-    proxy_pass http://tpmanager-app:8000/;
+    set $tpmanager_upstream tpmanager-app:8000;
+    rewrite ^/tpmanager/(.*)$ /$1 break;
+    proxy_pass http://$tpmanager_upstream;
   }
   location ^~ /pfmp/ {
     add_header X-LP-Gateway-Module "pfmp" always;
     include /etc/nginx/conf.d/lp-proxy-common.inc;
     proxy_set_header X-Forwarded-Prefix /pfmp;
     proxy_set_header X-Script-Name /pfmp;
-    proxy_pass http://pfmp-app:8000/;
+    set $pfmp_upstream pfmp-app:8000;
+    rewrite ^/pfmp/(.*)$ /$1 break;
+    proxy_pass http://$pfmp_upstream;
+  }
+  location ^~ /lpdisplaymanager/ {
+    add_header X-LP-Gateway-Module "lpdisplaymanager" always;
+    include /etc/nginx/conf.d/lp-proxy-common.inc;
+    proxy_set_header X-Forwarded-Prefix /lpdisplaymanager;
+    proxy_set_header X-Script-Name /lpdisplaymanager;
+    set $lpdisplay_upstream lp-display-manager-app:8000;
+    rewrite ^/lpdisplaymanager/(.*)$ /$1 break;
+    proxy_pass http://$lpdisplay_upstream;
   }
   location / {
     add_header X-LP-Gateway-Module "lp-core" always;
     include /etc/nginx/conf.d/lp-proxy-common.inc;
-    proxy_pass http://lp-core-app:8000/;
+    set $lpcore_upstream lp-core-app:8000;
+    proxy_pass http://$lpcore_upstream;
   }
 EOF
+}
+
+
+wait_for_upstreams(){
+  echo "[INFO] Attente résolution DNS des conteneurs applicatifs..."
+  UPSTREAMS="
+    lp-core-app
+    toolmag-app
+    safety-app
+    pedashop-app
+    system-manager-app
+    tpmanager-app
+    pfmp-app
+    lp-display-manager-app
+  "
+
+  for host in $UPSTREAMS; do
+    echo "[INFO] Vérification DNS: $host"
+    ok=0
+    for i in $(seq 1 60); do
+      if getent hosts "$host" >/dev/null 2>&1; then
+        echo "[OK] $host résolu"
+        ok=1
+        break
+      fi
+      sleep 1
+    done
+
+    if [ "$ok" != "1" ]; then
+      echo "[WARN] $host non résolu après attente, Nginx tentera quand même de démarrer"
+    fi
+  done
 }
 
 if [[ "$ENABLE_HTTPS" == "1" && -f "$SSL_CERT_FILE" && -f "$SSL_KEY_FILE" ]]; then
@@ -151,4 +214,6 @@ $(write_locations)
 EOF
 fi
 
+wait_for_upstreams
+nginx -t
 exec "$@"

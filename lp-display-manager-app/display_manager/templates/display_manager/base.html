@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LP Display Manager{% endblock %}</title>
+  <style>
+    :root{--ink:#172033;--muted:#667085;--brand:#0f2d4a;--accent:#2f80ed;--bg:#f5f7fb;--card:#fff;--line:#d8dee9;}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    a{color:inherit}.topbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1.2rem;background:var(--brand);color:white;box-shadow:0 2px 12px rgba(0,0,0,.14)}
+    .brand{display:flex;align-items:baseline;gap:.8rem;font-weight:800}.brand a{text-decoration:none;color:white}.brand span{font-size:.78rem;opacity:.75}
+    nav{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}nav a,nav summary{color:white;text-decoration:none;padding:.45rem .65rem;border-radius:.55rem;background:rgba(255,255,255,.08);cursor:pointer}nav a:hover,nav summary:hover{background:rgba(255,255,255,.18)}
+    .container{max-width:1280px;margin:0 auto;padding:1.4rem}.panel,.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;box-shadow:0 2px 10px rgba(16,24,40,.06)}.panel{padding:1.2rem;margin-bottom:1rem}.card{padding:1rem}
+    .hero{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;background:linear-gradient(135deg,#fff,#eef5ff);border:1px solid var(--line);border-radius:1rem;padding:1.3rem;margin-bottom:1rem}.eyebrow{text-transform:uppercase;color:var(--accent);font-weight:800;font-size:.75rem;letter-spacing:.08em;margin:0 0 .3rem}.lead,.muted,.text-muted{color:var(--muted)}
+    .cards,.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}.button,.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:.65rem;padding:.6rem .9rem;background:var(--accent);color:white!important;text-decoration:none;font-weight:700;cursor:pointer}.button.secondary,.btn-outline-secondary,.btn-outline-primary,.btn-outline-warning,.btn-outline-success{background:#eef2f7;color:var(--ink)!important}.btn-sm{padding:.35rem .55rem;font-size:.85rem}
+    table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:.65rem;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:.85rem}input,select,textarea{width:100%;padding:.55rem;border:1px solid var(--line);border-radius:.55rem}.alert{margin:.6rem 0;padding:.75rem 1rem;border-radius:.65rem;background:#eef5ff;border:1px solid #b7d4ff}.alert-error,.alert-danger{background:#fff1f1;border-color:#ffc9c9}.badge{display:inline-block;border-radius:999px;padding:.25rem .55rem;background:#e7eef9;color:#1f3b63;font-size:.78rem}.badge-online{background:#dcfce7;color:#166534}.badge-offline{background:#fee2e2;color:#991b1b}.badge-unknown{background:#e5e7eb;color:#374151}
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><a href="{% url 'display_manager:dashboard' %}">LP Display Manager</a><span>Affichage dynamique</span></div>
+  <nav>
+    <a href="/">LP Core</a>
+    <a href="{% url 'display_manager:dashboard' %}">Tableau de bord</a>
+    <a href="{% url 'display_manager:screens' %}">Écrans</a>
+    <a href="{% url 'display_manager:layouts' %}">Layouts</a>
+    <a href="{% url 'display_manager:media_library' %}">Médiathèque</a>
+    <a href="{% url 'display_manager:qr_actions' %}">QR actions</a>
+    {% if request.user.is_authenticated %}<a href="{% url 'display_manager:logout' %}">Déconnexion {{ request.user.username }}</a>{% else %}<a href="{% url 'display_manager:login' %}">Connexion</a>{% endif %}
+  </nav>
+</header>
+<main class="container">
+  {% for message in messages %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

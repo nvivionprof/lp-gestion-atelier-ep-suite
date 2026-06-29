@@ -106,3 +106,37 @@ exports/
 *.zip
 __pycache__/
 *.pyc
+
+# Local secrets / env backups
+.env
+.env.*
+!.env.example
+.envback
+
+# Local backups / repair artifacts
+backup-before-*/
+data/
+docker-compose-back.yml
+docker-compose.yml.corrected
+entrypoint.sh.corrected
+nginx/entrypoint-back.sh
+lpdisplay_media_fix_pack/
+apply_*.sh
+README_CORRECTIF_BETA2.md
+README_LPDISPLAY_INTEGRATION.md
+lp-gateway
+
+# Runtime/generated folders
+backups/
+imports/
+exports/
+media/
+uploads/
+staticfiles/
+
+# Archives
+*.zip
+
+# Python cache
+__pycache__/
+*.pyc

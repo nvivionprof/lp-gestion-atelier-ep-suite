@@ -1,0 +1,45 @@
+{% extends 'display_manager/base.html' %}
+{% block title %}Tableau de bord - LP Display Manager{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Tableau de bord</h1>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card p-3"><div class="text-muted">Écrans</div><div class="display-6">{{ screen_count }}</div></div></div>
+  <div class="col-md-3"><div class="card p-3"><div class="text-muted">En ligne</div><div class="display-6 text-success">{{ online_count }}</div></div></div>
+  <div class="col-md-3"><div class="card p-3"><div class="text-muted">Hors ligne</div><div class="display-6 text-danger">{{ offline_count }}</div></div></div>
+  <div class="col-md-3"><div class="card p-3"><div class="text-muted">Médias</div><div class="display-6">{{ media_count }}</div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card p-3">
+      <h2 class="h5">Écrans récents</h2>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Nom</th><th>Lieu</th><th>Statut</th><th>Layout</th></tr></thead>
+        <tbody>
+        {% for screen in screens %}
+          <tr>
+            <td><a href="{% url 'display_manager:screen_detail' screen.pk %}">{{ screen.name }}</a></td>
+            <td>{{ screen.location }}</td>
+            <td><span class="badge badge-{{ screen.status }}">{{ screen.get_status_display }}</span></td>
+            <td>{{ screen.active_layout|default:'—' }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4" class="text-muted">Aucun écran.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card p-3">
+      <h2 class="h5">Dernières commandes</h2>
+      <ul class="list-group list-group-flush">
+        {% for command in commands %}
+          <li class="list-group-item d-flex justify-content-between"><span>{{ command.screen }} — {{ command.get_action_display }}</span><span class="badge text-bg-secondary">{{ command.get_status_display }}</span></li>
+        {% empty %}
+          <li class="list-group-item text-muted">Aucune commande.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

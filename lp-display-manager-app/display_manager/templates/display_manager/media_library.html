@@ -1,0 +1,72 @@
+{% extends 'display_manager/base.html' %}
+{% block title %}Médiathèque - LP Display Manager{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">LP Display Manager</p>
+    <h1>Médiathèque</h1>
+    <p class="lead">Ajoute ici les images et pages web utilisées par les layouts d'affichage dynamique. Ne passe plus par l'admin Django pour les contenus courants.</p>
+  </div>
+  <div><a class="button secondary" href="{% url 'display_manager:layouts' %}">Gérer les layouts</a></div>
+</section>
+
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card p-3">
+      <h2 class="h5">Ajouter un média</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+        <p><label>Nom<br>{{ form.name }}</label>{{ form.name.errors }}</p>
+        <p><label>Type<br>{{ form.media_type }}</label>{{ form.media_type.errors }}</p>
+        <p><label>Image<br>{{ form.image }}</label>{{ form.image.errors }}</p>
+        <p><label>URL web<br>{{ form.web_url }}</label>{{ form.web_url.errors }}</p>
+        <p><label>Durée par défaut<br>{{ form.default_duration_seconds }}</label>{{ form.default_duration_seconds.errors }}</p>
+        <p><label>{{ form.is_active }} Actif</label>{{ form.is_active.errors }}</p>
+        <button class="button" type="submit">Ajouter à la médiathèque</button>
+      </form>
+      <p class="text-muted small mt-3">Formats conseillés : PNG/JPG/WebP en 1920×1080 ou 1080×1920 selon l'écran. Les vidéos seront à ajouter dans une évolution dédiée.</p>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card p-3">
+      <h2 class="h5">Médias disponibles</h2>
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Aperçu</th><th>Nom</th><th>Type</th><th>Durée</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for media in media_list %}
+          <tr>
+            <td style="width:120px">
+              {% if media.media_type == 'image' and media.image %}
+                <a href="{{ media.image.url }}" target="_blank"><img src="{{ media.image.url }}" alt="{{ media.name }}" style="max-width:100px;max-height:60px;border-radius:.5rem;border:1px solid #d8dee9;object-fit:cover"></a>
+              {% elif media.media_type == 'web' %}
+                <span class="badge">WEB</span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              <strong>{{ media.name }}</strong>
+              {% if media.media_type == 'image' and media.image %}<br><code class="small">{{ media.image.url }}</code>{% endif %}
+              {% if media.media_type == 'web' and media.web_url %}<br><a class="small" href="{{ media.web_url }}" target="_blank">{{ media.web_url }}</a>{% endif %}
+            </td>
+            <td>{{ media.get_media_type_display }}</td>
+            <td>{{ media.default_duration_seconds }} s</td>
+            <td>{{ media.is_active|yesno:'actif,inactif' }}</td>
+            <td>
+              <form method="post" action="{% url 'display_manager:media_delete' media.pk %}" onsubmit="return confirm('Supprimer ce média ?');">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="text-muted">Aucun média. Ajoute une image ou une URL web depuis le formulaire.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

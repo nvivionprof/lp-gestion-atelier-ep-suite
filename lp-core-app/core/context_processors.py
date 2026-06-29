@@ -12,6 +12,7 @@ MODULE_DEFINITIONS = [
     {'code': 'system', 'name': 'System Manager', 'subtitle': 'Systèmes pédagogiques, réservations & QR codes', 'version': SUITE_VERSION_LABEL, 'url_attr': 'SYSTEM_MANAGER_PUBLIC_URL', 'fallback_attr': 'INVENTORY_PUBLIC_URL', 'icon': 'core/img/logo-system-manager-launcher.png', 'default_roles': {'eleve', 'utilisateur', 'magasinier', 'professeur', 'responsable', 'admin'}},
     {'code': 'tpmanager', 'name': 'TP Manager', 'subtitle': 'Base documentaire TP, parcours élèves & compétences', 'version': SUITE_VERSION_LABEL, 'url_attr': 'TPMANAGER_PUBLIC_URL', 'icon': 'core/img/logo-tpmanager-launcher.png', 'default_roles': {'professeur', 'responsable', 'admin'}},
     {'code': 'pfmp', 'name': 'PFMP Manager', 'subtitle': 'Entreprises, périodes PFMP, démarches et portail entreprise', 'version': SUITE_VERSION_LABEL, 'url_attr': 'PFMP_PUBLIC_URL', 'icon': 'core/img/logo-pfmp-manager-launcher.png', 'default_roles': {'eleve', 'utilisateur', 'professeur', 'responsable', 'admin'}},
+    {'code': 'lpdisplaymanager', 'name': 'LP Display Manager', 'subtitle': 'Affichage dynamique, écrans, campagnes et players Raspberry', 'version': SUITE_VERSION_LABEL, 'url_attr': 'LPDISPLAY_PUBLIC_URL', 'icon': 'core/img/logo-lp-suite.png', 'default_roles': {'professeur', 'responsable', 'admin'}},
 ]
 
 
@@ -33,6 +34,7 @@ EXPECTED_MODULE_PATHS = {
     'system': '/system/',
     'tpmanager': '/tpmanager/',
     'pfmp': '/pfmp/',
+    'lpdisplaymanager': '/lpdisplaymanager/',
 }
 
 
@@ -146,6 +148,7 @@ def core_context(request):
         'PEDASHOP_PUBLIC_URL': _url_for({'code': 'pedashop', 'url_attr': 'PEDASHOP_PUBLIC_URL'}, request),
         'SYSTEM_MANAGER_PUBLIC_URL': _url_for({'code': 'system', 'url_attr': 'SYSTEM_MANAGER_PUBLIC_URL'}, request),
         'TPMANAGER_PUBLIC_URL': _url_for({'code': 'tpmanager', 'url_attr': 'TPMANAGER_PUBLIC_URL'}, request),
+        'LPDISPLAY_PUBLIC_URL': _url_for({'code': 'lpdisplaymanager', 'url_attr': 'LPDISPLAY_PUBLIC_URL'}, request),
         'suite_modules': visible_modules,
         'suite_modules_all': modules,
         'core_current_user': user,

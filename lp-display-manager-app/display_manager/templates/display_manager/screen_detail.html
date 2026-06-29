@@ -1,0 +1,46 @@
+{% extends 'display_manager/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="h3">{{ screen.name }}</h1>
+    <div class="text-muted">{{ screen.location }}</div>
+  </div>
+  <div>
+    <a class="btn btn-outline-secondary" href="{% url 'display_manager:screen_edit' screen.pk %}">Modifier</a>
+    <a class="btn btn-outline-warning" href="{% url 'display_manager:send_command' screen.pk 'freeze' %}">Freeze 60 s</a>
+    <a class="btn btn-outline-success" href="{% url 'display_manager:send_command' screen.pk 'resume' %}">Resume</a>
+    <a class="btn btn-outline-primary" href="{% url 'display_manager:send_command' screen.pk 'reload' %}">Reload</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card p-3">
+      <h2 class="h5">Informations player</h2>
+      <dl class="row">
+        <dt class="col-sm-4">Statut</dt><dd class="col-sm-8"><span class="badge badge-{{ screen.status }}">{{ screen.get_status_display }}</span></dd>
+        <dt class="col-sm-4">Code association</dt><dd class="col-sm-8"><code>{{ screen.association_code }}</code></dd>
+        <dt class="col-sm-4">Token player</dt><dd class="col-sm-8"><code>{{ screen.player_token }}</code></dd>
+        <dt class="col-sm-4">IP</dt><dd class="col-sm-8">{{ screen.ip_address|default:'—' }}</dd>
+        <dt class="col-sm-4">Dernier contact</dt><dd class="col-sm-8">{{ screen.last_contact|default:'—' }}</dd>
+        <dt class="col-sm-4">Version agent</dt><dd class="col-sm-8">{{ screen.agent_version|default:'—' }}</dd>
+      </dl>
+      <p><a target="_blank" class="btn btn-sm btn-dark" href="{% url 'display_manager:player' screen.player_token %}">Ouvrir la page player</a></p>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card p-3">
+      <h2 class="h5">Commandes récentes</h2>
+      <table class="table table-sm">
+        <thead><tr><th>Action</th><th>Statut</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for command in commands %}
+          <tr><td>{{ command.get_action_display }}</td><td>{{ command.get_status_display }}</td><td>{{ command.created_at }}</td></tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-muted">Aucune commande.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

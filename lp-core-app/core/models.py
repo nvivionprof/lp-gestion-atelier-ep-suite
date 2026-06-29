@@ -178,6 +178,7 @@ class CoreModuleAccessRule(TimeStampedModel):
         ('pedashop', 'PedaShop'),
         ('system', 'System Manager'),
         ('tpmanager', 'TP Manager'),
+        ('lpdisplaymanager', 'LP Display Manager'),
     ]
     TARGET_CHOICES = [
         ('role', 'Fonction / rôle'),
