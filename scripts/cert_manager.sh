@@ -108,8 +108,8 @@ run_lego_cmd() {
     done
     docker run --rm \
       -e DUCKDNS_TOKEN="$DUCKDNS_TOKEN" \
-      -v "$SSL_DIR/lego:/lego" \
-      goacme/lego:latest \
+      -v "$SSL_DIR/lego:/lego-data" \
+      goacme/lego:v4.21.0 \
       "${args[@]}"
     return $?
   fi
@@ -131,7 +131,7 @@ issue_dns_duckdns() {
   need DUCKDNS_TOKEN
   echo "Génération Let's Encrypt DNS-01 via DuckDNS pour $PUBLIC_DOMAIN"
   run_lego_cmd \
-    --path "$SSL_DIR/lego" \
+    --path "/lego-data" \
     --email "$LETSENCRYPT_EMAIL" \
     --dns duckdns \
     --domains "$PUBLIC_DOMAIN" \
@@ -148,7 +148,7 @@ renew_dns_duckdns() {
   echo "Renouvellement Let's Encrypt DNS-01 via DuckDNS pour $PUBLIC_DOMAIN"
   set +e
   run_lego_cmd \
-    --path "$SSL_DIR/lego" \
+    --path "/lego-data" \
     --email "$LETSENCRYPT_EMAIL" \
     --dns duckdns \
     --domains "$PUBLIC_DOMAIN" \

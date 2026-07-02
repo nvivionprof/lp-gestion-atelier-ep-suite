@@ -1,0 +1,32 @@
+services:
+  lp-core-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  toolmag-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  safety-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  pedashop-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  system-manager-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  tpmanager-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  pfmp-app:
+    environment:
+      ENABLE_HTTPS: "0"
+
+  lp-display-manager-app:
+    environment:
+      ENABLE_HTTPS: "0"
