@@ -1,6 +1,7 @@
 {% extends 'inventory/base.html' %}
 {% block content %}
 <h1>{{ equipment.code }} — {{ equipment.name }}</h1>
+
 <section class="panel detail">
   {% if equipment.photo %}<div class="equipment-photo-wrap"><img class="equipment-photo" src="{{ equipment.photo.url }}" alt="Photo {{ equipment.name }}"></div>{% endif %}
   <p><strong>Type :</strong> {{ equipment.get_equipment_type_display }}</p>
@@ -45,6 +46,7 @@
   {% if can_edit_equipment %}<a class="button secondary" href="{% url 'equipment_duplicate' equipment.code %}">Dupliquer / créer depuis modèle</a>{% endif %}
   {% if can_edit_components %}<a class="button secondary" href="{% url 'equipment_components_edit' equipment.code %}">Composants</a>{% endif %}
   {% if can_add_document %}<a class="button secondary" href="{% url 'equipment_documents_edit' equipment.code %}">Documents</a>{% endif %}
+  {% if can_edit_equipment %}<a class="button danger" href="{% url 'equipment_delete' equipment.code %}">Supprimer / archiver</a>{% endif %}
   {% if current_storekeeper %}<a class="button secondary" href="{% url 'intervention_equipment' equipment.code %}">Bon d’intervention</a>{% endif %}
   {% if has_inventory_components %}
     <a class="button secondary" href="{% url 'user_inventory_auto' equipment.code %}">Inventaire utilisateur sortie / retour</a>
