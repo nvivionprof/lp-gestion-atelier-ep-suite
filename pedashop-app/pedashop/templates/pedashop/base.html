@@ -48,14 +48,14 @@
         {% if pedashop_current_user.is_admin_like %}<a class="admin-menu-item danger-link" href="{% url 'pedashop_database_purge' %}">Vider les bases PedaShop</a>{% endif %}
       </div></details>
       {% endif %}
-      <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu">
-        <a class="admin-menu-item" href="{{ LP_CORE_PUBLIC_URL }}">LP Core</a>
+      <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier">
+        <a class="admin-menu-item" href="/">LP Core</a>
         <a class="admin-menu-item" href="/toolmag/">ToolMag</a>
         <a class="admin-menu-item" href="/safety/">Safety Manager</a>
-        <a class="admin-menu-item" href="/pedashop/">PedaShop</a>
         <a class="admin-menu-item" href="/system/">System Manager</a>
         <a class="admin-menu-item" href="/tpmanager/">TP Manager</a>
         <a class="admin-menu-item" href="/pfmp/">PFMP Manager</a>
+        <a class="admin-menu-item" href="/lpdisplaymanager/">LP Display Manager</a>
       </div></details>
       <form class="role-switch-form" method="post" action="{% url 'pedashop_switch_role' 'utilisateur' %}">{% csrf_token %}<button class="session-pill {% if request.session.pedashop_active_role|default:'utilisateur' == 'utilisateur' %}active{% endif %}" type="submit">Utilisateur : {{ pedashop_current_user.username }}</button></form>
       {% if pedashop_current_user.is_storekeeper_like %}<form class="role-switch-form" method="post" action="{% url 'pedashop_switch_role' 'magasinier' %}">{% csrf_token %}<button class="session-pill {% if request.session.pedashop_active_role == 'magasinier' %}active{% endif %}" type="submit">Magasinier : {{ pedashop_current_user.username }}</button></form>{% else %}<span class="session-pill disabled">Connexion magasinier</span>{% endif %}

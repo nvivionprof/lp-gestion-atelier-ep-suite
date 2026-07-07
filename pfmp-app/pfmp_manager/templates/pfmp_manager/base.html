@@ -5,13 +5,13 @@
 <nav>
 <a href="{% url 'pfmp_dashboard' %}">Tableau de bord</a><a href="{% url 'pfmp_company_list' %}">Entreprises</a><a href="{% url 'pfmp_map' %}">Carte</a><a href="{% url 'pfmp_my_searches' %}">Mes recherches</a><a href="{% url 'pfmp_period_list' %}">Périodes et bilans</a><a href="{% url 'pfmp_assignment_list' %}">Suivi élèves</a><a href="{% url 'pfmp_announcement_list' %}">Portail entreprise V2</a>
 <details><summary>Applications</summary><div>
-<a href="{{ LP_CORE_PUBLIC_URL }}">LP Core</a>
+<a href="/">LP Core</a>
 <a href="/toolmag/">ToolMag</a>
 <a href="/safety/">Safety Manager</a>
+<a href="/pedashop/">PedaShop</a>
 <a href="/system/">System Manager</a>
 <a href="/tpmanager/">TP Manager</a>
-<a href="/pedashop/">PedaShop</a>
-<a href="{% url 'pfmp_dashboard' %}">PFMP Manager</a>
+<a href="/lpdisplaymanager/">LP Display Manager</a>
 </div></details>
 <details><summary>Fonctions admin</summary><div><a href="{% url 'pfmp_company_create' %}">Ajouter entreprise</a><a href="{% url 'pfmp_company_import' %}">Import entreprises XLSX</a><a href="{% url 'pfmp_company_geocode' %}">Géocodage entreprises</a><a href="{% url 'pfmp_period_create' %}">Créer période</a><a href="{% url 'pfmp_assignment_create' %}">Affecter élève</a></div><a href="/pfmp/xlsx/">Export / import XLSX</a></details>
 <details><summary>Aide</summary><div><a href="{% url 'pfmp_help' %}">Aide PFMP</a><a href="{% url 'pfmp_about' %}">À propos</a></div></details>

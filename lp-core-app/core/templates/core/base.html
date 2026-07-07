@@ -16,8 +16,13 @@
       <a href="{% url 'core_dashboard' %}">Portail</a>
       <a href="{% url 'core_my_account' %}">Ma fiche</a>
       <details class="nav-dropdown"><summary>Applications</summary><div>
-        <a href="{% url 'core_dashboard' %}">LP Core</a>
-        {% for module in suite_modules %}<a href="{{ module.url }}">{{ module.name }}</a>{% endfor %}
+        <a href="/toolmag/">ToolMag</a>
+        <a href="/safety/">Safety Manager</a>
+        <a href="/pedashop/">PedaShop</a>
+        <a href="/system/">System Manager</a>
+        <a href="/tpmanager/">TP Manager</a>
+        <a href="/pfmp/">PFMP Manager</a>
+        <a href="/lpdisplaymanager/">LP Display Manager</a>
       </div></details>
       {% if core_current_user.is_admin_like %}
         <details class="nav-dropdown"><summary>Administration</summary><div>

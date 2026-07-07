@@ -20,8 +20,16 @@
 <header class="topbar">
   <div class="brand"><a href="{% url 'display_manager:dashboard' %}">LP Display Manager</a><span>Affichage dynamique</span></div>
   <nav>
-    <a href="/">LP Core</a>
-    <a href="{% url 'display_manager:dashboard' %}">Tableau de bord</a>
+    <details><summary>Applications</summary><div>
+<a href="/">LP Core</a>
+<a href="/toolmag/">ToolMag</a>
+<a href="/safety/">Safety Manager</a>
+<a href="/pedashop/">PedaShop</a>
+<a href="/system/">System Manager</a>
+<a href="/tpmanager/">TP Manager</a>
+<a href="/pfmp/">PFMP Manager</a>
+</div></details>
+<a href="{% url 'display_manager:dashboard' %}">Tableau de bord</a>
     <a href="{% url 'display_manager:screens' %}">Écrans</a>
     <a href="{% url 'display_manager:layouts' %}">Layouts</a>
     <a href="{% url 'display_manager:media_library' %}">Médiathèque</a>

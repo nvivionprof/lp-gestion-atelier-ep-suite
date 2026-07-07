@@ -19,14 +19,15 @@
     <a href="{% url 'dashboard' %}">Tableau de bord</a>
     <a href="{% url 'equipment_list' %}">Inventaire</a>
     <a href="{% url 'display_current_loans' %}">Affichage dynamique</a>
-    <details class="admin-dropdown">
-      <summary>Applications</summary>
-      <div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier">
-        {% for app in SUITE_APP_LINKS %}
-          <a class="admin-menu-item" href="{{ app.url }}">{{ app.name }}</a>
-        {% endfor %}
-      </div>
-    </details>
+    <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier">
+        <a class="admin-menu-item" href="/">LP Core</a>
+        <a class="admin-menu-item" href="/safety/">Safety Manager</a>
+        <a class="admin-menu-item" href="/pedashop/">PedaShop</a>
+        <a class="admin-menu-item" href="/system/">System Manager</a>
+        <a class="admin-menu-item" href="/tpmanager/">TP Manager</a>
+        <a class="admin-menu-item" href="/pfmp/">PFMP Manager</a>
+        <a class="admin-menu-item" href="/lpdisplaymanager/">LP Display Manager</a>
+      </div></details>
     <a href="{% url 'dnl_glossary' %}">Glossaire DNL</a>
     {% if tm_is_prof %}
       <details class="admin-dropdown">

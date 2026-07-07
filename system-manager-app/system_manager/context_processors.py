@@ -18,7 +18,7 @@ def _role(user):
 def _can_see_suite_app(user, code):
     # Filtrage d'affichage du menu Suite côté System Manager.
     # La sécurité réelle reste portée par chaque module et par LP Core.
-    if code in {'core', 'system'}:
+    if code in {'core'}:
         return True
     if not user:
         return False
@@ -81,7 +81,7 @@ def _suite_links(user, request):
         ('tpmanager', 'TP Manager', getattr(settings, 'TPMANAGER_PUBLIC_URL', '')),
         ('pfmp', 'PFMP Manager', getattr(settings, 'PFMP_PUBLIC_URL', '')),
     ]
-    return [{'code': code, 'name': name, 'url': _public_url(request, code, url)} for code, name, url in defs if _can_see_suite_app(user, code)]
+    return [{'code': code, 'name': name, 'url': _public_url(request, code, url)} for code, name, url in defs if code != 'system' and _can_see_suite_app(user, code)]
 
 
 def system_context(request):

@@ -34,9 +34,16 @@
         <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
       </div><a href="/tpmanager/xlsx/">Export / import XLSX</a></details>
     {% endif %}
-    <a href="{{ SYSTEM_MANAGER_PUBLIC_URL }}" target="_blank" rel="noopener">System Manager</a>
-    <a href="{{ LP_CORE_PUBLIC_URL }}" target="_blank" rel="noopener">LP Core</a>
-    {% if tp_current_user %}<span class="tp-session-pill">{% if tp_current_user.is_admin_like %}Admin{% elif tp_current_user.is_prof_like %}Professeur{% else %}Élève{% endif %} : {{ tp_current_user.username }}</span><a href="{% url 'tp_logout' %}">Déconnexion</a>{% else %}<a class="tp-session-pill" href="{% url 'tp_login' %}">Connexion</a>{% endif %}
+    <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier">
+        <a class="admin-menu-item" href="/">LP Core</a>
+        <a class="admin-menu-item" href="/toolmag/">ToolMag</a>
+        <a class="admin-menu-item" href="/safety/">Safety Manager</a>
+        <a class="admin-menu-item" href="/pedashop/">PedaShop</a>
+        <a class="admin-menu-item" href="/system/">System Manager</a>
+        <a class="admin-menu-item" href="/pfmp/">PFMP Manager</a>
+        <a class="admin-menu-item" href="/lpdisplaymanager/">LP Display Manager</a>
+      </div></details>
+{% if tp_current_user %}<span class="tp-session-pill">{% if tp_current_user.is_admin_like %}Admin{% elif tp_current_user.is_prof_like %}Professeur{% else %}Élève{% endif %} : {{ tp_current_user.username }}</span><a href="{% url 'tp_logout' %}">Déconnexion</a>{% else %}<a class="tp-session-pill" href="{% url 'tp_login' %}">Connexion</a>{% endif %}
     <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide TP Manager">
       <a class="admin-menu-item" href="{% url 'tp_help' %}">Aide TP / Séquences / Évaluations</a>
       <a class="admin-menu-item" href="{% url 'tp_about' %}">À propos</a>

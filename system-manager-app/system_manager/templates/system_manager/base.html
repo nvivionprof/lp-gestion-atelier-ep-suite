@@ -32,9 +32,15 @@
         <a class="admin-menu-item" title="Administration Django" href="/admin/">Admin Django</a>
       </div><a href="/system/xlsx/">Export / import XLSX</a></details>
     {% endif %}
-    <details class="admin-dropdown suite-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier accessibles">
-      {% for app in suite_app_links %}<a class="admin-menu-item" href="{{ app.url }}" target="_blank" rel="noopener">{{ app.name }}</a>{% empty %}<span class="admin-menu-item muted">Aucune application disponible</span>{% endfor %}
-    </div></details>
+    <details class="admin-dropdown"><summary>Applications</summary><div class="admin-dropdown-menu" aria-label="Applications LP Gestion Atelier">
+        <a class="admin-menu-item" href="/">LP Core</a>
+        <a class="admin-menu-item" href="/toolmag/">ToolMag</a>
+        <a class="admin-menu-item" href="/safety/">Safety Manager</a>
+        <a class="admin-menu-item" href="/pedashop/">PedaShop</a>
+        <a class="admin-menu-item" href="/tpmanager/">TP Manager</a>
+        <a class="admin-menu-item" href="/pfmp/">PFMP Manager</a>
+        <a class="admin-menu-item" href="/lpdisplaymanager/">LP Display Manager</a>
+      </div></details>
     {% if system_current_user %}<span class="lp-role-pill active">Utilisateur : {{ system_current_user.code|default:system_current_user.username }}</span><a href="{% url 'system_logout' %}">Déconnexion</a>{% else %}<a href="{% url 'system_login' %}">Connexion</a>{% endif %}
     <details class="admin-dropdown"><summary>Aide</summary><div class="admin-dropdown-menu" aria-label="Aide System Manager">
       <a class="admin-menu-item" href="{% url 'system_help' %}">Aide System Manager</a>
