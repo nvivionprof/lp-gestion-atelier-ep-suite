@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     DOCKER_COMPOSE_VERSION=2.32.4 \
     LEGO_VERSION=4.23.1
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends bash ca-certificates curl unzip rsync openssl zip tar gzip \
+    && apt-get install -y --no-install-recommends bash ca-certificates curl unzip rsync openssl zip tar gzip rclone \
     && rm -rf /var/lib/apt/lists/* \
     && ARCH="$(dpkg --print-architecture)" \
     && case "$ARCH" in \

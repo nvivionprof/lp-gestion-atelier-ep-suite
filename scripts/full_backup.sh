@@ -79,3 +79,6 @@ if [[ "$MODE" == "daily" ]]; then
   find "$BACKUP_DIR" -type f -name 'lp-suite-full-*.zip' -mtime +"$RETENTION_DAYS" -delete 2>/dev/null || true
 fi
 echo "Sauvegarde complète créée : $ARCHIVE"
+if [[ -x "$SUITE_ROOT/scripts/cloud_backup_sync.sh" ]]; then
+  "$SUITE_ROOT/scripts/cloud_backup_sync.sh" push "$ARCHIVE" || echo "Avertissement : upload cloud impossible." >&2
+fi

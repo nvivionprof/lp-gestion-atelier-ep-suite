@@ -108,6 +108,85 @@ def list_database_backup_files():
                 continue
     return items[:150]
 
+
+def read_env_file(path):
+    data = {}
+    try:
+        for line in Path(path).read_text(errors='replace').splitlines():
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, v = line.split('=', 1)
+            data[k.strip()] = v.strip().strip('"').strip("'")
+    except Exception:
+        pass
+    return data
+
+
+def cloud_settings():
+    env = {}
+    env.update(read_env_file(SUITE_ROOT / '.env'))
+    env.update(read_env_file(SUITE_ROOT / 'lp-core-db' / 'data' / 'backup-policy.env'))
+    enabled = env.get('BACKUP_CLOUD_ENABLED', '0') == '1'
+    remote = env.get('BACKUP_CLOUD_RCLONE_REMOTE') or 'gdrive'
+    remote_path = (env.get('BACKUP_CLOUD_REMOTE_PATH') or 'LP-Gestion-Atelier-Suite/backups').strip().strip('/')
+    return {
+        'enabled': enabled,
+        'remote': remote,
+        'remote_path': remote_path,
+        'target': f'{remote}:{remote_path}',
+    }
+
+
+def list_cloud_backup_files():
+    cfg = cloud_settings()
+    if not cfg['enabled']:
+        return {'ok': True, 'enabled': False, 'backups': []}
+
+    try:
+        result = subprocess.run(
+            ['rclone', 'lsjson', cfg['target'], '--files-only', '--recursive'],
+            capture_output=True,
+            text=True,
+            timeout=90,
+        )
+    except Exception as exc:
+        return {'ok': False, 'enabled': True, 'error': f'rclone indisponible ou erreur : {exc}', 'backups': []}
+
+    if result.returncode != 0:
+        return {'ok': False, 'enabled': True, 'error': result.stderr[-1200:] or result.stdout[-1200:] or 'Erreur rclone lsjson', 'backups': []}
+
+    try:
+        raw_items = json.loads(result.stdout or '[]')
+    except Exception as exc:
+        return {'ok': False, 'enabled': True, 'error': f'JSON rclone invalide : {exc}', 'backups': []}
+
+    items = []
+    for item in raw_items:
+        path = item.get('Path') or item.get('Name') or ''
+        if not path.endswith('.zip'):
+            continue
+        name = Path(path).name
+        kind = 'database' if path.startswith('databases/') or name.startswith('lp-suite-db-') else 'full'
+        module = ''
+        if name.startswith('lp-suite-db-'):
+            try:
+                module = name.removeprefix('lp-suite-db-').rsplit('-', 2)[0]
+            except Exception:
+                module = ''
+        items.append({
+            'kind': kind,
+            'module': module,
+            'path': path,
+            'size_bytes': item.get('Size') or 0,
+            'size_human': human_size(item.get('Size') or 0),
+            'modified': str(item.get('ModTime') or ''),
+            'restorable': True,
+        })
+    items.sort(key=lambda x: x.get('modified') or '', reverse=True)
+    return {'ok': True, 'enabled': True, 'backups': items[:150]}
+
+
 def authorized(handler):
     if not TOKEN:
         return True
@@ -167,6 +246,21 @@ def start_job(action, payload):
             command = ['bash', str(SUITE_ROOT / 'scripts/restart_module.sh'), module]
         else:
             command = ['bash', str(SUITE_ROOT / 'scripts/logs_module.sh'), module, '180']
+    elif action == 'cloud_test':
+        command = ['bash', str(SUITE_ROOT / 'scripts/cloud_backup_sync.sh'), 'test']
+    elif action == 'cloud_sync':
+        command = ['bash', str(SUITE_ROOT / 'scripts/cloud_backup_sync.sh'), 'sync']
+    elif action == 'restore_cloud_backup':
+        cloud_path = str(payload.get('cloud_path', '')).replace('\\', '/')
+        backup_kind = str(payload.get('backup_kind', 'auto') or 'auto')
+        module = str(payload.get('module', 'auto') or 'auto')
+        allowed_modules = {'auto','all','lp-core','toolmag','safety','pedashop','system-manager','tpmanager','pfmp'}
+        if module not in allowed_modules:
+            raise ValueError('Module de restauration cloud non autorisé.')
+        rel = Path(cloud_path)
+        if not cloud_path.endswith('.zip') or rel.is_absolute() or '..' in rel.parts:
+            raise ValueError('Chemin cloud invalide.')
+        command = ['bash', str(SUITE_ROOT / 'scripts/cloud_backup_restore.sh'), cloud_path, backup_kind, module]
     elif action == 'backup_database':
         module = str(payload.get('module') or 'all')
         allowed_modules = {'all','lp-core','toolmag','safety','pedashop','system-manager','tpmanager','pfmp'}
@@ -277,6 +371,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return self._json(200, {'ok': True, 'backups': list_backup_files()})
         if path == '/database-backups':
             return self._json(200, {'ok': True, 'backups': list_database_backup_files()})
+        if path == '/cloud-backups':
+            return self._json(200, list_cloud_backup_files())
         return self._json(404, {'ok': False, 'error': 'Not found'})
 
     def do_POST(self):

@@ -434,6 +434,21 @@ class BackupPolicySettings(TimeStampedModel):
     pre_upgrade_required = models.BooleanField(default=True)
     block_update_if_backup_failed = models.BooleanField(default=True)
     web_restore_enabled = models.BooleanField(default=True)
+
+    CLOUD_PROVIDER_CHOICES = [
+        ('google_drive', 'Google Drive'),
+        ('onedrive', 'Microsoft OneDrive'),
+        ('sharepoint', 'Microsoft SharePoint'),
+        ('other', 'Autre remote rclone'),
+    ]
+    cloud_enabled = models.BooleanField(default=False)
+    cloud_provider = models.CharField(max_length=40, choices=CLOUD_PROVIDER_CHOICES, default='google_drive')
+    cloud_rclone_remote = models.CharField(max_length=80, blank=True, default='gdrive', help_text='Nom du remote rclone configuré sur le serveur, par exemple gdrive.')
+    cloud_remote_path = models.CharField(max_length=255, blank=True, default='LP-Gestion-Atelier-Suite/backups', help_text='Dossier distant dans le cloud.')
+    cloud_sync_full_backups = models.BooleanField(default=True)
+    cloud_sync_database_backups = models.BooleanField(default=True)
+    cloud_restore_enabled = models.BooleanField(default=True)
+
     notes = models.TextField(blank=True, default='Sauvegarde quotidienne automatique, conservation glissante configurable. Sauvegardes manuelles et pré-mise-à-jour conservées sans suppression automatique.')
 
     class Meta:
@@ -465,6 +480,13 @@ class BackupPolicySettings(TimeStampedModel):
             f'BACKUP_PRE_UPGRADE_REQUIRED={1 if self.pre_upgrade_required else 0}',
             f'BACKUP_BLOCK_UPDATE_IF_BACKUP_FAILED={1 if self.block_update_if_backup_failed else 0}',
             f'BACKUP_WEB_RESTORE_ENABLED={1 if self.web_restore_enabled else 0}',
+            f'BACKUP_CLOUD_ENABLED={1 if self.cloud_enabled else 0}',
+            f'BACKUP_CLOUD_PROVIDER={self.cloud_provider}',
+            f'BACKUP_CLOUD_RCLONE_REMOTE={self.cloud_rclone_remote}',
+            f'BACKUP_CLOUD_REMOTE_PATH={self.cloud_remote_path.strip("/")}',
+            f'BACKUP_CLOUD_SYNC_FULL={1 if self.cloud_sync_full_backups else 0}',
+            f'BACKUP_CLOUD_SYNC_DATABASE={1 if self.cloud_sync_database_backups else 0}',
+            f'BACKUP_CLOUD_RESTORE_ENABLED={1 if self.cloud_restore_enabled else 0}',
             '',
         ])
 

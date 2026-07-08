@@ -30,6 +30,36 @@
     <label>Restauration web
       <select name="web_restore_enabled"><option value="1" {% if backup_policy.web_restore_enabled %}selected{% endif %}>Autorisée admin</option><option value="0" {% if not backup_policy.web_restore_enabled %}selected{% endif %}>Désactivée</option></select>
     </label>
+    <hr class="span-all">
+    <h3 class="span-all">Sauvegarde cloud</h3>
+    <label>Mode cloud
+      <select name="cloud_enabled"><option value="1" {% if backup_policy.cloud_enabled %}selected{% endif %}>Activé</option><option value="0" {% if not backup_policy.cloud_enabled %}selected{% endif %}>Désactivé</option></select>
+    </label>
+    <label>Fournisseur
+      <select name="cloud_provider">
+        <option value="google_drive" {% if backup_policy.cloud_provider == 'google_drive' %}selected{% endif %}>Google Drive</option>
+        <option value="onedrive" {% if backup_policy.cloud_provider == 'onedrive' %}selected{% endif %}>Microsoft OneDrive</option>
+        <option value="sharepoint" {% if backup_policy.cloud_provider == 'sharepoint' %}selected{% endif %}>Microsoft SharePoint</option>
+        <option value="other" {% if backup_policy.cloud_provider == 'other' %}selected{% endif %}>Autre remote rclone</option>
+      </select>
+    </label>
+    <label>Compte / remote rclone
+      <input type="text" name="cloud_rclone_remote" value="{{ backup_policy.cloud_rclone_remote }}" placeholder="gdrive">
+    </label>
+    <label>Dossier cloud
+      <input type="text" name="cloud_remote_path" value="{{ backup_policy.cloud_remote_path }}" placeholder="LP-Gestion-Atelier-Suite/backups">
+    </label>
+    <label>Sauvegardes complètes
+      <select name="cloud_sync_full_backups"><option value="1" {% if backup_policy.cloud_sync_full_backups %}selected{% endif %}>Envoyer vers le cloud</option><option value="0" {% if not backup_policy.cloud_sync_full_backups %}selected{% endif %}>Ne pas envoyer</option></select>
+    </label>
+    <label>Sauvegardes PostgreSQL
+      <select name="cloud_sync_database_backups"><option value="1" {% if backup_policy.cloud_sync_database_backups %}selected{% endif %}>Envoyer vers le cloud</option><option value="0" {% if not backup_policy.cloud_sync_database_backups %}selected{% endif %}>Ne pas envoyer</option></select>
+    </label>
+    <label>Restauration depuis cloud
+      <select name="cloud_restore_enabled"><option value="1" {% if backup_policy.cloud_restore_enabled %}selected{% endif %}>Autorisée</option><option value="0" {% if not backup_policy.cloud_restore_enabled %}selected{% endif %}>Désactivée</option></select>
+    </label>
+    <p class="muted span-all">L’authentification Google/Microsoft est gérée côté serveur par <code>rclone</code>. LP Core ne stocke pas le mot de passe Google.</p>
+
     <label class="span-all">Notes internes
       <textarea name="notes" rows="3">{{ backup_policy.notes }}</textarea>
     </label>
@@ -47,6 +77,48 @@
 <section class="panel"><h2>Sauvegardes bases présentes sur le serveur</h2>{% if database_backups_error %}<p class="alert warning">{{ database_backups_error }}</p>{% endif %}<table><tr><th>Date</th><th>Type</th><th>Module</th><th>Fichier</th><th>Taille</th><th>Restauration</th></tr>{% for b in database_backups %}<tr><td>{{ b.modified }}</td><td>{{ b.kind }}</td><td>{{ b.module }}</td><td><code>{{ b.path }}</code></td><td>{{ b.size_human }}</td><td>{% if backup_policy.web_restore_enabled and b.restorable %}<form method="post" onsubmit="return confirm('Restaurer cette sauvegarde base ? Les données du module choisi seront remplacées.');">{% csrf_token %}<input type="hidden" name="form_action" value="restore_existing_database_backup"><input type="hidden" name="database_backup_path" value="{{ b.path }}"><label>Restaurer <select name="database_restore_module"><option value="auto">Auto</option>{% for code,label in database_backup_modules %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label><label>Confirmation <input type="text" name="confirm_restore_existing_database" placeholder="RESTAURER" required></label><button type="submit" class="danger">Restaurer base</button></form>{% else %}<span class="muted">Non restaurable ici</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="6">Aucune sauvegarde base listée.</td></tr>{% endfor %}</table></section>
 
 <section class="panel danger-zone"><h2>Injecter une sauvegarde base PostgreSQL depuis un ZIP</h2><p class="alert warning">La restauration remplace les tables de la base choisie. Elle est prévue après réinstallation complète ou incident.</p><form method="post" enctype="multipart/form-data" class="form-grid">{% csrf_token %}<input type="hidden" name="form_action" value="upload_db_restore"><label class="span-all">Archive ZIP de sauvegarde base <input type="file" name="database_backup_zip" accept=".zip" required></label><p class="muted span-all">Le ZIP doit contenir <code>manifest.json</code>, <code>databases/*.dump</code> et idéalement <code>checksums.sha256</code>.</p><div class="span-all actions"><button type="submit" {% if not backup_policy.web_restore_enabled %}disabled{% endif %}>Déposer et analyser la sauvegarde base</button></div></form></section>
+
+<section class="panel"><h2>Sauvegardes cloud</h2>
+{% if not backup_policy.cloud_enabled %}
+  <p class="muted">Mode cloud désactivé.</p>
+{% else %}
+  {% if cloud_backups_error %}<p class="alert warning">{{ cloud_backups_error }}</p>{% endif %}
+  <div class="actions">
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="test_cloud_backup"><button type="submit">Tester le compte cloud</button></form>
+    <form method="post">{% csrf_token %}<input type="hidden" name="form_action" value="sync_cloud_backups"><button type="submit">Synchroniser maintenant vers le cloud</button></form>
+  </div>
+  <table><tr><th>Date</th><th>Type</th><th>Module</th><th>Fichier cloud</th><th>Taille</th><th>Restauration</th></tr>
+  {% for b in cloud_backups %}
+    <tr>
+      <td>{{ b.modified }}</td>
+      <td>{{ b.kind }}</td>
+      <td>{{ b.module|default:'—' }}</td>
+      <td><code>{{ b.path }}</code></td>
+      <td>{{ b.size_human }}</td>
+      <td>
+        {% if backup_policy.web_restore_enabled and backup_policy.cloud_restore_enabled %}
+          <form method="post" onsubmit="return confirm('Restaurer cette sauvegarde depuis le cloud ? Les données actuelles seront remplacées.');">
+            {% csrf_token %}
+            <input type="hidden" name="form_action" value="restore_cloud_backup">
+            <input type="hidden" name="cloud_backup_path" value="{{ b.path }}">
+            <input type="hidden" name="cloud_backup_kind" value="{{ b.kind }}">
+            {% if b.kind == 'database' %}
+              <label>Restaurer <select name="database_restore_module"><option value="auto">Auto</option>{% for code,label in database_backup_modules %}<option value="{{ code }}">{{ label }}</option>{% endfor %}</select></label>
+            {% endif %}
+            <label>Confirmation <input type="text" name="confirm_restore_cloud" placeholder="RESTAURER" required></label>
+            <button type="submit" class="danger">Restaurer depuis cloud</button>
+          </form>
+        {% else %}
+          <span class="muted">Non restaurable ici</span>
+        {% endif %}
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6">Aucune sauvegarde cloud listée.</td></tr>
+  {% endfor %}
+  </table>
+{% endif %}
+</section>
 
 <section class="panel"><h2>Sauvegardes déjà présentes sur le serveur</h2>{% if existing_backups_error %}<p class="alert warning">{{ existing_backups_error }}</p>{% endif %}<table><tr><th>Date</th><th>Type</th><th>Fichier</th><th>Taille</th><th>Restauration</th></tr>{% for b in existing_backups %}<tr><td>{{ b.modified }}</td><td>{{ b.kind }}</td><td><code>{{ b.path }}</code></td><td>{{ b.size_human }}</td><td>{% if backup_policy.web_restore_enabled and b.restorable %}<form method="post" onsubmit="return confirm('Restaurer cette sauvegarde serveur ? Les données actuelles seront remplacées.');">{% csrf_token %}<input type="hidden" name="form_action" value="restore_existing_backup"><input type="hidden" name="backup_path" value="{{ b.path }}"><label>Confirmation <input type="text" name="confirm_restore_existing" placeholder="RESTAURER" required></label><button type="submit" class="danger">Restaurer</button></form>{% else %}<span class="muted">Non restaurable ici</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="5">Aucune sauvegarde serveur listée.</td></tr>{% endfor %}</table></section>
 

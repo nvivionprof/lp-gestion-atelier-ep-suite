@@ -64,7 +64,20 @@ module_service(){
 
 ensure_postgres(){
   dc up -d "$POSTGRES_SERVICE" >/dev/null
-  dc exec -T "$POSTGRES_SERVICE" pg_isready -U "$POSTGRES_USER" -d "${POSTGRES_DB:-lp_core}" >/dev/null
+
+  echo "Attente PostgreSQL..."
+  for i in $(seq 1 60); do
+    if dc exec -T "$POSTGRES_SERVICE" pg_isready -U "$POSTGRES_USER" -d postgres >/dev/null 2>&1; then
+      echo "PostgreSQL prêt."
+      return 0
+    fi
+    sleep 1
+  done
+
+  echo "ERREUR : PostgreSQL non prêt après 60 secondes." >&2
+  dc ps "$POSTGRES_SERVICE" >&2 || true
+  dc logs --tail=80 "$POSTGRES_SERVICE" >&2 || true
+  return 1
 }
 
 safe_db_name(){

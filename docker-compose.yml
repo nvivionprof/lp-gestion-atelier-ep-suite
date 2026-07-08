@@ -386,6 +386,7 @@ services:
     volumes:
     - ./:/suite:rw
     - ${SUITE_HOST_ROOT:-.}:${SUITE_HOST_ROOT:-/suite}:rw
+    - ./data/rclone:/root/.config/rclone:rw
     - /var/run/docker.sock:/var/run/docker.sock
     networks:
     - lp-suite-net
@@ -402,6 +403,7 @@ services:
       BACKUP_ENABLED: ${BACKUP_ENABLED:-1}
     volumes:
     - ./:/suite:rw
+    - ./data/rclone:/root/.config/rclone:rw
     command: 'bash -lc ''mkdir -p /suite/backups/daily; while true; do [ -f /suite/lp-core-db/data/backup-policy.env ] && . /suite/lp-core-db/data/backup-policy.env || true; D=$$(date +%F); H=$$(date +%H); M=$$(date +%M); STAMP="/suite/backups/.last_daily_$${D}"; if [ "$${BACKUP_ENABLED:-1}" = "1" ] && [ "$${H}" = "$${BACKUP_DAILY_HOUR:-02}" ] && [ "$${M}" = "$${BACKUP_DAILY_MINUTE:-00}" ] && [ ! -f "$${STAMP}" ]; then /suite/scripts/full_backup.sh daily && touch "$${STAMP}"; fi; find /suite/backups/daily -type f -name "lp-suite-full-*.zip" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true; sleep 60; done''
 
       '

@@ -1331,6 +1331,16 @@ def backup_restore_view(request):
                 policy.pre_upgrade_required = request.POST.get('pre_upgrade_required') == '1'
                 policy.block_update_if_backup_failed = request.POST.get('block_update_if_backup_failed') == '1'
                 policy.web_restore_enabled = request.POST.get('web_restore_enabled') == '1'
+                cloud_provider = request.POST.get('cloud_provider') or policy.cloud_provider or 'google_drive'
+                if cloud_provider not in {'google_drive', 'onedrive', 'sharepoint', 'other'}:
+                    cloud_provider = 'google_drive'
+                policy.cloud_enabled = request.POST.get('cloud_enabled') == '1'
+                policy.cloud_provider = cloud_provider
+                policy.cloud_rclone_remote = (request.POST.get('cloud_rclone_remote') or 'gdrive').strip()
+                policy.cloud_remote_path = (request.POST.get('cloud_remote_path') or 'LP-Gestion-Atelier-Suite/backups').strip().strip('/')
+                policy.cloud_sync_full_backups = request.POST.get('cloud_sync_full_backups') == '1'
+                policy.cloud_sync_database_backups = request.POST.get('cloud_sync_database_backups') == '1'
+                policy.cloud_restore_enabled = request.POST.get('cloud_restore_enabled') == '1'
                 policy.notes = request.POST.get('notes') or ''
                 policy.save()
                 rgpd_policy.backup_retention_days = policy.daily_retention_days
@@ -1340,6 +1350,40 @@ def backup_restore_view(request):
                 log_core_action(actor, 'BACKUP_SETTINGS_UPDATED', 'backup-policy', policy.to_env_text())
             except Exception as exc:
                 messages.error(request, f'Paramètres non enregistrés : {exc}')
+            return redirect('core_backup_restore')
+
+        if form_action == 'test_cloud_backup':
+            job, data = _record_agent_job('cloud_test', actor)
+            if data.get('ok'):
+                messages.success(request, f'Test cloud lancé — job {job.agent_job_id}.')
+            else:
+                messages.error(request, job.result_message or 'Test cloud refusé par l’agent serveur.')
+            return redirect('core_backup_restore')
+
+        if form_action == 'sync_cloud_backups':
+            job, data = _record_agent_job('cloud_sync', actor)
+            if data.get('ok'):
+                messages.success(request, f'Synchronisation cloud lancée — job {job.agent_job_id}.')
+            else:
+                messages.error(request, job.result_message or 'Synchronisation cloud refusée par l’agent serveur.')
+            return redirect('core_backup_restore')
+
+        if form_action == 'restore_cloud_backup':
+            if not policy.web_restore_enabled or not policy.cloud_restore_enabled:
+                messages.error(request, 'La restauration cloud est désactivée.')
+                return redirect('core_backup_restore')
+            cloud_path = request.POST.get('cloud_backup_path') or ''
+            backup_kind = request.POST.get('cloud_backup_kind') or 'auto'
+            module = request.POST.get('database_restore_module') or 'auto'
+            confirm = (request.POST.get('confirm_restore_cloud') or '').strip().upper()
+            if confirm != 'RESTAURER':
+                messages.error(request, 'Confirmation incorrecte. Saisir RESTAURER pour restaurer depuis le cloud.')
+                return redirect('core_backup_restore')
+            job, data = _record_agent_job('restore_cloud_backup', actor, payload={'cloud_path': cloud_path, 'backup_kind': backup_kind, 'module': module})
+            if data.get('ok'):
+                messages.success(request, f'Restauration cloud lancée — job {job.agent_job_id}.')
+            else:
+                messages.error(request, job.result_message or 'Restauration cloud refusée par l’agent serveur.')
             return redirect('core_backup_restore')
 
         if form_action == 'full_backup':
@@ -1523,7 +1567,7 @@ def backup_restore_view(request):
         messages.error(request, 'Action inconnue.')
         return redirect('core_backup_restore')
 
-    jobs = list(SuiteMaintenanceJob.objects.select_related('package', 'requested_by').filter(action__in=['full_backup', 'restore_full_backup', 'restore_existing_backup', 'backup_all', 'backup_database', 'restore_database_backup'])[:12])
+    jobs = list(SuiteMaintenanceJob.objects.select_related('package', 'requested_by').filter(action__in=['full_backup', 'restore_full_backup', 'restore_existing_backup', 'backup_all', 'backup_database', 'restore_database_backup', 'cloud_test', 'cloud_sync', 'restore_cloud_backup'])[:12])
     for job in jobs:
         if job.status in {'requested', 'running'}:
             _refresh_agent_job(job)
@@ -1532,6 +1576,8 @@ def backup_restore_view(request):
     existing_backups = existing_backups_response.get('backups', []) if existing_backups_response.get('ok') else []
     database_backups_response = _agent_get('/database-backups')
     database_backups = database_backups_response.get('backups', []) if database_backups_response.get('ok') else []
+    cloud_backups_response = _agent_get('/cloud-backups') if policy.cloud_enabled else {'ok': True, 'backups': []}
+    cloud_backups = cloud_backups_response.get('backups', []) if cloud_backups_response.get('ok') else []
     context = {
         'jobs': jobs,
         'packages': packages,
@@ -1539,6 +1585,8 @@ def backup_restore_view(request):
         'existing_backups_error': '' if existing_backups_response.get('ok') else existing_backups_response.get('error', 'Liste indisponible'),
         'database_backups': database_backups,
         'database_backups_error': '' if database_backups_response.get('ok') else database_backups_response.get('error', 'Liste indisponible'),
+        'cloud_backups': cloud_backups,
+        'cloud_backups_error': '' if cloud_backups_response.get('ok') else cloud_backups_response.get('error', 'Liste cloud indisponible'),
         'database_backup_modules': DATABASE_BACKUP_MODULES,
         'updates_dir': base,
         'agent_url': getattr(settings, 'SUITE_ADMIN_AGENT_URL', 'http://suite-admin-agent:8079'),
