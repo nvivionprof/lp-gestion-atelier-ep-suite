@@ -1967,3 +1967,53 @@ def export_pdf_config(request):
         messages.success(request, 'Configuration export PDF System Manager enregistrée pour la session.')
         return redirect('system_export_config')
     return render(request, 'system_manager/export_pdf_config.html', {'identity_mode': request.session.get('system_pdf_identity_mode', 'anonymous')})
+
+@system_edit_required
+@require_http_methods(['GET', 'POST'])
+def system_delete(request, pk):
+    systeme = get_object_or_404(EducationalSystem, pk=pk)
+    user = current_system_user(request)
+
+    if not can_edit_systems(user, systeme):
+        messages.error(request, 'Tu n’as pas de droit actif pour supprimer ou archiver ce système.')
+        return redirect('system_detail', systeme.pk)
+
+    def related_exists(obj, names):
+        for name in names:
+            rel = getattr(obj, name, None)
+            if rel is not None and hasattr(rel, 'exists'):
+                try:
+                    if rel.exists():
+                        return True
+                except Exception:
+                    pass
+        return False
+
+    has_history = related_exists(systeme, [
+        'documents',
+        'check_items',
+        'reservations',
+        'sessions',
+        'anomalies',
+        'maintenance_interventions',
+        'tp_associations',
+        'safety_links',
+        'change_logs',
+    ])
+
+    if request.method == 'POST':
+        if has_history:
+            systeme.statut = 'archive'
+            systeme.actif = False
+            systeme.save(update_fields=['statut', 'actif', 'updated_at'])
+            messages.warning(request, 'Le système possède un historique : il a été archivé au lieu d’être supprimé.')
+        else:
+            label = f'{systeme.code} — {systeme.designation}'
+            systeme.delete()
+            messages.success(request, f'Système supprimé : {label}')
+        return redirect('system_list')
+
+    return render(request, 'system_manager/system_confirm_delete.html', {
+        'systeme': systeme,
+        'has_history': has_history,
+    })

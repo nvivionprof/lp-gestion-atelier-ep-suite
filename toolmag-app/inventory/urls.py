@@ -24,6 +24,7 @@ urlpatterns = [
     path('materiels/<str:code>/dupliquer/', views.equipment_duplicate, name='equipment_duplicate'),
     path('materiels/<str:code>/composants/', views.equipment_components_edit, name='equipment_components_edit'),
     path('materiels/<str:code>/documents/', views.equipment_documents_edit, name='equipment_documents_edit'),
+    path('materiels/<str:code>/supprimer/', views.equipment_delete, name='equipment_delete'),
     path('materiels/<str:code>/', views.equipment_detail, name='equipment_detail'),
     path('materiels/<str:code>/controle/', views.equipment_control, name='equipment_control'),
     path('materiels/<str:code>/reparation/', views.repair_equipment, name='repair_equipment'),

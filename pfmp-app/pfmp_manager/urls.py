@@ -9,6 +9,7 @@ urlpatterns=[
  path('entreprises/',views.company_list,name='pfmp_company_list'),
  path('entreprises/creer/',views.company_create,name='pfmp_company_create'),
  path('entreprises/<int:pk>/modifier/',views.company_update,name='pfmp_company_update'),
+ path('entreprises/<int:pk>/supprimer/',views.company_delete,name='pfmp_company_delete'),
  path('entreprises/import/',views.import_companies,name='pfmp_company_import'),
  path('entreprises/geocodage/',views.geocode_companies,name='pfmp_company_geocode'),
  path('entreprises/<int:pk>/',views.company_detail,name='pfmp_company_detail'),

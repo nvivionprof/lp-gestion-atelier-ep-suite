@@ -2856,3 +2856,39 @@ def dynamic_loans_display(request):
         'status_filter': status_filter,
         'now': timezone.now(),
     })
+
+def equipment_delete(request, code):
+    equipment = get_object_or_404(Equipment, code=code)
+
+    actor, redirect_response = require_material_permission(
+        request,
+        'can_edit_equipment',
+        'Droit insuffisant pour supprimer ou archiver un matériel.'
+    )
+    if redirect_response:
+        return redirect_response
+
+    has_history = (
+        equipment.loans.exists()
+        or equipment.user_inventories.exists()
+    )
+
+    if request.method == 'POST':
+        if has_history:
+            equipment.status = Equipment.Status.OUT_OF_SERVICE
+            equipment.display_on_public_screen = False
+            equipment.save(update_fields=['status', 'display_on_public_screen', 'updated_at'])
+            messages.warning(
+                request,
+                "Le matériel possède un historique : il a été mis hors service au lieu d’être supprimé."
+            )
+        else:
+            label = f"{equipment.code} — {equipment.name}"
+            equipment.delete()
+            messages.success(request, f"Matériel supprimé : {label}")
+        return redirect('equipment_list')
+
+    return render(request, 'inventory/equipment_confirm_delete.html', {
+        'equipment': equipment,
+        'has_history': has_history,
+    })

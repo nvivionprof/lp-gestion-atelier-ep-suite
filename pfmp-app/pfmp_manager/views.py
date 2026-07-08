@@ -781,3 +781,38 @@ def sync_lp_core_view(request):
     users=sync_users_from_lp_core(force_password=force, core_user_id=core_user_id)
     formations=sync_formations_from_lp_core()
     return JsonResponse({'ok':not users['errors'] and not formations['errors'], 'users':users, 'formations':formations})
+
+@require_http_methods(['GET', 'POST'])
+def company_delete(request, pk):
+    user, response = _require_login(request)
+    if response:
+        return response
+    if not user.is_prof_like:
+        messages.error(request, 'Suppression réservée aux professeurs ou administrateurs PFMP.')
+        return redirect('pfmp_company_detail', pk)
+
+    company = get_object_or_404(Company, pk=pk)
+
+    has_history = (
+        company.contacts.exists()
+        or company.assignments.exists()
+        or company.student_searches.exists()
+    )
+
+    if request.method == 'POST':
+        if has_history:
+            company.status = 'inactive'
+            company.student_visible = False
+            company.save(update_fields=['status', 'student_visible', 'updated_at'])
+            messages.warning(request, 'Entreprise avec historique : elle a été rendue inactive et masquée aux élèves.')
+        else:
+            label = company.name
+            company.delete()
+            messages.success(request, f'Entreprise supprimée : {label}')
+        return redirect('pfmp_company_list')
+
+    return render(request, 'pfmp_manager/company_confirm_delete.html', {
+        'company': company,
+        'has_history': has_history,
+        'user': user,
+    })

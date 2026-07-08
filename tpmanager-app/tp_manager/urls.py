@@ -17,6 +17,7 @@ urlpatterns = [
     path('tps/export/pdf/', views.export_selection_pdf, name='tp_export_selection_pdf'),
     path('tps/<int:pk>/', views_v2.tp_detail, name='tp_detail'),
     path('tps/<int:pk>/modifier/', views_v2.tp_update, name='tp_update'),
+    path('tps/<int:pk>/supprimer/', views_v2.tp_delete, name='tp_delete'),
     path('tps/<int:pk>/ajouter-a-mon-parcours/', views.request_tp_for_me, name='tp_request_for_me'),
     path('tps/<int:tp_pk>/documents/ajouter/', views_v2.document_add, name='tp_document_add'),
     path('tps/<int:tp_pk>/formations/ajouter/', views.tpformation_add, name='tp_formation_add'),

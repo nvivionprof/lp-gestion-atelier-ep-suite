@@ -10,6 +10,7 @@
     <div class="actions">
       <a class="button" href="{% url 'pfmp_search_add_company' company.pk %}">Ajouter à ma recherche</a>
       {% if user and user.is_prof_like %}<a class="button secondary" href="{% url 'pfmp_company_update' company.pk %}">Modifier l’entreprise</a>{% endif %}
+      {% if user and user.is_prof_like %}<a class="button danger" href="{% url 'pfmp_company_delete' company.pk %}">Supprimer / archiver</a>{% endif %}
     </div>
   </div>
 

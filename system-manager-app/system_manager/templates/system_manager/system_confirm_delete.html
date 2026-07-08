@@ -1,0 +1,24 @@
+{% extends 'system_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Supprimer / archiver le système</h1>
+  <p><strong>{{ systeme.code }} — {{ systeme.designation }}</strong></p>
+
+  {% if has_history %}
+    <div class="alert warning">
+      Ce système possède un historique : documents, réservations, sessions, anomalies ou maintenance.
+      Il sera archivé et désactivé, mais pas supprimé définitivement.
+    </div>
+  {% else %}
+    <div class="alert danger">
+      Ce système ne possède pas d’historique détecté. Il sera supprimé définitivement.
+    </div>
+  {% endif %}
+
+  <form method="post" class="actions">
+    {% csrf_token %}
+    <a class="button secondary" href="{% url 'system_detail' systeme.pk %}">Annuler</a>
+    <button class="button danger" type="submit">Confirmer</button>
+  </form>
+</section>
+{% endblock %}

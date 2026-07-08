@@ -14,6 +14,7 @@
   {% if my_open_sessions %}{% for s in my_open_sessions %}<a class="button" href="{% url 'worksession_return' s.pk %}">Restituer ma session</a>{% endfor %}{% else %}<a class="button" href="{% url 'worksession_start' systeme.pk %}">Prise de poste</a>{% endif %}
   <a class="button secondary" href="{% url 'reservation_create' %}?systeme={{ systeme.pk }}">Réserver</a>
   {% if can_edit_this_system %}<a class="button secondary" href="{% url 'system_update' systeme.pk %}">Modifier le système</a>{% endif %}
+  {% if can_edit_this_system %}<a class="button danger" href="{% url 'system_delete' systeme.pk %}">Supprimer / archiver</a>{% endif %}
   {% if system_is_admin %}<a class="button secondary" href="{% url 'maintenance_create' systeme.pk %}">Maintenance / dépannage</a>{% endif %}
 </div>
 

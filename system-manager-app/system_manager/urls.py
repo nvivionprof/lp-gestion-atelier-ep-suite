@@ -14,6 +14,7 @@ urlpatterns = [
     path('systemes/creer/', views.system_create, name='system_create'),
     path('systemes/<int:pk>/', views.system_detail, name='system_detail'),
     path('systemes/<int:pk>/modifier/', views.system_update, name='system_update'),
+    path('systemes/<int:pk>/supprimer/', views.system_delete, name='system_delete'),
     path('systemes/<int:pk>/qr.png', views.system_qr_png, name='system_qr_png'),
     path('systemes/<int:system_pk>/documents/ajouter/', views.document_add, name='system_document_add'),
     path('documents/<int:pk>/modifier/', views.document_update, name='system_document_update'),

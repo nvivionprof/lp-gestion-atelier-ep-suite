@@ -1,0 +1,24 @@
+{% extends 'pfmp_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Supprimer / archiver l’entreprise</h1>
+  <p><strong>{{ company.name }}</strong></p>
+
+  {% if has_history %}
+    <div class="alert warning">
+      Cette entreprise possède des contacts, recherches ou affectations.
+      Elle sera passée en inactive et masquée aux élèves, mais pas supprimée définitivement.
+    </div>
+  {% else %}
+    <div class="alert danger">
+      Cette entreprise ne possède pas d’historique détecté. Elle sera supprimée définitivement.
+    </div>
+  {% endif %}
+
+  <form method="post" class="actions">
+    {% csrf_token %}
+    <a class="button secondary" href="{% url 'pfmp_company_detail' company.pk %}">Annuler</a>
+    <button class="button danger" type="submit">Confirmer</button>
+  </form>
+</section>
+{% endblock %}

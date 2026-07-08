@@ -13,6 +13,7 @@
       <a class="button" href="{% url 'tp_update' tp.pk %}">Modifier le TP</a>
       <a class="button secondary" href="{% url 'tpv2_referentiel_affect' tp.pk %}">Affecter / barème</a>
       <a class="button secondary" href="{% url 'tp_duplicate' tp.pk %}">Dupliquer pour modification</a>
+      <a class="button danger" href="{% url 'tp_delete' tp.pk %}">Supprimer / archiver</a>
     {% endif %}
   </div>
 </section>

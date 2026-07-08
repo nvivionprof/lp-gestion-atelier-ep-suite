@@ -1,0 +1,38 @@
+{% extends "inventory/base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+      Suppression / archivage du matériel
+    </div>
+
+    <div class="card-body">
+      <h1 class="h4">{{ equipment.code }} — {{ equipment.name }}</h1>
+
+      {% if has_history %}
+        <div class="alert alert-warning mt-3">
+          Ce matériel possède un historique d’emprunt ou d’inventaire.
+          Il ne sera pas supprimé définitivement : il sera mis hors service et masqué de l’affichage public.
+        </div>
+      {% else %}
+        <div class="alert alert-danger mt-3">
+          Ce matériel ne possède pas d’historique bloquant.
+          Il sera supprimé définitivement.
+        </div>
+      {% endif %}
+
+      <form method="post" class="mt-4">
+        {% csrf_token %}
+        <a href="{% url 'equipment_detail' equipment.code %}" class="btn btn-secondary">
+          Annuler
+        </a>
+
+        <button type="submit" class="btn btn-danger">
+          Confirmer
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

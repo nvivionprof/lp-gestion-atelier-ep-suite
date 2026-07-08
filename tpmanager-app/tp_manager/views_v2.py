@@ -763,3 +763,49 @@ def api_diplome_refs(request, diplome_pk):
             for t in a.taches.all().order_by('ordre', 'code')
         ]})
     return JsonResponse({'diplome': diplome.code, 'competences': competences, 'champs': champs, 'activites': activities})
+
+@tp_prof_required
+def tp_delete(request, pk):
+    tp = get_object_or_404(TPV2, pk=pk)
+
+    def related_exists(obj, names):
+        for name in names:
+            rel = getattr(obj, name, None)
+            if rel is not None and hasattr(rel, 'exists'):
+                try:
+                    if rel.exists():
+                        return True
+                except Exception:
+                    pass
+        return False
+
+    has_history = related_exists(tp, [
+        'valeurs_champs',
+        'activites_officielles',
+        'taches_officielles',
+        'competences_officielles',
+        'criteres_officiels_selectionnes',
+        'attitudes_officielles_selectionnees',
+        'criteres_reussite',
+        'criteres_evaluation_finale',
+        'documents_v2',
+        'resource_groups',
+        'linked_blocks',
+        'copies_transferees',
+    ])
+
+    if request.method == 'POST':
+        if has_history:
+            tp.statut = 'archive'
+            tp.save(update_fields=['statut', 'updated_at'])
+            messages.warning(request, 'Le TP possède des liens ou un historique : il a été archivé au lieu d’être supprimé.')
+        else:
+            label = f'{tp.code} — {tp.titre}'
+            tp.delete()
+            messages.success(request, f'TP supprimé : {label}')
+        return redirect('tp_list')
+
+    return render(request, 'tp_manager/tpv2_confirm_delete.html', {
+        'tp': tp,
+        'has_history': has_history,
+    })

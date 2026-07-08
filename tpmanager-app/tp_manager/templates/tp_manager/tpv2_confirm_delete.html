@@ -1,0 +1,24 @@
+{% extends 'tp_manager/base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Supprimer / archiver le TP</h1>
+  <p><strong>{{ tp.code }} — {{ tp.titre }}</strong></p>
+
+  {% if has_history %}
+    <div class="alert warning">
+      Ce TP possède des liens pédagogiques, documents, critères, ressources ou copies.
+      Il sera archivé, mais pas supprimé définitivement.
+    </div>
+  {% else %}
+    <div class="alert danger">
+      Ce TP ne possède pas d’historique détecté. Il sera supprimé définitivement.
+    </div>
+  {% endif %}
+
+  <form method="post" class="actions">
+    {% csrf_token %}
+    <a class="button secondary" href="{% url 'tp_detail' tp.pk %}">Annuler</a>
+    <button class="button danger" type="submit">Confirmer</button>
+  </form>
+</section>
+{% endblock %}
