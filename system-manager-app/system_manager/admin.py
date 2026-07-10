@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     SystemUser, Formation, Niveau, SchoolClass, WorkshopZone, WorkshopSubZone, EducationalSystem, DocumentCategory,
-    SystemDocument, DefaultCheckTemplate, CheckItem, ReservationGroup, Reservation, WorkSession, CheckResponse, SystemAnomaly, TemporarySystemPermission
+    SystemDocument, SystemEquipment, DefaultCheckTemplate, CheckItem, ReservationGroup, Reservation, WorkSession, CheckResponse, SystemAnomaly, TemporarySystemPermission
 )
 
 
@@ -58,13 +58,18 @@ class CheckItemInline(admin.TabularInline):
     extra = 0
 
 
+class SystemEquipmentInline(admin.TabularInline):
+    model = SystemEquipment
+    extra = 0
+
+
 @admin.register(EducationalSystem)
 class EducationalSystemAdmin(admin.ModelAdmin):
-    list_display = ('code', 'designation', 'zone', 'sous_zone', 'statut', 'professeur_referent', 'actif')
+    list_display = ('code', 'designation', 'parent_system', 'zone', 'sous_zone', 'statut', 'professeur_referent', 'actif')
     search_fields = ('code', 'designation', 'description')
     list_filter = ('statut', 'zone', 'formations', 'niveaux', 'actif')
     filter_horizontal = ('formations', 'niveaux')
-    inlines = [DocumentInline, CheckItemInline]
+    inlines = [DocumentInline, SystemEquipmentInline, CheckItemInline]
 
 
 @admin.register(DocumentCategory)
@@ -78,6 +83,21 @@ class SystemDocumentAdmin(admin.ModelAdmin):
     list_display = ('systeme', 'categorie', 'titre', 'type_document', 'version', 'visible_students', 'teacher_only', 'actif')
     search_fields = ('titre', 'systeme__code', 'systeme__designation')
     list_filter = ('categorie', 'type_document', 'visible_students', 'teacher_only', 'actif')
+
+
+@admin.register(SystemEquipment)
+class SystemEquipmentAdmin(admin.ModelAdmin):
+    list_display = (
+        'systeme', 'code', 'designation', 'type_equipement',
+        'marque', 'modele', 'quantite', 'toolmag_code', 'actif',
+    )
+    list_filter = ('actif', 'type_equipement', 'marque', 'systeme__zone')
+    search_fields = (
+        'code', 'designation', 'marque', 'modele',
+        'numero_serie', 'toolmag_code', 'systeme__code',
+    )
+
+
 
 
 @admin.register(DefaultCheckTemplate)

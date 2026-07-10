@@ -1,5 +1,12 @@
 {% extends 'system_manager/base.html' %}
 {% block content %}
+{% if systeme.parent_system %}
+<nav class="system-breadcrumb" aria-label="Arborescence système">
+  <a href="{% url 'system_detail' systeme.parent_system.pk %}">{{ systeme.parent_system.code }}</a>
+  <span>›</span>
+  <strong>{{ systeme.code }}</strong>
+</nav>
+{% endif %}
 <section class="system-header panel">
   <div>{% if systeme.photo %}<img class="system-photo" src="{{ systeme.photo.url }}" alt="{{ systeme.designation }}">{% else %}<div class="system-photo placeholder">Système</div>{% endif %}</div>
   <div class="system-main">
@@ -20,6 +27,14 @@
 
 <section class="panel">
   <h2>Classeur numérique du système</h2>
+  {% if documents_inherited %}
+    <div class="shared-doc-notice">
+      <strong>Documentation commune héritée de
+        <a href="{% url 'system_detail' documentation_system.pk %}">{{ documentation_system.code }} — {{ documentation_system.designation }}</a>.
+      </strong>
+      Aucun fichier n’est dupliqué dans ce sous-système.
+    </div>
+  {% endif %}
   <p class="muted">Les conteneurs sont repliés par défaut. Les documents Office peuvent être prévisualisés en PDF et l’original reste téléchargeable.</p>
   <div class="doc-stack">
     {% if show_check_container %}<details class="doc-category doc-container-full">
@@ -31,22 +46,101 @@
 
     {% for root, children, root_docs in docs_sections %}
       <details class="doc-category doc-container-full">
-        <summary><span>{{ root.nom }}</span>{% if system_is_admin %}<a class="mini-button secondary summary-action" href="{% url 'system_document_add' systeme.pk %}?categorie={{ root.pk }}">Ajouter</a>{% endif %}</summary>
+        <summary><span>{{ root.nom }}</span>{% if system_is_admin and not documents_inherited %}<a class="mini-button secondary summary-action" href="{% url 'system_document_add' documentation_system.pk %}?categorie={{ root.pk }}">Ajouter</a>{% endif %}</summary>
         {% if root.code == '08_HISTORIQUE_MODIFICATIONS' or root.section_code == '08' %}
           <table class="doc-table"><tr><th>Date</th><th>Type</th><th>Titre</th><th>Versions</th><th>Par</th></tr>{% for c in change_logs %}<tr><td>{{ c.date_effet|default:c.created_at|date:'d/m/Y' }}</td><td>{{ c.get_type_changement_display }}</td><td><strong>{{ c.titre }}</strong><br><small>{{ c.description|truncatechars:120 }}</small></td><td>{{ c.version_avant|default:'—' }} → {{ c.version_apres|default:'—' }}</td><td>{{ c.effectue_par.full_name|default:'—' }}</td></tr>{% endfor %}</table>
         {% endif %}
         {% if root_docs %}
-          <table class="doc-table"><tr><th>Document</th><th>Type</th><th>Version</th><th>Accès</th>{% if system_is_admin %}<th>Administration</th>{% endif %}</tr>{% for d in root_docs %}{% include 'system_manager/_document_row.html' with d=d %}{% endfor %}</table>
+          <table class="doc-table"><tr><th>Document</th><th>Type</th><th>Version</th><th>Accès</th>{% if system_is_admin and not documents_inherited %}<th>Administration</th>{% endif %}</tr>{% for d in root_docs %}{% include 'system_manager/_document_row.html' with d=d %}{% endfor %}</table>
         {% endif %}
         {% for cat, docs in children %}
-          <details class="doc-subcategory"><summary><span>{{ cat.nom }}</span>{% if system_is_admin %}<a class="mini-button secondary summary-action" href="{% url 'system_document_add' systeme.pk %}?categorie={{ cat.pk }}">Ajouter</a>{% endif %}</summary>
-            {% if docs %}<table class="doc-table"><tr><th>Document</th><th>Type</th><th>Version</th><th>Accès</th>{% if system_is_admin %}<th>Administration</th>{% endif %}</tr>{% for d in docs %}{% include 'system_manager/_document_row.html' with d=d %}{% endfor %}</table>{% endif %}
+          <details class="doc-subcategory"><summary><span>{{ cat.nom }}</span>{% if system_is_admin and not documents_inherited %}<a class="mini-button secondary summary-action" href="{% url 'system_document_add' documentation_system.pk %}?categorie={{ cat.pk }}">Ajouter</a>{% endif %}</summary>
+            {% if docs %}<table class="doc-table"><tr><th>Document</th><th>Type</th><th>Version</th><th>Accès</th>{% if system_is_admin and not documents_inherited %}<th>Administration</th>{% endif %}</tr>{% for d in docs %}{% include 'system_manager/_document_row.html' with d=d %}{% endfor %}</table>{% endif %}
           </details>
         {% endfor %}
       </details>
     {% endfor %}
   </div>
   {% if uncategorized_docs %}<h3>Sans rubrique</h3><table>{% for d in uncategorized_docs %}{% include 'system_manager/_document_row.html' with d=d %}{% endfor %}</table>{% endif %}
+
+
+<details class="doc-category doc-container-full" open>
+  <summary>
+    <span>09 - Arborescence sous-systèmes et équipements</span>
+    {% if not systeme.parent_system and system_can_create %}
+      <a class="mini-button secondary summary-action" href="{% url 'system_create' %}?parent={{ systeme.pk }}">Ajouter un sous-système</a>
+    {% elif systeme.parent_system and can_edit_this_system %}
+      <a class="mini-button secondary summary-action" href="{% url 'system_equipment_add' systeme.pk %}">Ajouter un équipement</a>
+    {% endif %}
+  </summary>
+
+  {% if systeme.parent_system %}
+    <table class="equipment-table">
+      <tr><th>Code</th><th>Équipement</th><th>Type</th><th>Marque / modèle</th><th>N° série</th><th>Qté</th><th>ToolMag</th>{% if can_edit_this_system %}<th>Actions</th>{% endif %}</tr>
+      {% for e in equipment_items %}
+        <tr>
+          <td>{{ e.code }}</td>
+          <td><strong>{{ e.designation }}</strong><br><small>{{ e.description|truncatechars:100 }}</small></td>
+          <td>{{ e.type_equipement|default:'—' }}</td>
+          <td>{{ e.marque|default:'—' }} {{ e.modele }}</td>
+          <td>{{ e.numero_serie|default:'—' }}</td>
+          <td>{{ e.quantite }}</td>
+          <td>{{ e.toolmag_code|default:'—' }}</td>
+          {% if can_edit_this_system %}
+            <td>
+              <a class="mini-button secondary" href="{% url 'system_equipment_update' e.pk %}">Modifier</a>
+              <form method="post" action="{% url 'system_equipment_delete' e.pk %}" class="inline-form">
+                {% csrf_token %}
+                <button class="mini-button danger" type="submit" onclick="return confirm('Supprimer cet équipement ?')">Supprimer</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+      {% empty %}
+        <tr><td colspan="8">Aucun équipement dans ce sous-système.</td></tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <div class="subsystem-tree">
+      {% for child in subsystems %}
+        <details class="subsystem-node">
+          <summary>
+            <span><a href="{% url 'system_detail' child.pk %}"><strong>{{ child.code }}</strong> — {{ child.designation }}</a></span>
+            {% if can_edit_this_system %}
+              <a class="mini-button secondary summary-action" href="{% url 'system_equipment_add' child.pk %}">Ajouter un équipement</a>
+            {% endif %}
+          </summary>
+          <table class="equipment-table">
+            <tr><th>Code</th><th>Équipement</th><th>Type</th><th>Marque / modèle</th><th>Qté</th><th>ToolMag</th>{% if can_edit_this_system %}<th>Actions</th>{% endif %}</tr>
+            {% for e in child.active_equipment_items %}
+              <tr>
+                <td>{{ e.code }}</td>
+                <td><strong>{{ e.designation }}</strong><br><small>{{ e.description|truncatechars:100 }}</small></td>
+                <td>{{ e.type_equipement|default:'—' }}</td>
+                <td>{{ e.marque|default:'—' }} {{ e.modele }}</td>
+                <td>{{ e.quantite }}</td>
+                <td>{{ e.toolmag_code|default:'—' }}</td>
+                {% if can_edit_this_system %}
+                  <td>
+                    <a class="mini-button secondary" href="{% url 'system_equipment_update' e.pk %}">Modifier</a>
+                    <form method="post" action="{% url 'system_equipment_delete' e.pk %}" class="inline-form">
+                      {% csrf_token %}
+                      <button class="mini-button danger" type="submit" onclick="return confirm('Supprimer cet équipement ?')">Supprimer</button>
+                    </form>
+                  </td>
+                {% endif %}
+              </tr>
+            {% empty %}
+              <tr><td colspan="7">Aucun équipement.</td></tr>
+            {% endfor %}
+          </table>
+        </details>
+      {% empty %}
+        <p class="muted">Aucun sous-système.</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</details>
 </section>
 
 <div class="grid2">

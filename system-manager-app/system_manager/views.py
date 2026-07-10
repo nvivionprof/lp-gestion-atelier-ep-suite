@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, time
 from io import BytesIO
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Prefetch
 from django.http import HttpResponse, JsonResponse, HttpResponseForbidden, FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -16,10 +16,10 @@ import zipfile
 from pathlib import Path
 from .models import (
     SystemUser, Formation, Niveau, SchoolClass, WorkshopZone, WorkshopSubZone, EducationalSystem, DocumentCategory,
-    SystemDocument, DefaultCheckTemplate, CheckItem, ReservationGroup, Reservation, WorkSession, CheckResponse, SystemAnomaly, WorkshopBlock, WorkshopBlockSlot, SystemTPAssociation, SystemSafetyLink, MaintenanceIntervention, MaintenanceCheckLine, MaintenanceDrawingZone, SystemChangeLog, TemporarySystemPermission
+    SystemDocument, SystemEquipment, DefaultCheckTemplate, CheckItem, ReservationGroup, Reservation, WorkSession, CheckResponse, SystemAnomaly, WorkshopBlock, WorkshopBlockSlot, SystemTPAssociation, SystemSafetyLink, MaintenanceIntervention, MaintenanceCheckLine, MaintenanceDrawingZone, SystemChangeLog, TemporarySystemPermission
 )
 from .forms import (
-    ZoneForm, SubZoneForm, FormationForm, NiveauForm, EducationalSystemForm, DocumentCategoryForm, SystemDocumentForm, DefaultCheckTemplateForm,
+    ZoneForm, SubZoneForm, FormationForm, NiveauForm, EducationalSystemForm, DocumentCategoryForm, SystemDocumentForm, SystemEquipmentForm, DefaultCheckTemplateForm,
     CheckItemForm, ReservationForm, QuickReservationForm, WorkSessionStartForm, WorkSessionReturnForm, SystemAnomalyForm, WorkshopBlockForm, WorkshopBlockSlotForm, SystemTPAssociationForm, SystemSafetyLinkForm, MaintenanceInterventionForm, MaintenanceCheckLineForm, MaintenanceDrawingZoneForm, SystemChangeLogForm, TemporarySystemPermissionForm, ReservationGroupForm, SystemSearchForm
 )
 from .permissions import system_login_required, system_edit_required, system_admin_required, current_system_user, can_create_systems, can_edit_systems
@@ -222,7 +222,28 @@ def system_create(request):
     if not can_create_systems(user):
         messages.error(request, 'Tu n’as pas de droit actif pour créer un système.')
         return redirect('system_list')
-    form = EducationalSystemForm(request.POST or None, request.FILES or None)
+    initial = {}
+    parent_id = request.GET.get('parent') or request.GET.get('parent_system') or ''
+    if parent_id:
+        parent = EducationalSystem.objects.filter(
+            pk=parent_id,
+            parent_system__isnull=True,
+            actif=True,
+        ).prefetch_related('formations', 'niveaux').first()
+        if parent:
+            initial.update({
+                'parent_system': parent,
+                'zone': parent.zone_id,
+                'sous_zone': parent.sous_zone_id,
+                'professeur_referent': parent.professeur_referent_id,
+                'formations': list(parent.formations.values_list('pk', flat=True)),
+                'niveaux': list(parent.niveaux.values_list('pk', flat=True)),
+            })
+    form = EducationalSystemForm(
+        request.POST or None,
+        request.FILES or None,
+        initial=initial,
+    )
     if request.method == 'POST' and form.is_valid():
         systeme = form.save()
         _ensure_default_check_items(systeme)
@@ -1110,7 +1131,7 @@ def _root_document_sections():
 
 
 def _candidate_systems(request):
-    qs = EducationalSystem.objects.select_related('zone', 'sous_zone').filter(actif=True)
+    qs = EducationalSystem.objects.select_related('parent_system', 'zone', 'sous_zone').filter(actif=True)
     q = (request.GET.get('q') or '').strip()
     zone = request.GET.get('zone') or ''
     subzone = request.GET.get('sous_zone') or ''
@@ -1508,47 +1529,113 @@ def _recompute_system_status_from_anomalies(systeme):
 
 @system_login_required
 def system_detail(request, pk):
-    systeme = get_object_or_404(EducationalSystem.objects.select_related('zone', 'sous_zone', 'professeur_referent').prefetch_related('formations', 'niveaux'), pk=pk)
+    systeme = get_object_or_404(
+        EducationalSystem.objects.select_related(
+            'parent_system', 'zone', 'sous_zone', 'professeur_referent'
+        ).prefetch_related('formations', 'niveaux'),
+        pk=pk,
+    )
     user = current_system_user(request)
+    documentation_system = systeme.documentation_system
+
     visible_doc_filter = Q(actif=True)
     if not (user and user.is_prof_like):
         visible_doc_filter &= Q(visible_students=True, teacher_only=False)
+
     docs_sections = []
     for root in _root_document_sections():
-        children = list(root.sous_categories.filter(active=True).order_by('ordre', 'code')) if hasattr(root, 'sous_categories') else []
+        children = list(
+            root.sous_categories.filter(active=True).order_by('ordre', 'code')
+        ) if hasattr(root, 'sous_categories') else []
         if not children:
             children = [root]
+
         child_rows = []
         for cat in children:
-            qs = systeme.documents.filter(visible_doc_filter, categorie=cat).select_related('parent_document').prefetch_related('versions').order_by('titre')
-            child_rows.append((cat, qs))
-        root_docs = systeme.documents.filter(visible_doc_filter, categorie=root).select_related('parent_document').prefetch_related('versions').order_by('titre') if children and children[0] != root else []
+            docs = documentation_system.documents.filter(
+                visible_doc_filter,
+                categorie=cat,
+            ).select_related('parent_document').prefetch_related('versions').order_by('titre')
+            child_rows.append((cat, docs))
+
+        root_docs = (
+            documentation_system.documents.filter(
+                visible_doc_filter,
+                categorie=root,
+            ).select_related('parent_document').prefetch_related('versions').order_by('titre')
+            if children and children[0] != root
+            else []
+        )
         docs_sections.append((root, child_rows, root_docs))
+
+    equipment_qs = SystemEquipment.objects.filter(actif=True).order_by(
+        'ordre', 'code', 'designation'
+    )
+    subsystems = EducationalSystem.objects.none()
+    if not systeme.parent_system_id:
+        subsystems = systeme.subsystems.filter(actif=True).select_related(
+            'zone', 'sous_zone', 'professeur_referent'
+        ).prefetch_related(
+            Prefetch(
+                'equipment_items',
+                queryset=equipment_qs,
+                to_attr='active_equipment_items',
+            )
+        ).order_by('code')
+
     context = {
         'systeme': systeme,
+        'documentation_system': documentation_system,
+        'documents_inherited': documentation_system.pk != systeme.pk,
+        'subsystems': subsystems,
+        'equipment_items': equipment_qs.filter(systeme=systeme),
         'effective_status': system_effective_status(systeme),
         'docs_sections': docs_sections,
-        'uncategorized_docs': systeme.documents.filter(visible_doc_filter, categorie__isnull=True).select_related('parent_document').prefetch_related('versions'),
+        'uncategorized_docs': documentation_system.documents.filter(
+            visible_doc_filter,
+            categorie__isnull=True,
+        ).select_related('parent_document').prefetch_related('versions'),
         'check_items': systeme.check_items.filter(actif=True).order_by('ordre', 'id'),
         'show_check_container': can_edit_systems(user, systeme),
-        'can_download_original_docs': bool(user and (user.is_prof_like or can_edit_systems(user, systeme))),
-        'my_open_sessions': systeme.sessions.filter(statut='ouverte', utilisateur=user).select_related('utilisateur') if user else [],
+        'can_download_original_docs': bool(
+            user and (user.is_prof_like or can_edit_systems(user, documentation_system))
+        ),
+        'my_open_sessions': (
+            systeme.sessions.filter(statut='ouverte', utilisateur=user).select_related('utilisateur')
+            if user else []
+        ),
         'can_edit_this_system': can_edit_systems(user, systeme),
         'current_reservation': current_reservation_for_system(systeme),
         'upcoming_reservations': upcoming_reservations(systeme, 8),
         'open_sessions': systeme.sessions.filter(statut='ouverte').select_related('utilisateur'),
-        'recent_sessions': systeme.sessions.select_related('utilisateur', 'formation', 'niveau', 'professeur_referent').order_by('-date_prise')[:10],
-        'anomalies': systeme.anomalies.select_related('signalee_par', 'lift_requested_by', 'lift_authorized_by').order_by('-created_at')[:20],
-        'maintenance_interventions': systeme.maintenance_interventions.select_related('intervention_par').order_by('-created_at')[:12],
-        'change_logs': systeme.change_logs.select_related('effectue_par').order_by('-date_effet', '-created_at')[:100],
+        'recent_sessions': systeme.sessions.select_related(
+            'utilisateur', 'formation', 'niveau', 'professeur_referent'
+        ).order_by('-date_prise')[:10],
+        'anomalies': systeme.anomalies.select_related(
+            'signalee_par', 'lift_requested_by', 'lift_authorized_by'
+        ).order_by('-created_at')[:20],
+        'maintenance_interventions': systeme.maintenance_interventions.select_related(
+            'intervention_par'
+        ).order_by('-created_at')[:12],
+        'change_logs': systeme.change_logs.select_related('effectue_par').order_by(
+            '-date_effet', '-created_at'
+        )[:100],
     }
     return render(request, 'system_manager/system_detail.html', context)
-
 
 @system_admin_required
 @require_http_methods(['GET', 'POST'])
 def document_add(request, system_pk):
-    systeme = get_object_or_404(EducationalSystem, pk=system_pk)
+    systeme = get_object_or_404(
+        EducationalSystem.objects.select_related('parent_system'),
+        pk=system_pk,
+    )
+    if systeme.parent_system_id:
+        messages.info(
+            request,
+            f'La documentation de {systeme.code} est commune avec {systeme.parent_system.code}. Ajout redirigé vers le système principal.',
+        )
+        return redirect('system_document_add', system_pk=systeme.parent_system_id)
     initial = {}
     cat = request.GET.get('categorie') or request.GET.get('category') or ''
     if cat and DocumentCategory.objects.filter(pk=cat).exists():
@@ -1999,6 +2086,8 @@ def system_delete(request, pk):
         'tp_associations',
         'safety_links',
         'change_logs',
+        'subsystems',
+        'equipment_items',
     ])
 
     if request.method == 'POST':
@@ -2017,3 +2106,109 @@ def system_delete(request, pk):
         'systeme': systeme,
         'has_history': has_history,
     })
+
+
+# ---------------------------------------------------------------------------
+# Hiérarchie systèmes / équipements locaux
+# ---------------------------------------------------------------------------
+@system_edit_required
+@require_http_methods(['GET', 'POST'])
+def equipment_add(request, system_pk):
+    systeme = get_object_or_404(
+        EducationalSystem.objects.select_related('parent_system'),
+        pk=system_pk,
+    )
+    user = current_system_user(request)
+    if not can_edit_systems(user, systeme):
+        messages.error(request, 'Droit insuffisant pour modifier les équipements de ce système.')
+        return redirect('system_detail', systeme.pk)
+
+    form = SystemEquipmentForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        equipment = form.save(commit=False)
+        equipment.systeme = systeme
+        try:
+            equipment.full_clean()
+            equipment.save()
+            SystemChangeLog.objects.create(
+                systeme=systeme,
+                type_changement='parametrage',
+                titre=f'Ajout équipement : {equipment.designation}',
+                description=equipment.description,
+                effectue_par=user,
+                date_effet=timezone.localdate(),
+            )
+            messages.success(request, 'Équipement ajouté.')
+            return redirect('system_detail', systeme.pk)
+        except ValidationError as exc:
+            form.add_error(None, exc)
+
+    return render(
+        request,
+        'system_manager/form.html',
+        {'form': form, 'title': f'Ajouter un équipement — {systeme.code}'},
+    )
+
+
+@system_edit_required
+@require_http_methods(['GET', 'POST'])
+def equipment_update(request, pk):
+    equipment = get_object_or_404(
+        SystemEquipment.objects.select_related('systeme', 'systeme__parent_system'),
+        pk=pk,
+    )
+    user = current_system_user(request)
+    if not can_edit_systems(user, equipment.systeme):
+        messages.error(request, 'Droit insuffisant pour modifier cet équipement.')
+        return redirect('system_detail', equipment.systeme.pk)
+
+    form = SystemEquipmentForm(request.POST or None, instance=equipment)
+    if request.method == 'POST' and form.is_valid():
+        equipment = form.save(commit=False)
+        try:
+            equipment.full_clean()
+            equipment.save()
+            SystemChangeLog.objects.create(
+                systeme=equipment.systeme,
+                type_changement='parametrage',
+                titre=f'Modification équipement : {equipment.designation}',
+                description=equipment.description,
+                effectue_par=user,
+                date_effet=timezone.localdate(),
+            )
+            messages.success(request, 'Équipement modifié.')
+            return redirect('system_detail', equipment.systeme.pk)
+        except ValidationError as exc:
+            form.add_error(None, exc)
+
+    return render(
+        request,
+        'system_manager/form.html',
+        {'form': form, 'title': f'Modifier un équipement — {equipment.systeme.code}'},
+    )
+
+
+@system_edit_required
+@require_http_methods(['POST'])
+def equipment_delete(request, pk):
+    equipment = get_object_or_404(
+        SystemEquipment.objects.select_related('systeme'),
+        pk=pk,
+    )
+    systeme = equipment.systeme
+    user = current_system_user(request)
+    if not can_edit_systems(user, systeme):
+        messages.error(request, 'Droit insuffisant pour supprimer cet équipement.')
+        return redirect('system_detail', systeme.pk)
+
+    label = f'{equipment.code} — {equipment.designation}'
+    equipment.delete()
+    SystemChangeLog.objects.create(
+        systeme=systeme,
+        type_changement='parametrage',
+        titre=f'Suppression équipement : {label}',
+        effectue_par=user,
+        date_effet=timezone.localdate(),
+    )
+    messages.success(request, f'Équipement supprimé : {label}.')
+    return redirect('system_detail', systeme.pk)

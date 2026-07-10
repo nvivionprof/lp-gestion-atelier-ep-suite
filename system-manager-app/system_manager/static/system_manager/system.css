@@ -206,3 +206,13 @@
 }
 .topbar .lp-role-pill.warning { background:#f97316 !important; }
 
+/* V0.3.9 — hiérarchie système */
+.system-breadcrumb{display:flex;gap:.55rem;align-items:center;margin:0 0 12px 4px}
+.shared-doc-notice{padding:12px 14px;margin:0 0 14px;border:1px solid #bfdbfe;border-left:5px solid #2563eb;border-radius:10px;background:#eff6ff}
+.subsystem-tree{display:grid;gap:.8rem;padding:.6rem}
+.subsystem-node{border:1px solid var(--border);border-radius:12px;background:#fff;padding:.5rem}
+.subsystem-node>summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.55rem;cursor:pointer}
+.equipment-table{margin-top:.65rem}
+.subsystem-row{background:#f8fafc}
+.subsystem-row td:nth-child(2){padding-left:1.8rem;border-left:4px solid #bfdbfe}
+@media(max-width:860px){.subsystem-node>summary{align-items:flex-start;flex-direction:column}.equipment-table{display:block;overflow-x:auto}}

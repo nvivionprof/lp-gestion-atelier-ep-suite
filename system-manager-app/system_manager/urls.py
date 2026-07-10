@@ -20,6 +20,9 @@ urlpatterns = [
     path('documents/<int:pk>/modifier/', views.document_update, name='system_document_update'),
     path('documents/<int:pk>/nouvelle-version/', views.document_new_version, name='system_document_new_version'),
     path('documents/<int:pk>/supprimer/', views.document_delete, name='system_document_delete'),
+    path('systemes/<int:system_pk>/equipements/ajouter/', views.equipment_add, name='system_equipment_add'),
+    path('equipements/<int:pk>/modifier/', views.equipment_update, name='system_equipment_update'),
+    path('equipements/<int:pk>/supprimer/', views.equipment_delete, name='system_equipment_delete'),
 
     path('systemes/<int:system_pk>/tp-associer/ajouter/', views.tp_association_add, name='system_tp_association_add'),
     path('systemes/<int:system_pk>/securite/ajouter/', views.safety_link_add, name='system_safety_link_add'),

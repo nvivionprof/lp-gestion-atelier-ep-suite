@@ -36,6 +36,8 @@ def can_edit_systems(user, systeme=None):
     for perm in perms:
         if perm.allows_system(systeme, create=False):
             return True
+        if getattr(systeme, 'parent_system_id', None) and perm.allows_system(systeme.parent_system, create=False):
+            return True
     return False
 
 

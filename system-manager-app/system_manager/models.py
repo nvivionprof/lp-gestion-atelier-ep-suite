@@ -201,13 +201,37 @@ class EducationalSystem(TimeStampedModel):
     statut = models.CharField(max_length=40, choices=STATUS_CHOICES, default='disponible')
     actif = models.BooleanField(default=True)
     commentaire_interne = models.TextField(blank=True)
+    parent_system = models.ForeignKey(
+        'self',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='subsystems',
+        verbose_name='Système principal',
+        help_text='Laisser vide pour un système principal. Un sous-système partage sa documentation.',
+    )
 
     class Meta:
         ordering = ['zone__code', 'code']
         verbose_name = 'système pédagogique'
         verbose_name_plural = 'systèmes pédagogiques'
 
+    def _validate_parent_hierarchy(self):
+        if not self.parent_system_id:
+            return
+        if self.pk and self.parent_system_id == self.pk:
+            raise ValidationError({'parent_system': 'Un système ne peut pas être son propre parent.'})
+        if self.parent_system and self.parent_system.parent_system_id:
+            raise ValidationError({'parent_system': 'Le parent doit être un système principal. Un seul niveau de sous-système est autorisé.'})
+        if self.parent_system and not self.parent_system.actif:
+            raise ValidationError({'parent_system': 'Le système principal sélectionné est inactif.'})
+
+    def clean(self):
+        super().clean()
+        self._validate_parent_hierarchy()
+
     def save(self, *args, **kwargs):
+        self._validate_parent_hierarchy()
         if not self.code:
             zone = self.zone.code if self.zone else 'SYS'
             base = normalize_code(self.designation, 'SYSTEME', 40)
@@ -228,8 +252,67 @@ class EducationalSystem(TimeStampedModel):
         return reverse('system_detail', args=[self.pk])
 
     @property
+    def is_subsystem(self):
+        return bool(self.parent_system_id)
+
+    @property
+    def documentation_system(self):
+        return self.parent_system if self.parent_system_id else self
+
+    @property
     def open_anomalies_count(self):
         return self.anomalies.exclude(statut__in=['resolue', 'annulee']).count()
+
+class SystemEquipment(TimeStampedModel):
+    """Équipement local rattaché à un système ou à un sous-système.
+
+    Le lien ToolMag reste déclaratif afin de conserver l'isolation des bases :
+    aucune clé étrangère inter-application n'est créée.
+    """
+    systeme = models.ForeignKey(EducationalSystem, on_delete=models.CASCADE, related_name='equipment_items')
+    code = models.CharField(max_length=80, blank=True)
+    designation = models.CharField(max_length=220)
+    type_equipement = models.CharField(max_length=120, blank=True)
+    marque = models.CharField(max_length=120, blank=True)
+    modele = models.CharField(max_length=120, blank=True)
+    numero_serie = models.CharField(max_length=160, blank=True)
+    quantite = models.PositiveIntegerField(default=1)
+    toolmag_code = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text='Code métier ToolMag facultatif. Aucun lien SQL direct entre les deux bases.',
+    )
+    description = models.TextField(blank=True)
+    ordre = models.PositiveIntegerField(default=100)
+    actif = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['ordre', 'code', 'designation']
+        unique_together = [('systeme', 'code')]
+        verbose_name = 'équipement de système'
+        verbose_name_plural = 'équipements de systèmes'
+
+    def clean(self):
+        super().clean()
+        if self.quantite is not None and self.quantite < 1:
+            raise ValidationError({'quantite': 'La quantité doit être supérieure ou égale à 1.'})
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            base = normalize_code(self.designation, 'EQUIPEMENT', 60)
+            candidate = base
+            index = 1
+            while SystemEquipment.objects.exclude(pk=self.pk).filter(systeme=self.systeme, code=candidate).exists():
+                index += 1
+                candidate = f'{base[:70]}-{index:02d}'
+            self.code = candidate[:80]
+        else:
+            self.code = normalize_code(self.code, 'EQUIPEMENT', 80)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.systeme.code} / {self.code} — {self.designation}'
+
 
 
 class TemporarySystemPermission(TimeStampedModel):

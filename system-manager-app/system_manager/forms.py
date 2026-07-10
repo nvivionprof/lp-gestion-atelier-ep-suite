@@ -2,7 +2,7 @@ from __future__ import annotations
 from django import forms
 from django.utils import timezone
 from .models import (
-    WorkshopZone, WorkshopSubZone, Formation, Niveau, SchoolClass, SystemUser, EducationalSystem, DocumentCategory, SystemDocument, DefaultCheckTemplate,
+    WorkshopZone, WorkshopSubZone, Formation, Niveau, SchoolClass, SystemUser, EducationalSystem, DocumentCategory, SystemDocument, SystemEquipment, DefaultCheckTemplate,
     CheckItem, ReservationGroup, Reservation, WorkSession, SystemAnomaly, WorkshopBlock, WorkshopBlockSlot, SystemTPAssociation, SystemSafetyLink, MaintenanceIntervention, MaintenanceCheckLine, MaintenanceDrawingZone, SystemChangeLog, TemporarySystemPermission
 )
 
@@ -48,13 +48,26 @@ class NiveauForm(BaseStyledForm):
 class EducationalSystemForm(BaseStyledForm):
     class Meta:
         model = EducationalSystem
-        fields = ['code', 'designation', 'description', 'photo', 'zone', 'sous_zone', 'formations', 'niveaux', 'professeur_referent', 'statut', 'actif', 'commentaire_interne']
+        fields = ['code', 'designation', 'description', 'parent_system', 'photo', 'zone', 'sous_zone', 'formations', 'niveaux', 'professeur_referent', 'statut', 'actif', 'commentaire_interne']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'commentaire_interne': forms.Textarea(attrs={'rows': 3}),
             'formations': forms.CheckboxSelectMultiple,
             'niveaux': forms.CheckboxSelectMultiple,
         }
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        parents = EducationalSystem.objects.filter(
+            parent_system__isnull=True,
+            actif=True,
+        ).order_by('zone__code', 'code')
+        if self.instance and self.instance.pk:
+            parents = parents.exclude(pk=self.instance.pk)
+        self.fields['parent_system'].queryset = parents
+        self.fields['parent_system'].required = False
+        self.fields['parent_system'].label = 'Système principal / documentation commune'
 
 
 class DocumentCategoryForm(BaseStyledForm):
@@ -83,6 +96,19 @@ class SystemDocumentForm(BaseStyledForm):
         self.fields['visible_students'].label = 'Visible par les élèves'
         self.fields['teacher_only'].label = 'Correction / contenu professeur uniquement'
         self.fields['fichier'].help_text = 'DOCX/XLSX/PPTX : une prévisualisation PDF sera générée automatiquement si LibreOffice est disponible.'
+
+
+class SystemEquipmentForm(BaseStyledForm):
+    class Meta:
+        model = SystemEquipment
+        fields = [
+            'code', 'designation', 'type_equipement', 'marque', 'modele',
+            'numero_serie', 'quantite', 'toolmag_code', 'description',
+            'ordre', 'actif',
+        ]
+        widgets = {'description': forms.Textarea(attrs={'rows': 3})}
+
+
 
 
 class DefaultCheckTemplateForm(BaseStyledForm):
