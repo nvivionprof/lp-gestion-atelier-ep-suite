@@ -56,18 +56,29 @@ class EducationalSystemForm(BaseStyledForm):
             'niveaux': forms.CheckboxSelectMultiple,
         }
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        parents = EducationalSystem.objects.filter(
-            parent_system__isnull=True,
-            actif=True,
-        ).order_by('zone__code', 'code')
+        parents = EducationalSystem.objects.filter(actif=True).order_by(
+            'zone__code', 'code'
+        )
         if self.instance and self.instance.pk:
-            parents = parents.exclude(pk=self.instance.pk)
+            excluded_ids = {self.instance.pk}
+            frontier = [self.instance.pk]
+            while frontier:
+                child_ids = list(
+                    EducationalSystem.objects.filter(parent_system_id__in=frontier)
+                    .values_list('pk', flat=True)
+                )
+                frontier = [pk for pk in child_ids if pk not in excluded_ids]
+                excluded_ids.update(frontier)
+            parents = parents.exclude(pk__in=excluded_ids)
         self.fields['parent_system'].queryset = parents
         self.fields['parent_system'].required = False
-        self.fields['parent_system'].label = 'Système principal / documentation commune'
+        self.fields['parent_system'].label = 'Système parent (facultatif)'
+        self.fields['parent_system'].help_text = (
+            'Laisser vide pour une racine. Tout système actif peut devenir le parent '
+            'd’un nouveau sous-système, quelle que soit sa profondeur.'
+        )
 
 
 class DocumentCategoryForm(BaseStyledForm):

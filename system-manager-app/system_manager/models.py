@@ -221,10 +221,17 @@ class EducationalSystem(TimeStampedModel):
             return
         if self.pk and self.parent_system_id == self.pk:
             raise ValidationError({'parent_system': 'Un système ne peut pas être son propre parent.'})
-        if self.parent_system and self.parent_system.parent_system_id:
-            raise ValidationError({'parent_system': 'Le parent doit être un système principal. Un seul niveau de sous-système est autorisé.'})
         if self.parent_system and not self.parent_system.actif:
-            raise ValidationError({'parent_system': 'Le système principal sélectionné est inactif.'})
+            raise ValidationError({'parent_system': 'Le système parent sélectionné est inactif.'})
+
+        # Autorise une profondeur libre, mais interdit toute boucle dans la chaîne.
+        seen = {self.pk} if self.pk else set()
+        current = self.parent_system
+        while current is not None:
+            if current.pk in seen:
+                raise ValidationError({'parent_system': 'Cette sélection créerait une boucle dans l’arborescence.'})
+            seen.add(current.pk)
+            current = current.parent_system
 
     def clean(self):
         super().clean()
@@ -255,9 +262,38 @@ class EducationalSystem(TimeStampedModel):
     def is_subsystem(self):
         return bool(self.parent_system_id)
 
+    def get_ancestor_chain(self, include_self=False):
+        """Retourne la chaîne racine → parent, avec le système courant en option."""
+        chain = []
+        current = self if include_self else self.parent_system
+        seen = set()
+        while current is not None and current.pk not in seen:
+            seen.add(current.pk)
+            chain.append(current)
+            current = current.parent_system
+        chain.reverse()
+        return chain
+
+    def get_descendant_ids(self):
+        """Retourne tous les descendants sans dépendre d’une profondeur maximale."""
+        if not self.pk:
+            return set()
+        descendants = set()
+        frontier = [self.pk]
+        while frontier:
+            children = list(
+                EducationalSystem.objects.filter(parent_system_id__in=frontier)
+                .values_list('pk', flat=True)
+            )
+            frontier = [pk for pk in children if pk not in descendants]
+            descendants.update(frontier)
+        return descendants
+
     @property
     def documentation_system(self):
-        return self.parent_system if self.parent_system_id else self
+        """Compatibilité : retourne la racine de l’arborescence."""
+        chain = self.get_ancestor_chain(include_self=True)
+        return chain[0] if chain else self
 
     @property
     def open_anomalies_count(self):

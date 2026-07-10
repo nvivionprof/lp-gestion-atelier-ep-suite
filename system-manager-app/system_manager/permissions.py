@@ -25,6 +25,15 @@ def can_create_systems(user):
     return bool(user and (user.is_prof_like or _active_temporary_permissions(user).filter(can_create=True).exists()))
 
 
+def _system_and_ancestors(systeme):
+    current = systeme
+    seen = set()
+    while current is not None and current.pk not in seen:
+        seen.add(current.pk)
+        yield current
+        current = current.parent_system
+
+
 def can_edit_systems(user, systeme=None):
     if not user:
         return False
@@ -34,10 +43,9 @@ def can_edit_systems(user, systeme=None):
     if systeme is None:
         return perms.exists()
     for perm in perms:
-        if perm.allows_system(systeme, create=False):
-            return True
-        if getattr(systeme, 'parent_system_id', None) and perm.allows_system(systeme.parent_system, create=False):
-            return True
+        for scoped_system in _system_and_ancestors(systeme):
+            if perm.allows_system(scoped_system, create=False):
+                return True
     return False
 
 

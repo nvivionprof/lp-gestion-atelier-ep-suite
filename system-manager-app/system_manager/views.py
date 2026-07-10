@@ -227,7 +227,6 @@ def system_create(request):
     if parent_id:
         parent = EducationalSystem.objects.filter(
             pk=parent_id,
-            parent_system__isnull=True,
             actif=True,
         ).prefetch_related('formations', 'niveaux').first()
         if parent:
@@ -1536,11 +1535,41 @@ def system_detail(request, pk):
         pk=pk,
     )
     user = current_system_user(request)
-    documentation_system = systeme.documentation_system
+
+    # La visibilité documentaire est ascendante : racine → ... → système courant.
+    # Les documents locaux d’un enfant ne remontent jamais vers son parent et ne
+    # sont donc pas visibles par ses frères.
+    document_sources = systeme.get_ancestor_chain(include_self=True)
+    source_ids = [source.pk for source in document_sources]
+    source_order = {source.pk: index for index, source in enumerate(document_sources)}
+    inherited_source_ids = set()
 
     visible_doc_filter = Q(actif=True)
     if not (user and user.is_prof_like):
         visible_doc_filter &= Q(visible_students=True, teacher_only=False)
+
+    def load_documents(category):
+        documents = list(
+            SystemDocument.objects.filter(
+                visible_doc_filter,
+                systeme_id__in=source_ids,
+                categorie=category,
+            )
+            .select_related('systeme', 'parent_document')
+            .prefetch_related('versions')
+        )
+        documents.sort(
+            key=lambda document: (
+                source_order.get(document.systeme_id, 999999),
+                document.titre.casefold(),
+            )
+        )
+        for document in documents:
+            document.is_inherited = document.systeme_id != systeme.pk
+            document.source_system = document.systeme
+            if document.is_inherited:
+                inherited_source_ids.add(document.systeme_id)
+        return documents
 
     docs_sections = []
     for root in _root_document_sections():
@@ -1551,54 +1580,62 @@ def system_detail(request, pk):
             children = [root]
 
         child_rows = []
-        for cat in children:
-            docs = documentation_system.documents.filter(
-                visible_doc_filter,
-                categorie=cat,
-            ).select_related('parent_document').prefetch_related('versions').order_by('titre')
-            child_rows.append((cat, docs))
+        for category in children:
+            documents = load_documents(category)
+            child_rows.append((category, documents, bool(documents)))
 
         root_docs = (
-            documentation_system.documents.filter(
-                visible_doc_filter,
-                categorie=root,
-            ).select_related('parent_document').prefetch_related('versions').order_by('titre')
+            load_documents(root)
             if children and children[0] != root
             else []
         )
-        docs_sections.append((root, child_rows, root_docs))
+        section_has_docs = bool(root_docs) or any(row[2] for row in child_rows)
+        docs_sections.append((root, child_rows, root_docs, section_has_docs))
+
+    uncategorized_docs = load_documents(None)
+    inherited_document_sources = [
+        source for source in document_sources[:-1]
+        if source.pk in inherited_source_ids
+    ]
 
     equipment_qs = SystemEquipment.objects.filter(actif=True).order_by(
         'ordre', 'code', 'designation'
     )
-    subsystems = EducationalSystem.objects.none()
-    if not systeme.parent_system_id:
-        subsystems = systeme.subsystems.filter(actif=True).select_related(
-            'zone', 'sous_zone', 'professeur_referent'
-        ).prefetch_related(
+    subsystems = (
+        systeme.subsystems.filter(actif=True)
+        .select_related('parent_system', 'zone', 'sous_zone', 'professeur_referent')
+        .annotate(
+            active_child_count=Count(
+                'subsystems',
+                filter=Q(subsystems__actif=True),
+                distinct=True,
+            )
+        )
+        .prefetch_related(
             Prefetch(
                 'equipment_items',
                 queryset=equipment_qs,
                 to_attr='active_equipment_items',
             )
-        ).order_by('code')
+        )
+        .order_by('code')
+    )
 
     context = {
         'systeme': systeme,
-        'documentation_system': documentation_system,
-        'documents_inherited': documentation_system.pk != systeme.pk,
+        'documentation_system': systeme.documentation_system,
+        'documents_inherited': bool(inherited_document_sources),
+        'document_sources': document_sources,
+        'inherited_document_sources': inherited_document_sources,
         'subsystems': subsystems,
         'equipment_items': equipment_qs.filter(systeme=systeme),
         'effective_status': system_effective_status(systeme),
         'docs_sections': docs_sections,
-        'uncategorized_docs': documentation_system.documents.filter(
-            visible_doc_filter,
-            categorie__isnull=True,
-        ).select_related('parent_document').prefetch_related('versions'),
+        'uncategorized_docs': uncategorized_docs,
         'check_items': systeme.check_items.filter(actif=True).order_by('ordre', 'id'),
         'show_check_container': can_edit_systems(user, systeme),
         'can_download_original_docs': bool(
-            user and (user.is_prof_like or can_edit_systems(user, documentation_system))
+            user and (user.is_prof_like or can_edit_systems(user, systeme))
         ),
         'my_open_sessions': (
             systeme.sessions.filter(statut='ouverte', utilisateur=user).select_related('utilisateur')
@@ -1630,22 +1667,24 @@ def document_add(request, system_pk):
         EducationalSystem.objects.select_related('parent_system'),
         pk=system_pk,
     )
-    if systeme.parent_system_id:
-        messages.info(
-            request,
-            f'La documentation de {systeme.code} est commune avec {systeme.parent_system.code}. Ajout redirigé vers le système principal.',
-        )
-        return redirect('system_document_add', system_pk=systeme.parent_system_id)
     initial = {}
     cat = request.GET.get('categorie') or request.GET.get('category') or ''
     if cat and DocumentCategory.objects.filter(pk=cat).exists():
         initial['categorie'] = cat
-    form = SystemDocumentForm(request.POST or None, request.FILES or None, initial=initial, systeme=systeme)
+    form = SystemDocumentForm(
+        request.POST or None,
+        request.FILES or None,
+        initial=initial,
+        systeme=systeme,
+    )
     if request.method == 'POST' and form.is_valid():
         doc = form.save(commit=False)
         doc.systeme = systeme
         doc.ajoute_par = current_system_user(request)
-        if doc.categorie and ('CORR' in doc.categorie.code.upper() or 'CORRECTION' in doc.categorie.nom.upper()):
+        if doc.categorie and (
+            'CORR' in doc.categorie.code.upper()
+            or 'CORRECTION' in doc.categorie.nom.upper()
+        ):
             doc.teacher_only = True
             doc.visible_students = False
         try:
@@ -1653,13 +1692,31 @@ def document_add(request, system_pk):
             doc.save()
             if _is_office_preview_candidate(doc):
                 _generate_document_preview(doc)
-            SystemChangeLog.objects.create(systeme=systeme, type_changement='document', titre=f'Ajout document : {doc.titre}', description=doc.description, version_apres=doc.version, effectue_par=current_system_user(request), date_effet=timezone.localdate())
-            messages.success(request, 'Document ajouté.')
+            SystemChangeLog.objects.create(
+                systeme=systeme,
+                type_changement='document',
+                titre=f'Ajout document : {doc.titre}',
+                description=doc.description,
+                version_apres=doc.version,
+                effectue_par=current_system_user(request),
+                date_effet=timezone.localdate(),
+            )
+            messages.success(
+                request,
+                f'Document ajouté localement à {systeme.code}.',
+            )
             return redirect('system_detail', systeme.pk)
         except ValidationError as exc:
             form.add_error(None, exc)
-    return render(request, 'system_manager/document_form.html', {'form': form, 'title': f'Ajouter un document — {systeme.code}', 'systeme': systeme})
-
+    return render(
+        request,
+        'system_manager/document_form.html',
+        {
+            'form': form,
+            'title': f'Ajouter un document — {systeme.code}',
+            'systeme': systeme,
+        },
+    )
 
 @system_admin_required
 @require_http_methods(['GET', 'POST'])
